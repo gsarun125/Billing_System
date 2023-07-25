@@ -29,6 +29,7 @@ public class SalesActivity extends DrawerBaseActivity {
     String Date="25/07/23";
 
     String Time="01:29 PM";
+    float net_amount=180.0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,11 +75,75 @@ public class SalesActivity extends DrawerBaseActivity {
                 canvas.drawText("Customer Name: "+Customer_Name,20,590,myPaint);
                 canvas.drawText("Phone No: "+PHone_NO,20,650,myPaint);
 
+
                 myPaint.setTextAlign(Paint.Align.LEFT);
                 myPaint.setTextSize(35f);
                 myPaint.setColor(Color.BLACK);
-                canvas.drawText("Bill No : "+Bill_NO,pageWidth-20,590,myPaint);
-                canvas.drawText("Date : "+Date,pageWidth-20,650,myPaint);
+                canvas.drawText("Bill No : "+Bill_NO,pageWidth-350,590,myPaint);
+                canvas.drawText("Date : "+Date,pageWidth-350,650,myPaint);
+                canvas.drawText("Time : "+Time,pageWidth-350,710,myPaint);
+
+                canvas.drawText("--------------------------------------------------",pageWidth/2,780,titlePaint);
+
+                //box
+                myPaint.setStyle(Paint.Style.STROKE);
+                myPaint.setStrokeWidth(2);
+                canvas.drawRect(20,800,pageWidth-20,860,myPaint);
+
+                myPaint.setTextAlign(Paint.Align.LEFT);
+                myPaint.setStyle(Paint.Style.FILL);
+                canvas.drawText("Sl.No.",pageWidth-1168,850,myPaint);
+                canvas.drawText("Pid",pageWidth-1000,850,myPaint);
+                canvas.drawText("Particulars",pageWidth-792,850,myPaint);
+                canvas.drawText("Qty",pageWidth-500,850,myPaint);
+                canvas.drawText("Rate",pageWidth-376,850,myPaint);
+                canvas.drawText("Amount",pageWidth-198,850,myPaint);
+
+                canvas.drawLine(pageWidth-1168+120,800,pageWidth-1168+120,860,myPaint);
+                canvas.drawLine(pageWidth-970+100,800,pageWidth-970+100,860,myPaint);
+                canvas.drawLine(pageWidth-792+248,800,pageWidth-792+248,860,myPaint);
+                canvas.drawLine(pageWidth-500+100,800,pageWidth-500+100,860,myPaint);
+                canvas.drawLine(pageWidth-376+148,800,pageWidth-376+148,860,myPaint);
+
+                int start_item1=50;
+                int start_item2=200;
+                int start_item3=400;
+                int start_item4=700;
+                int start_item5=850;
+                int start_item6=1000;
+
+                int end_item=950;
+                //product
+                //if(itemspiner.getSelectedItemPosition()!=0)
+                //{
+               // max 12
+                int i=12;
+                 while (i>0){
+                     canvas.drawText("1", start_item1, end_item, myPaint);
+                     canvas.drawText("18", start_item2, end_item, myPaint);
+                     canvas.drawText("APPLE", start_item3, end_item, myPaint);
+                     canvas.drawText("6", start_item4, end_item, myPaint);
+                     canvas.drawText("29", start_item5, end_item, myPaint);
+                     canvas.drawText("174", start_item6, end_item, myPaint);
+                     end_item = end_item + 70;
+                     System.out.println(i);
+                     i=i-1;
+                 }
+                // }
+
+                canvas.drawLine(680,end_item,pageWidth-20,end_item,myPaint);
+                 end_item=end_item+50;
+
+                 canvas.drawText("Net Amt",730,end_item,myPaint);
+                 canvas.drawText(":",970,end_item,myPaint);
+                 canvas.drawText(""+net_amount,1000,end_item,myPaint);
+                 end_item=end_item+30;
+                 canvas.drawLine(680,end_item,pageWidth-20,end_item,myPaint);
+
+                 end_item=end_item+70;
+                titlePaint.setTextSize(30);
+                canvas.drawText("**THANK YOUR VISIT**",pageWidth/2,end_item,titlePaint);
+
 
 
                 document.finishPage(page);
