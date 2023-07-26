@@ -1,14 +1,9 @@
-package com.mini.billingsystem;
+package com.mini.billingsystem.Activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.mini.billingsystem.Activity.AddProductActivity;
-import com.mini.billingsystem.Activity.DrawerBaseActivity;
 import com.mini.billingsystem.DataBase.DataBaseHandler;
 import com.mini.billingsystem.databinding.ActivityUpdateBinding;
 
