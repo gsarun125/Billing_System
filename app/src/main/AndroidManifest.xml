@@ -16,7 +16,7 @@
             android:name=".Activity.StockActivity"
             android:exported="false" />
         <activity
-            android:name=".UpdateActivity"
+            android:name=".Activity.UpdateActivity"
             android:exported="false" />
         <activity
             android:name=".Activity.SalesActivity"

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnCount="2"
+        android:rowCount="4">
+
+        <Spinner
+            android:id="@+id/sproductid"
+            android:layout_width="161dp"
+            android:layout_height="wrap_content"
+            android:layout_row="0"
+            android:entries="@array/experience"
+            android:layout_column="0"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:hint="product id"
+            android:textSize="20sp" />
+
+
+        <TextView
+            android:id="@+id/productname"
+            android:layout_width="194dp"
+            android:layout_height="39dp"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:layout_margin="10dp"
+            android:gravity="fill_horizontal"
+            android:hint="product Name"
+            android:textSize="20sp" />
+
+
+
+    </GridLayout>
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/et_Qty"
+            android:layout_width="350dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:hint="Qty"
+            android:inputType="number"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </GridLayout>
+
+</LinearLayout>

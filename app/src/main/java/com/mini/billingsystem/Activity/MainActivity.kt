@@ -4,6 +4,7 @@ import android.os.Bundle
 import com.mini.billingsystem.Activity.DrawerBaseActivity
 import com.mini.billingsystem.databinding.ActivityMainBinding
 
+
 class MainActivity : DrawerBaseActivity() {
 
     lateinit var binding: ActivityMainBinding
