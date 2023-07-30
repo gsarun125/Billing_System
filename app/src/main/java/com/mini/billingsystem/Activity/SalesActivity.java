@@ -44,10 +44,10 @@ public class SalesActivity extends DrawerBaseActivity {
     private List<String> mSpinner = new ArrayList();
     int pageWidth=1200;
     int add_count=0;
-    String Customer_Name=" ";
-    String PHone_NO=" ";
-    String Bill_NO="CA1937";
-    TextView  p_name;
+   private String Customer_Name=" ";
+   private String PHone_NO=" ";
+   private String Bill_NO="CA1937";
+   private TextView  p_name;
     private List<String> mQty = new ArrayList();
 
     private List<String> mProduct_name = new ArrayList();
@@ -95,8 +95,15 @@ public class SalesActivity extends DrawerBaseActivity {
             @Override
             public void onClick(View view) {
 
-                saveData();
+                LinearLayout layout = activitySalesBinding.parentLinearLayout;
+                int count= layout.getChildCount();
 
+                if (count!=0) {
+                    saveData();
+                }
+                else {
+                    Toast.makeText(SalesActivity.this,"add values",Toast.LENGTH_LONG).show();
+                }
 
             }
         });
@@ -331,6 +338,8 @@ public class SalesActivity extends DrawerBaseActivity {
 
         document.finishPage(page);
 
+        cusEdit.setText("");
+        phoneEdit.setText("");
         File downloadsDir= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         String fileName="stock.pdf";
         File file=new File(downloadsDir,fileName);
@@ -346,18 +355,33 @@ public class SalesActivity extends DrawerBaseActivity {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
+        removeView();
     }
     void Spinner_value(){
-        Cursor c1 = db.get_value("SELECT Product_Id FROM Stock");
-        if (c1.moveToFirst()) {
-            do {
-                @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Id"));
-                mSpinner.add(data1);
+        try {
+            Cursor c1 = db.get_value("SELECT Product_Id FROM Stock");
+            if (c1.moveToFirst()) {
+                do {
+                    @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Id"));
+                    mSpinner.add(data1);
 
-            } while (c1.moveToNext());
+                } while (c1.moveToNext());
+            }
+        }
+        catch (Exception e){
+            Toast.makeText(this,"Please add  product first!",Toast.LENGTH_LONG).show();
         }
 
     }
+
+    void removeView(){
+        System.out.println("sshs");
+        View  inflater = LayoutInflater.from((Context)this).inflate(R.layout.row_add_language, null);
+        LinearLayout layout = activitySalesBinding.parentLinearLayout;
+        Intrinsics.checkNotNullExpressionValue(layout, "binding.parentLinearLayout");
+        layout.removeAllViews();
+
+    }
+
 
 }
