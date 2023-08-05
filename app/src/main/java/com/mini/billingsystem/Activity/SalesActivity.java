@@ -4,6 +4,7 @@ package com.mini.billingsystem.Activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -39,26 +40,27 @@ import java.util.List;
 import kotlin.jvm.internal.Intrinsics;
 
 public class SalesActivity extends DrawerBaseActivity {
-    private DataBaseHandler db = new DataBaseHandler(this);
-    ActivitySalesBinding activitySalesBinding;
+    public DataBaseHandler db = new DataBaseHandler(this);
+    public  ActivitySalesBinding activitySalesBinding;
     private List<String> mSpinner = new ArrayList();
     int pageWidth=1200;
     int add_count=0;
-   private String Customer_Name=" ";
-   private String PHone_NO=" ";
-   private String Bill_NO="CA1937";
+   public String Customer_Name=" ";
+   public String PHone_NO=" ";
+   int Bill_NO;
    private TextView  p_name;
-    private List<String> mQty = new ArrayList();
+    public List<String> mQty = new ArrayList();
 
-    private List<String> mProduct_name = new ArrayList();
+    public List<String> mProduct_name = new ArrayList();
+
+    EditText cusEdit;
+    EditText phoneEdit;
+    public List<Float> mTotal = new ArrayList();
 
 
-    private List<Float> mTotal = new ArrayList();
+    public List<String> mProduct_id = new ArrayList();
 
-
-    private List<String> mProduct_id = new ArrayList();
-
-    private List<String> mCost= new ArrayList();
+    public List<String> mCost= new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,25 +191,23 @@ public class SalesActivity extends DrawerBaseActivity {
                     Toast.makeText(this,"Enter all the value",Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-
            }
 
 
-
-        PDF();
+        cusEdit=(EditText) findViewById(R.id.cusName);
+         phoneEdit=(EditText) findViewById(R.id.PhoneNo);
+        if (cusEdit.getText().toString().length()!=0||phoneEdit.getText().toString().length()!=0) {
+            Customer_Name = cusEdit.getText().toString();
+            PHone_NO=phoneEdit.getText().toString();
+        }
+          PDF();
 
     }
 
 
 
-    private void PDF(){
-        EditText cusEdit=(EditText) findViewById(R.id.cusName);
-        EditText phoneEdit=(EditText) findViewById(R.id.PhoneNo);
-        if (cusEdit.getText().toString().length()!=0||phoneEdit.getText().toString().length()!=0) {
-            Customer_Name = cusEdit.getText().toString();
-            PHone_NO=phoneEdit.getText().toString();
-        }
+    public void PDF(){
+
         PdfDocument document=new PdfDocument();
         Paint myPaint=new Paint();
         Paint titlePaint=new Paint();
@@ -250,6 +250,13 @@ public class SalesActivity extends DrawerBaseActivity {
 
         SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
         Date day = new Date();
+
+        Cursor cursor = db.get_value("select max(Bill_No) from Sales");
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int id= cursor.getInt(0);
+            Bill_NO = id + 1;
+        }
 
 
 
@@ -302,6 +309,7 @@ public class SalesActivity extends DrawerBaseActivity {
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
         int count= layout.getChildCount();
 
+        long time= System.currentTimeMillis();
         for (int i=0;i<count;i++){
             try {
 
@@ -314,6 +322,7 @@ public class SalesActivity extends DrawerBaseActivity {
                 canvas.drawText(String.valueOf(mTotal.get(i)), start_item6, end_item, myPaint);
                 end_item = end_item + 70;
 
+                db.insertData_to_sales(Bill_NO,mProduct_id.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),time);
             }
             catch (Exception e){
                 Toast.makeText(this,"Enter the value",Toast.LENGTH_SHORT).show();
@@ -340,10 +349,12 @@ public class SalesActivity extends DrawerBaseActivity {
 
         cusEdit.setText("");
         phoneEdit.setText("");
-        File downloadsDir= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        String fileName="stock.pdf";
-        File file=new File(downloadsDir,fileName);
+        //File downloadsDir= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        String fileName="Bill.pdf";
+        File file;
         try {
+            file= new File(Environment.getExternalStorageDirectory(),fileName);
+            // file= File.createTempFile(fileName, null, this.getCacheDir());
             FileOutputStream fos=new FileOutputStream(file);
             document.writeTo(fos);
             document.close();
@@ -355,7 +366,13 @@ public class SalesActivity extends DrawerBaseActivity {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         removeView();
+
+        Intent i=new Intent(this,PdfviewActivity.class);
+        i.putExtra("File",file);
+        startActivity(i);
+
     }
     void Spinner_value(){
         try {
@@ -380,7 +397,6 @@ public class SalesActivity extends DrawerBaseActivity {
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
         Intrinsics.checkNotNullExpressionValue(layout, "binding.parentLinearLayout");
         layout.removeAllViews();
-
     }
 
 

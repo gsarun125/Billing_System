@@ -33,7 +33,6 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
         setSupportActionBar(toolbar);
         NavigationView navigationView=drawerLayout.findViewById(R.id.nav_View);
         navigationView.setNavigationItemSelectedListener(this);
-
         ActionBarDrawerToggle toggle=new ActionBarDrawerToggle(this,drawerLayout,toolbar, string.menu_drawer_open, string.menu_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();

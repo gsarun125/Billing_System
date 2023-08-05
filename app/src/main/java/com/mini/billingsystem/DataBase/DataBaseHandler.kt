@@ -15,12 +15,24 @@ val COL_PRODUCT_NAME = "Product_Name"
 val COL_PRODUCT_ID = "Product_Id"
 val COl_QUANTITY="quantity"
 val COL_COST = "cost"
+
+val TABLENAME2 = "Sales"
+val COL_BILL_NO="Bill_No"
+val COL_PRODUCT_ID2 = "Product_Id"
+val COl_QUANTITY2="quantity"
+val COL_RATE = "rate"
+val COL_AMOUNT="amount"
+val COL_TIMESTAMP="time"
+
 class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASENAME, null,
     1) {
     override fun onCreate(db: SQLiteDatabase?) {
-        val createTable =
-            "CREATE TABLE " + TABLENAME1 + " (" + COL_PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY + " INTEGER," + COL_COST + " INTEGER)"
+        val createTable = "CREATE TABLE " + TABLENAME1 + " (" + COL_PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY + " INTEGER," + COL_COST + " INTEGER)"
         db?.execSQL(createTable)
+
+       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_BILL_NO + " INTEGER," + COL_PRODUCT_ID2 + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG)"
+
+        db?.execSQL(createTable2)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -43,6 +55,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
             Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     fun update( Product_id :Int , Product_Name: String,quantity:Int,cost:Int) {
 
@@ -76,29 +89,27 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
 
 
-    /*
-    fun getData(Current_Time:String): Cursor? {
-        val db = this.writableDatabase
-        val query = "SELECT  * FROM $TABLENAME WHERE $COL_DATE > $Current_Time ORDER BY $COL_DATE ASC;"
 
 
-        return db.rawQuery(query, null)
+    fun insertData_to_sales(Bill_id:Int,product_id:String,Product_Name: String,quantity:String,rate:String,amount:Float,time:Long) {
+        val database = this.writableDatabase
+        val contentValues = ContentValues()
+
+        contentValues.put(COL_BILL_NO, Bill_id)
+        contentValues.put(COL_PRODUCT_ID2, product_id)
+
+        contentValues.put(COL_PRODUCT_NAME,Product_Name)
+        contentValues.put(COl_QUANTITY2, quantity)
+        contentValues.put(COL_RATE,rate)
+        contentValues.put(COL_AMOUNT,amount)
+        contentValues.put(COL_TIMESTAMP,time)
+
+        val result = database.insert(TABLENAME2, null, contentValues)
+        if (result == (0).toLong()) {
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+        }
     }
 
-
-    fun GetRequestID(id: String): Cursor? {
-
-        val db = this.writableDatabase
-        val  query="SELECT * FROM $TABLENAME WHERE $COL_ID=$id;"
-        return db.rawQuery(query, null)
-    }
-    fun delete(id: String) {
-
-        val db = this.writableDatabase
-
-        db.delete(TABLENAME, "id=?", arrayOf<String>(id))
-        db.close()
-    }
-
-     */
 }
