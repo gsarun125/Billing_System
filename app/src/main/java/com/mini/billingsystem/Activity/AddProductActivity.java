@@ -1,6 +1,5 @@
 package com.mini.billingsystem.Activity;
 
-import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -61,7 +60,8 @@ public class AddProductActivity extends DrawerBaseActivity {
                         System.out.println(Product_Name);
                         System.out.println(Quantity);
                         System.out.println(Cost);
-                    } else {
+                    }
+                    else {
                         Toast.makeText(AddProductActivity.this, "Enter value ", Toast.LENGTH_LONG).show();
                     }
                 }
