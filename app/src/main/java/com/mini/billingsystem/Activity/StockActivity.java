@@ -49,6 +49,7 @@ public class StockActivity extends DrawerBaseActivity {
         super.onCreate(savedInstanceState);
         Binding= ActivityStockBinding.inflate(getLayoutInflater());
         setContentView(Binding.getRoot());
+        getSupportActionBar().setTitle("Stock");
         recyclerView = findViewById(R.id.list);
         mProduct_ID.add("Product ID");
         mProduct_Name.add("Product Name");

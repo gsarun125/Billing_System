@@ -45,8 +45,9 @@ public class SalesActivity extends DrawerBaseActivity {
     private List<String> mSpinner = new ArrayList();
     int pageWidth=1200;
     int add_count=0;
-   public String Customer_Name=" ";
-   public String PHone_NO=" ";
+   public String Customer_Name="";
+   public String PHone_NO="";
+   public String Customer_Id="";
    int Bill_NO;
    private TextView  p_name;
     public List<String> mQty = new ArrayList();
@@ -55,6 +56,7 @@ public class SalesActivity extends DrawerBaseActivity {
 
     EditText cusEdit;
     EditText phoneEdit;
+    EditText cusidEdit;
     public List<Float> mTotal = new ArrayList();
 
 
@@ -66,10 +68,10 @@ public class SalesActivity extends DrawerBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         activitySalesBinding = ActivitySalesBinding.inflate(getLayoutInflater());
         setContentView(activitySalesBinding.getRoot());
 
+        getSupportActionBar().setTitle("Sales");
         mSpinner.add("Select");
 
         Spinner_value();
@@ -195,12 +197,19 @@ public class SalesActivity extends DrawerBaseActivity {
 
 
         cusEdit=(EditText) findViewById(R.id.cusName);
-         phoneEdit=(EditText) findViewById(R.id.PhoneNo);
-        if (cusEdit.getText().toString().length()!=0||phoneEdit.getText().toString().length()!=0) {
+        cusidEdit = (EditText) findViewById(R.id.cusid);
+        phoneEdit=(EditText) findViewById(R.id.PhoneNo);
+
+        if (cusEdit.getText().toString().length()!=0||phoneEdit.getText().toString().length()!=0||cusidEdit.getText().toString().length()!=0) {
+            Customer_Id=cusidEdit.getText().toString();
             Customer_Name = cusEdit.getText().toString();
             PHone_NO=phoneEdit.getText().toString();
+            PDF();
         }
-          PDF();
+        else {
+            Toast.makeText(SalesActivity.this,"please enter the customer details ",Toast.LENGTH_SHORT).show();
+        }
+
 
     }
 
@@ -241,8 +250,9 @@ public class SalesActivity extends DrawerBaseActivity {
         myPaint.setTextAlign(Paint.Align.LEFT);
         myPaint.setTextSize(35f);
         myPaint.setColor(Color.BLACK);
-        canvas.drawText("Customer Name: "+Customer_Name,20,590,myPaint);
-        canvas.drawText("Phone No: "+PHone_NO,20,650,myPaint);
+        canvas.drawText("Customer Id: "+Customer_Id,20,590,myPaint);
+        canvas.drawText("Customer Name: "+Customer_Name,20,650,myPaint);
+        canvas.drawText("Phone No: "+PHone_NO,20,710,myPaint);
 
 
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
@@ -251,7 +261,7 @@ public class SalesActivity extends DrawerBaseActivity {
         SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
         Date day = new Date();
 
-        Cursor cursor = db.get_value("select max(Bill_No) from Sales");
+        Cursor cursor = db.get_value("select max(Bill_No) from Transation");
         if (cursor != null) {
             cursor.moveToFirst();
             int id= cursor.getInt(0);
@@ -322,7 +332,10 @@ public class SalesActivity extends DrawerBaseActivity {
                 canvas.drawText(String.valueOf(mTotal.get(i)), start_item6, end_item, myPaint);
                 end_item = end_item + 70;
 
-                db.insertData_to_sales(Bill_NO,mProduct_id.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),time);
+                db.insertData_to_trancation(Customer_Id,Bill_NO,mProduct_id.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),time);
+
+                db.insertData_to_Customer(Customer_Id,Customer_Name,PHone_NO);
+
             }
             catch (Exception e){
                 Toast.makeText(this,"Enter the value",Toast.LENGTH_SHORT).show();

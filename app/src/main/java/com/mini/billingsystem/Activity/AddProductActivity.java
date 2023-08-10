@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+
 import com.mini.billingsystem.DataBase.DataBaseHandler;
 import com.mini.billingsystem.databinding.ActivityAddProductBinding;
 
@@ -20,7 +21,9 @@ public class AddProductActivity extends DrawerBaseActivity {
         super.onCreate(savedInstanceState);
         Binding = ActivityAddProductBinding.inflate(getLayoutInflater());
 
+
         setContentView(Binding.getRoot());
+        getSupportActionBar().setTitle("Add Product");
 
         Cursor cursor = db.get_value("select max(Product_Id) from Stock");
         if (cursor != null) {
@@ -60,6 +63,7 @@ public class AddProductActivity extends DrawerBaseActivity {
                         System.out.println(Product_Name);
                         System.out.println(Quantity);
                         System.out.println(Cost);
+                        finish();
                     }
                     else {
                         Toast.makeText(AddProductActivity.this, "Enter value ", Toast.LENGTH_LONG).show();

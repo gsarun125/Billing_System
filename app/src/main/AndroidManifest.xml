@@ -18,6 +18,15 @@
         android:theme="@style/Theme.BillingSystem"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.HisPdfviewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.HistorysActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.HistoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.PdfviewActivity"
             android:exported="false" />
         <activity
@@ -44,6 +53,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -54,7 +64,5 @@
                 android:resource="@xml/file_paths" />
         </provider>
     </application>
-
-
 
 </manifest>

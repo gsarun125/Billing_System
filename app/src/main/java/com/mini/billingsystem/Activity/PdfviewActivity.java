@@ -47,6 +47,8 @@ public class PdfviewActivity extends AppCompatActivity {
                 File from = new File(Environment.getExternalStorageDirectory(), "Bill.pdf");
                 File to = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(),"Bill.pdf");
                 from.renameTo(to);
+                Toast.makeText(PdfviewActivity.this,"file saved",Toast.LENGTH_SHORT).show();
+
             }
         });
 

@@ -25,7 +25,6 @@ class MainActivity : DrawerBaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         if (SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
             //request for the permission
@@ -35,7 +34,6 @@ class MainActivity : DrawerBaseActivity() {
                 startActivity(intent)
             }
         }
-
         else {
             checkForPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, "storage", storage_RQ)
         }
