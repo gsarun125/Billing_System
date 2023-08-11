@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,6 +49,7 @@ public class StockActivity extends DrawerBaseActivity {
         super.onCreate(savedInstanceState);
         Binding= ActivityStockBinding.inflate(getLayoutInflater());
         setContentView(Binding.getRoot());
+        getSupportActionBar().setTitle("Stock");
         recyclerView = findViewById(R.id.list);
         mProduct_ID.add("Product ID");
         mProduct_Name.add("Product Name");
@@ -99,14 +101,26 @@ public class StockActivity extends DrawerBaseActivity {
 
 
         File downloadsDir= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        String fileName="stock.pdf";
+        SimpleDateFormat formatter1 = new SimpleDateFormat("dd_MM_yyyy");
+        Date day = new Date();
+
+        String date=formatter1.format(day);
+        String file1="stock"+date+".pdf";
+        System.out.println(file1);
+        String fileName=file1;
         File file=new File(downloadsDir,fileName);
         try {
+            file.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+
             FileOutputStream fos=new FileOutputStream(file);
             document.writeTo(fos);
             document.close();
             fos.close();
-            Toast.makeText(this,"Successfully",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Successfully Generated!",Toast.LENGTH_SHORT).show();
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);

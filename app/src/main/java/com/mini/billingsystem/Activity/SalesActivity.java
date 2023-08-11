@@ -4,6 +4,7 @@ package com.mini.billingsystem.Activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -39,35 +40,38 @@ import java.util.List;
 import kotlin.jvm.internal.Intrinsics;
 
 public class SalesActivity extends DrawerBaseActivity {
-    private DataBaseHandler db = new DataBaseHandler(this);
-    ActivitySalesBinding activitySalesBinding;
+    public DataBaseHandler db = new DataBaseHandler(this);
+    public  ActivitySalesBinding activitySalesBinding;
     private List<String> mSpinner = new ArrayList();
     int pageWidth=1200;
     int add_count=0;
-    String Customer_Name=" ";
-    String PHone_NO=" ";
-    String Bill_NO="CA1937";
-    TextView  p_name;
-    private List<String> mQty = new ArrayList();
+   public String Customer_Name="";
+   public String PHone_NO="";
+   public String Customer_Id="";
+   int Bill_NO;
+   private TextView  p_name;
+    public List<String> mQty = new ArrayList();
 
-    private List<String> mProduct_name = new ArrayList();
+    public List<String> mProduct_name = new ArrayList();
+
+    EditText cusEdit;
+    EditText phoneEdit;
+    EditText cusidEdit;
+    public List<Float> mTotal = new ArrayList();
 
 
-    private List<Float> mTotal = new ArrayList();
+    public List<String> mProduct_id = new ArrayList();
 
-
-    private List<String> mProduct_id = new ArrayList();
-
-    private List<String> mCost= new ArrayList();
+    public List<String> mCost= new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         activitySalesBinding = ActivitySalesBinding.inflate(getLayoutInflater());
         setContentView(activitySalesBinding.getRoot());
 
+        getSupportActionBar().setTitle("Sales");
         mSpinner.add("Select");
 
         Spinner_value();
@@ -95,8 +99,15 @@ public class SalesActivity extends DrawerBaseActivity {
             @Override
             public void onClick(View view) {
 
-                saveData();
+                LinearLayout layout = activitySalesBinding.parentLinearLayout;
+                int count= layout.getChildCount();
 
+                if (count!=0) {
+                    saveData();
+                }
+                else {
+                    Toast.makeText(SalesActivity.this,"add values",Toast.LENGTH_LONG).show();
+                }
 
             }
         });
@@ -182,25 +193,30 @@ public class SalesActivity extends DrawerBaseActivity {
                     Toast.makeText(this,"Enter all the value",Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-
            }
 
 
+        cusEdit=(EditText) findViewById(R.id.cusName);
+        cusidEdit = (EditText) findViewById(R.id.cusid);
+        phoneEdit=(EditText) findViewById(R.id.PhoneNo);
 
-        PDF();
+        if (cusEdit.getText().toString().length()!=0||phoneEdit.getText().toString().length()!=0||cusidEdit.getText().toString().length()!=0) {
+            Customer_Id=cusidEdit.getText().toString();
+            Customer_Name = cusEdit.getText().toString();
+            PHone_NO=phoneEdit.getText().toString();
+            PDF();
+        }
+        else {
+            Toast.makeText(SalesActivity.this,"please enter the customer details ",Toast.LENGTH_SHORT).show();
+        }
+
 
     }
 
 
 
-    private void PDF(){
-        EditText cusEdit=(EditText) findViewById(R.id.cusName);
-        EditText phoneEdit=(EditText) findViewById(R.id.PhoneNo);
-        if (cusEdit.getText().toString().length()!=0||phoneEdit.getText().toString().length()!=0) {
-            Customer_Name = cusEdit.getText().toString();
-            PHone_NO=phoneEdit.getText().toString();
-        }
+    public void PDF(){
+
         PdfDocument document=new PdfDocument();
         Paint myPaint=new Paint();
         Paint titlePaint=new Paint();
@@ -234,8 +250,9 @@ public class SalesActivity extends DrawerBaseActivity {
         myPaint.setTextAlign(Paint.Align.LEFT);
         myPaint.setTextSize(35f);
         myPaint.setColor(Color.BLACK);
-        canvas.drawText("Customer Name: "+Customer_Name,20,590,myPaint);
-        canvas.drawText("Phone No: "+PHone_NO,20,650,myPaint);
+        canvas.drawText("Customer Id: "+Customer_Id,20,590,myPaint);
+        canvas.drawText("Customer Name: "+Customer_Name,20,650,myPaint);
+        canvas.drawText("Phone No: "+PHone_NO,20,710,myPaint);
 
 
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
@@ -243,6 +260,13 @@ public class SalesActivity extends DrawerBaseActivity {
 
         SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
         Date day = new Date();
+
+        Cursor cursor = db.get_value("select max(Bill_No) from Transation");
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int id= cursor.getInt(0);
+            Bill_NO = id + 1;
+        }
 
 
 
@@ -295,6 +319,7 @@ public class SalesActivity extends DrawerBaseActivity {
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
         int count= layout.getChildCount();
 
+        long time= System.currentTimeMillis();
         for (int i=0;i<count;i++){
             try {
 
@@ -306,6 +331,10 @@ public class SalesActivity extends DrawerBaseActivity {
                 canvas.drawText(mCost.get(i), start_item5, end_item, myPaint);
                 canvas.drawText(String.valueOf(mTotal.get(i)), start_item6, end_item, myPaint);
                 end_item = end_item + 70;
+
+                db.insertData_to_trancation(Customer_Id,Bill_NO,mProduct_id.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),time);
+
+                db.insertData_to_Customer(Customer_Id,Customer_Name,PHone_NO);
 
             }
             catch (Exception e){
@@ -331,10 +360,14 @@ public class SalesActivity extends DrawerBaseActivity {
 
         document.finishPage(page);
 
-        File downloadsDir= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        String fileName="stock.pdf";
-        File file=new File(downloadsDir,fileName);
+        cusEdit.setText("");
+        phoneEdit.setText("");
+        //File downloadsDir= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        String fileName="Bill.pdf";
+        File file;
         try {
+            file= new File(Environment.getExternalStorageDirectory(),fileName);
+            // file= File.createTempFile(fileName, null, this.getCacheDir());
             FileOutputStream fos=new FileOutputStream(file);
             document.writeTo(fos);
             document.close();
@@ -347,17 +380,37 @@ public class SalesActivity extends DrawerBaseActivity {
             throw new RuntimeException(e);
         }
 
+        removeView();
+
+        Intent i=new Intent(this,PdfviewActivity.class);
+        i.putExtra("File",file);
+        startActivity(i);
+
     }
     void Spinner_value(){
-        Cursor c1 = db.get_value("SELECT Product_Id FROM Stock");
-        if (c1.moveToFirst()) {
-            do {
-                @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Id"));
-                mSpinner.add(data1);
+        try {
+            Cursor c1 = db.get_value("SELECT Product_Id FROM Stock");
+            if (c1.moveToFirst()) {
+                do {
+                    @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Id"));
+                    mSpinner.add(data1);
 
-            } while (c1.moveToNext());
+                } while (c1.moveToNext());
+            }
+        }
+        catch (Exception e){
+            Toast.makeText(this,"Please add  product first!",Toast.LENGTH_LONG).show();
         }
 
     }
+
+    void removeView(){
+        System.out.println("sshs");
+        View  inflater = LayoutInflater.from((Context)this).inflate(R.layout.row_add_language, null);
+        LinearLayout layout = activitySalesBinding.parentLinearLayout;
+        Intrinsics.checkNotNullExpressionValue(layout, "binding.parentLinearLayout");
+        layout.removeAllViews();
+    }
+
 
 }

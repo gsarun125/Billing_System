@@ -23,17 +23,18 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
 
     DrawerLayout drawerLayout;
     private int id;
+    Toolbar toolbar;
     @Override
     public void setContentView(View view) {
         drawerLayout=(DrawerLayout)getLayoutInflater().inflate(layout.activity_drawer_base,null);
         FrameLayout comtainer=drawerLayout.findViewById(R.id.activiyContainer);
         comtainer.addView(view);
         super.setContentView(drawerLayout);
-        Toolbar toolbar=drawerLayout.findViewById(R.id.toolBar);
+        toolbar=drawerLayout.findViewById(R.id.toolBar);
+
         setSupportActionBar(toolbar);
         NavigationView navigationView=drawerLayout.findViewById(R.id.nav_View);
         navigationView.setNavigationItemSelectedListener(this);
-
         ActionBarDrawerToggle toggle=new ActionBarDrawerToggle(this,drawerLayout,toolbar, string.menu_drawer_open, string.menu_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -48,22 +49,35 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
             if( R.id.sales==id) {
                 Intent i = new Intent(this, SalesActivity.class);
                 overridePendingTransition(0, 0);
+                toolbar.setTitle("Sales");
                 startActivity(i);
+
             }
             else if (R.id.Add==id){
                 Intent i1=new Intent(this, AddProductActivity.class);
                overridePendingTransition(0,0);
                 startActivity(i1);
+
+
             } else if (R.id.Update==id) {
                 Intent i2=new Intent(this, UpdateActivity.class);
                 overridePendingTransition(0,0);
+                toolbar.setTitle("Update");
                 startActivity(i2);
+
 
             } else if (R.id.Stock==id) {
 
-                Intent i3=new Intent(this ,StockActivity.class);
-                overridePendingTransition(0,0);
+                Intent i3 = new Intent(this, StockActivity.class);
+                overridePendingTransition(0, 0);
+                toolbar.setTitle("Stock");
                 startActivity(i3);
+            } else if (R.id.history==id) {
+                Intent i4 = new Intent(this, HistorysActivity.class);
+                overridePendingTransition(0, 0);
+                toolbar.setTitle("History");
+                startActivity(i4);
+
             }
 
         return true;

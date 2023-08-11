@@ -16,7 +16,7 @@ public class UpdateActivity extends DrawerBaseActivity {
         super.onCreate(savedInstanceState);
         binding=ActivityUpdateBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        getSupportActionBar().setTitle("Update");
 
         binding.get.setOnClickListener(new View.OnClickListener() {
             @Override
