@@ -5,6 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.HisPdfviewActivity">
+    <ImageButton
+        android:id="@+id/hisshare"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignStart="@+id/hissave"
+
+        android:layout_marginLeft="-60dp"
+        android:background="@color/white"
+        android:src="@drawable/baseline_share_24" />
+
+    <ImageButton
+        android:id="@+id/hissave"
+        android:layout_width="60dp"
+        android:layout_height="61dp"
+
+        android:layout_marginEnd="80dp"
+        android:layout_alignParentEnd="true"
+        android:background="@color/white"
+        android:src="@drawable/baseline_save_24" />
+
+
+    <ImageButton
+        android:id="@+id/filter"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="30dp"
+
+
+        android:layout_marginEnd="20dp"
+
+        android:backgroundTint="@color/white"
+        android:src="@drawable/baseline_filter_list_24" />
 
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/pdfView2"

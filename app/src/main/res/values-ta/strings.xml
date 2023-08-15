@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Billing System</string>
+    <string name="product_name">பொருளின் பெயர்</string>
+    <string name="product_id">தயாரிப்பு எண்</string>
+    <string name="net_quantity">நிகர அளவு</string>
+    <string name="unit_cost">அலகு விலை</string>
+    <string name="invoice">விலைப்பட்டியல்</string>
+    <string name="stock">" சேகரிப்பு"</string>
+    <string name="update_product">தயாரிப்பு புதுப்பிக்கவும்</string>
+    <string name="add_product">தயாரிப்பு சேர்க்கவும்</string>
+    <string name="history">வரலாறு</string>
+    <string name="recent_invoice">" சமீபத்திய விலைப்பட்டியல்"</string>
+    <string name="customer_name">வாடிக்கையாளர் பெயர்</string>
+    <string name="customer_id">" வாடிக்கையாளர் எண் "</string>
+    <string name="phone_no">" தொலைபேசி எண்"</string>
+    <string name="generate">" உருவாக்கு"</string>
+    <string name="add">" கூட்டு"</string>
+    <string name="qty">" அளவு"</string>
+
+</resources>

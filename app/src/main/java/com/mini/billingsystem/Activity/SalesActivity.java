@@ -24,6 +24,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.mini.billingsystem.DataBase.DataBaseHandler;
 import com.mini.billingsystem.R;
 import com.mini.billingsystem.databinding.ActivitySalesBinding;
@@ -39,7 +41,7 @@ import java.util.List;
 
 import kotlin.jvm.internal.Intrinsics;
 
-public class SalesActivity extends DrawerBaseActivity {
+public class SalesActivity extends AppCompatActivity {
     public DataBaseHandler db = new DataBaseHandler(this);
     public  ActivitySalesBinding activitySalesBinding;
     private List<String> mSpinner = new ArrayList();
@@ -69,9 +71,10 @@ public class SalesActivity extends DrawerBaseActivity {
         super.onCreate(savedInstanceState);
 
         activitySalesBinding = ActivitySalesBinding.inflate(getLayoutInflater());
+
+        //getSupportActionBar().setTitle("Sales");
         setContentView(activitySalesBinding.getRoot());
 
-        getSupportActionBar().setTitle("Sales");
         mSpinner.add("Select");
 
         Spinner_value();
@@ -332,7 +335,7 @@ public class SalesActivity extends DrawerBaseActivity {
                 canvas.drawText(String.valueOf(mTotal.get(i)), start_item6, end_item, myPaint);
                 end_item = end_item + 70;
 
-                db.insertData_to_trancation(Customer_Id,Bill_NO,mProduct_id.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),time);
+                db.insertData_to_trancation(Customer_Id,Bill_NO,mProduct_id.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),Net_AMT,time);
 
                 db.insertData_to_Customer(Customer_Id,Customer_Name,PHone_NO);
 

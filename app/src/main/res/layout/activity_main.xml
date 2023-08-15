@@ -1,18 +1,225 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="5"
     tools:context=".Activity.MainActivity">
+        <ImageButton
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:layout_weight="0.3"
+            android:id="@+id/lan"
+            android:layout_marginEnd="20dp"
+            android:layout_width="70dp"
+            android:layout_height="0dp"
+            android:layout_gravity="end"
+            android:backgroundTint="@color/white"
+            android:src="@drawable/baseline_language_24"
+            />
+    <GridLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_marginTop="40dp"
+    android:layout_weight="4"
+    android:padding="10dp"
+    android:rowCount="2"
+    android:columnCount="2"
+    >
+    <androidx.cardview.widget.CardView
+        android:id="@+id/invoice_card"
+        android:layout_width="0dp"
+        android:layout_margin="10dp"
+        android:layout_height="0dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="4dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:gravity="center"
+            android:layout_height="match_parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:src="@drawable/invoice" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:textSize="18sp"
+                android:layout_marginTop="40dp"
+                android:layout_marginStart="20dp"
+                android:textColor="@color/black"
+                android:layout_marginBottom="20dp"
+                android:text="@string/invoice"/>
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/Stock_card"
+        android:layout_width="0dp"
+        android:layout_margin="10dp"
+        android:layout_height="0dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="4dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:gravity="center"
+            android:layout_height="match_parent">
+        <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/baseline_local_grocery_store_24"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:textSize="18sp"
+                android:layout_marginStart="20dp"
+                android:textColor="@color/black"
+                android:layout_marginBottom="20dp"
+                android:text="@string/stock"/>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/Update_card"
+        android:layout_width="0dp"
+        android:layout_margin="10dp"
+        android:layout_height="0dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="4dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:gravity="center"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/baseline_update_24"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:textSize="18sp"
+                android:layout_marginStart="20dp"
+                android:textColor="@color/black"
+                android:layout_marginBottom="20dp"
+                android:text="@string/update_product"/>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/add_card"
+        android:layout_width="0dp"
+        android:layout_margin="10dp"
+        android:layout_height="0dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="4dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/baseline_add_24"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:textSize="18sp"
+                android:layout_marginStart="20dp"
+                android:textColor="@color/black"
+                android:layout_marginBottom="20dp"
+                android:text="@string/add_product"/>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/history_card"
+        android:layout_width="0dp"
+        android:layout_margin="10dp"
+        android:layout_height="0dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="4dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/baseline_manage_history_24"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:textSize="18sp"
+                android:layout_marginStart="20dp"
+                android:textColor="@color/black"
+                android:layout_marginBottom="20dp"
+                android:text="@string/history"/>
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_margin="10dp"
+        android:layout_height="0dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="4dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1">
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:gravity="center"
+            android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+           android:src="@drawable/invoice"
+            />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:textSize="18sp"
+                android:layout_marginStart="20dp"
+                android:textColor="@color/black"
+                android:layout_marginBottom="20dp"
+                android:text="@string/recent_invoice"/>
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</GridLayout>
+
+</LinearLayout>

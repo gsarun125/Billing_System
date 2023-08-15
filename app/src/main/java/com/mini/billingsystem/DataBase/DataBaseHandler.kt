@@ -23,6 +23,7 @@ val COl_QUANTITY2="quantity"
 val COL_RATE = "rate"
 val COL_AMOUNT="amount"
 val COL_TIMESTAMP="time"
+val CoL_TOTAL_AMOUNT="tamount"
 
 val TABLENAME3 = "customer"
 val COL_CUSID="cus_id"
@@ -36,7 +37,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         val createTable = "CREATE TABLE " + TABLENAME1 + " (" + COL_PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY + " INTEGER," + COL_COST + " INTEGER)"
         db?.execSQL(createTable)
 
-       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER  ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_ID2 + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
+       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER  ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_ID2 + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
 
         db?.execSQL(createTable2)
 
@@ -101,7 +102,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
 
 
-    fun insertData_to_trancation(Cus_Id:String,Bill_id:Int,product_id:String,Product_Name: String,quantity:String,rate:String,amount:Float,time:Long) {
+    fun insertData_to_trancation(Cus_Id:String,Bill_id:Int,product_id:String,Product_Name: String,quantity:String,rate:String,amount:Float,tamount:Float,time:Long) {
         val database = this.writableDatabase
         val contentValues = ContentValues()
 
@@ -113,6 +114,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         contentValues.put(COl_QUANTITY2, quantity)
         contentValues.put(COL_RATE,rate)
         contentValues.put(COL_AMOUNT,amount)
+        contentValues.put(CoL_TOTAL_AMOUNT,tamount)
         contentValues.put(COL_TIMESTAMP,time)
 
         val result = database.insert(TABLENAME2, null, contentValues)

@@ -18,11 +18,10 @@
             android:layout_width="161dp"
             android:layout_height="wrap_content"
             android:layout_row="0"
-            android:entries="@array/experience"
             android:layout_column="0"
             android:layout_margin="10dp"
             android:gravity="center"
-            android:hint="product id"
+            android:hint="@string/product_id"
             android:textSize="20sp" />
 
 
@@ -34,7 +33,7 @@
             android:layout_column="1"
             android:layout_margin="10dp"
             android:gravity="fill_horizontal"
-            android:hint="product Name"
+            android:hint="@string/product_name"
             android:textSize="20sp" />
 
 
@@ -52,7 +51,7 @@
             android:layout_width="350dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
-            android:hint="Qty"
+            android:hint="@string/qty"
             android:inputType="number"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

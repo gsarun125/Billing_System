@@ -1,28 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/sales"
-        android:title="Sales" />
-
+        android:id="@+id/date"
+        android:title="date" />
     <item
-        android:id="@+id/Stock"
-        android:title="Stock" />
-
-
+        android:id="@+id/billno"
+        android:title="Bill No"/>
     <item
-        android:id="@+id/Update"
-        android:icon="@drawable/baseline_update_24"
-        android:title="Update Product" />
+        android:id="@+id/menucus"
+        android:title="@string/customer_name"/>
     <item
-        android:id="@+id/Add"
-        android:icon="@drawable/baseline_add_24"
-        android:title="Add Product" />
-
-
+        android:id="@+id/lowpur"
+        android:title="Low Purchase"/>
     <item
-        android:id="@+id/history"
-        android:title="History" />
-
-
+        android:id="@+id/highpar"
+        android:title="High purchase"/>
 </menu>

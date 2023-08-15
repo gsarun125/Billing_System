@@ -16,7 +16,7 @@
             android:layout_width="130dp"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:hint="Customer Name"
+            android:hint="@string/customer_name"
             android:textColor="@color/black"
             android:textSize="15sp" />
 
@@ -25,7 +25,7 @@
             android:layout_width="130dp"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:hint="Customer ID"
+            android:hint="@string/customer_id"
             android:inputType="number"
             android:textColor="@color/black"
             android:textSize="15sp" />
@@ -37,9 +37,10 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:inputType="number"
-            android:hint="Phone No "
+            android:hint="@string/phone_no"
             android:textColor="@color/black"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:ignore="TextFields" />
 
 
 
@@ -60,14 +61,14 @@
             android:layout_marginTop="10dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:text="Add"
+            android:text="@string/add"
             android:textAllCaps="false"
             android:textColor="@color/white" />
 
         <Button
 
             android:layout_width="wrap_content"
-            android:text="Generate"
+            android:text="@string/generate"
             android:layout_marginTop="10dp"
 
             android:layout_gravity="center"

@@ -19,7 +19,7 @@
         android:layout_row="0"
         android:id="@+id/productid"
         android:layout_column="0"
-        android:hint="product id"
+        android:hint="@string/product_id"
         android:textSize="20sp"
         android:gravity="center"/>
 
@@ -31,7 +31,7 @@
             android:layout_row="0"
             android:layout_column="1"
             android:id="@+id/productname"
-            android:hint="product_Name"
+            android:hint="@string/product_name"
             android:textSize="20sp"
             android:gravity="center"/>
 
@@ -42,7 +42,7 @@
             android:layout_row="0"
             android:layout_column="2"
             android:id="@+id/quantity"
-            android:hint="Quantity"
+            android:hint="@string/net_quantity"
             android:textSize="20sp"
             android:gravity="center"/>
 
@@ -53,7 +53,7 @@
             android:layout_row="0"
             android:layout_column="3"
             android:id="@+id/cost"
-            android:hint="Cost"
+            android:hint="@string/unit_cost"
             android:textSize="20sp"
             android:gravity="center"/>
 </GridLayout>
