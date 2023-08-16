@@ -94,7 +94,7 @@ class HistorysActivity : AppCompatActivity() {
                 val  Y=  sdf3.format(it).toInt()
 
                 val calender= Calendar.getInstance()
-                calender.set(Y,M-1,D,0,0)
+                calender.set(Y,M-1,D,23,59)
                 To_time = calender.getTimeInMillis()
 
 

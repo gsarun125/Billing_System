@@ -6,11 +6,13 @@ import android.view.View;
 import android.widget.Toast;
 
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.mini.billingsystem.DataBase.DataBaseHandler;
 import com.mini.billingsystem.databinding.ActivityAddProductBinding;
 
 
-public class AddProductActivity extends DrawerBaseActivity {
+public class AddProductActivity extends AppCompatActivity {
 
     int Product_id;
     private DataBaseHandler db = new DataBaseHandler(this);
@@ -23,7 +25,7 @@ public class AddProductActivity extends DrawerBaseActivity {
 
 
         setContentView(Binding.getRoot());
-        getSupportActionBar().setTitle("Add Product");
+        //getSupportActionBar().setTitle("Add Product");
 
         Cursor cursor = db.get_value("select max(Product_Id) from Stock");
         if (cursor != null) {

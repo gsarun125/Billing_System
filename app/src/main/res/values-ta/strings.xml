@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Billing System</string>
+    <string name="product_name">பொருளின் பெயர்</string>
+    <string name="product_id">தயாரிப்பு எண்</string>
+    <string name="net_quantity">நிகர அளவு</string>
+    <string name="unit_cost">அலகு விலை</string>
+    <string name="invoice">விலைப்பட்டியல்</string>
+    <string name="stock">" சேகரிப்பு"</string>
+    <string name="update_product">தயாரிப்பு புதுப்பிக்கவும்</string>
+    <string name="add_product">தயாரிப்பு சேர்க்கவும்</string>
+    <string name="history">அறிக்கை</string>
+    <string name="recent_invoice">" சமீபத்திய விலைப்பட்டியல்"</string>
+    <string name="customer_name">வாடிக்கையாளர் பெயர்</string>
+    <string name="customer_id">" வாடிக்கையாளர் எண் "</string>
+    <string name="phone_no">" தொலைபேசி எண்"</string>
+    <string name="generate">" உருவாக்கு"</string>
+    <string name="qty">" அளவு"</string>
+    <string name="select">" தேர்ந்தெடு"</string>
+    <string name="enter_all_the_value">அனைத்து மதிப்பையும் உள்ளிடவும்</string>
+    <string name="please_enter_the_customer_details">வாடிக்கையாளர் விவரங்களை உள்ளிடவும்</string>
+    <string name="enter_the_value">" மதிப்பை உள்ளிடவும்"</string>
+    <string name="successfully_generated">" வெற்றிகரமாக உருவாக்கப்பட்டுள்ளது"</string>
+    <string name="please_add_product_first">முதலில் தயாரிப்பைச் சேர்க்கவும்!</string>
+    <string name="you_cannot_add_more_then_10_value">நீங்கள் 10 மதிப்பிற்கு மேல் சேர்க்க முடியாது</string>
+    <string name="add_values">" மதிப்புகளைச் சேர்க்கவும்"</string>
+
+</resources>

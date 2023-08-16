@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class StockActivity extends DrawerBaseActivity {
+public class StockActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private File filePDFOutput;
     private List<String> mProduct_ID = new ArrayList();
@@ -49,7 +49,7 @@ public class StockActivity extends DrawerBaseActivity {
         super.onCreate(savedInstanceState);
         Binding= ActivityStockBinding.inflate(getLayoutInflater());
         setContentView(Binding.getRoot());
-        getSupportActionBar().setTitle("Stock");
+       // getSupportActionBar().setTitle("Stock");
         recyclerView = findViewById(R.id.list);
         mProduct_ID.add("Product ID");
         mProduct_Name.add("Product Name");

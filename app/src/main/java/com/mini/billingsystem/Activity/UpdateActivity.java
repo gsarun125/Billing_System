@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.mini.billingsystem.DataBase.DataBaseHandler;
 import com.mini.billingsystem.databinding.ActivityUpdateBinding;
 
-public class UpdateActivity extends DrawerBaseActivity {
+public class UpdateActivity extends AppCompatActivity {
 
     private DataBaseHandler db=new DataBaseHandler(this);
     private ActivityUpdateBinding binding;
@@ -16,7 +18,7 @@ public class UpdateActivity extends DrawerBaseActivity {
         super.onCreate(savedInstanceState);
         binding=ActivityUpdateBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        getSupportActionBar().setTitle("Update");
+       // getSupportActionBar().setTitle("Update");
 
         binding.get.setOnClickListener(new View.OnClickListener() {
             @Override
