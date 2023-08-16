@@ -1,6 +1,7 @@
 package com.mini.billingsystem.DataBase
 
 
+import android.R.attr
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -30,7 +31,9 @@ val COL_CUSID="cus_id"
 val COL_CUSNAME= "cus_name"
 val COl_CUSPHONE="cus_Phone"
 
-
+val TABLENAME4 ="user"
+val COL_USER="user_name"
+val COL_PASS= "password"
 class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASENAME, null,
     1) {
     override fun onCreate(db: SQLiteDatabase?) {
@@ -44,6 +47,11 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         val createTable3 = "CREATE TABLE " + TABLENAME3 + " (" + COL_CUSID  + " INTEGER UNIQUE  ," + COL_CUSNAME + " VARCHAR(1000)," + COl_CUSPHONE + " INTEGER)"
 
         db?.execSQL(createTable3)
+
+        val createTable4 = "CREATE TABLE " + TABLENAME4 + " (" + COL_USER + " VARCHAR(1000) UNIQUE," + COL_PASS + " VARCHAR(1000))"
+        db?.execSQL(createTable4)
+
+        this.UserData(db, "admin", "admin");
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -140,5 +148,20 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         } else {
             Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
         }
+    }
+    open fun checkusernamepassword(query: String): Boolean {
+        val MyDB = this.writableDatabase
+        val cursor = MyDB.rawQuery(query,null);
+        if (cursor.count > 0)
+            return true
+        else
+            return false
+    }
+    fun UserData( db:SQLiteDatabase?,user: String?, pass: String?) {
+        val values = ContentValues()
+        values.put(COL_USER, user)
+        values.put(COL_PASS, pass)
+        db?.insert(TABLENAME4, null, values)
+
     }
 }

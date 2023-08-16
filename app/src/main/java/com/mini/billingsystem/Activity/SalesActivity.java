@@ -75,7 +75,7 @@ public class SalesActivity extends AppCompatActivity {
         //getSupportActionBar().setTitle("Sales");
         setContentView(activitySalesBinding.getRoot());
 
-        mSpinner.add("Select");
+        mSpinner.add(getString(R.string.select));
 
         Spinner_value();
            activitySalesBinding.buttonAdd.setOnClickListener(new View.OnClickListener() {
@@ -94,7 +94,7 @@ public class SalesActivity extends AppCompatActivity {
 
                 }
                 else {
-                    Toast.makeText(SalesActivity.this,"you cannot add more then 10 value",Toast.LENGTH_LONG).show();
+                    Toast.makeText(SalesActivity.this, R.string.you_cannot_add_more_then_10_value,Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -109,7 +109,7 @@ public class SalesActivity extends AppCompatActivity {
                     saveData();
                 }
                 else {
-                    Toast.makeText(SalesActivity.this,"add values",Toast.LENGTH_LONG).show();
+                    Toast.makeText(SalesActivity.this, R.string.add_values,Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -137,7 +137,7 @@ public class SalesActivity extends AppCompatActivity {
                 String spinnerSelectedValue = parent.getItemAtPosition(position).toString();
 
                 System.out.println(spinnerSelectedValue);
-                if (spinnerSelectedValue!="Select") {
+                if (spinnerSelectedValue!=getString(R.string.select)) {
                     Cursor c1 = db.get_value("SELECT  Product_Name FROM Stock WHERE Product_Id=" + spinnerSelectedValue);
                     if (c1.moveToFirst()) {
                         do {
@@ -193,7 +193,7 @@ public class SalesActivity extends AppCompatActivity {
                     }
                 }
                 else {
-                    Toast.makeText(this,"Enter all the value",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.enter_all_the_value,Toast.LENGTH_SHORT).show();
                     return;
                 }
            }
@@ -210,7 +210,7 @@ public class SalesActivity extends AppCompatActivity {
             PDF();
         }
         else {
-            Toast.makeText(SalesActivity.this,"please enter the customer details ",Toast.LENGTH_SHORT).show();
+            Toast.makeText(SalesActivity.this, R.string.please_enter_the_customer_details,Toast.LENGTH_SHORT).show();
         }
 
 
@@ -341,7 +341,7 @@ public class SalesActivity extends AppCompatActivity {
 
             }
             catch (Exception e){
-                Toast.makeText(this,"Enter the value",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.enter_the_value,Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -375,7 +375,7 @@ public class SalesActivity extends AppCompatActivity {
             document.writeTo(fos);
             document.close();
             fos.close();
-            Toast.makeText(SalesActivity.this,"Successfully",Toast.LENGTH_SHORT).show();
+            Toast.makeText(SalesActivity.this, R.string.successfully_generated,Toast.LENGTH_SHORT).show();
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -402,13 +402,13 @@ public class SalesActivity extends AppCompatActivity {
             }
         }
         catch (Exception e){
-            Toast.makeText(this,"Please add  product first!",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.please_add_product_first,Toast.LENGTH_LONG).show();
         }
 
     }
 
     void removeView(){
-        System.out.println("sshs");
+
         View  inflater = LayoutInflater.from((Context)this).inflate(R.layout.row_add_language, null);
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
         Intrinsics.checkNotNullExpressionValue(layout, "binding.parentLinearLayout");

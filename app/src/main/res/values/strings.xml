@@ -8,14 +8,21 @@
     <string name="stock">Stock</string>
     <string name="update_product">Update Product</string>
     <string name="add_product">Add Product</string>
-    <string name="history" translatable="false">History</string>
+    <string name="history">History</string>
     <string name="recent_invoice">Recent Invoice</string>
     <string name="customer_name">Customer Name</string>
     <string name="customer_id">Customer ID</string>
     <string name="phone_no">Phone No</string>
     <string name="generate">Generate</string>
-    <string name="add">Add</string>
     <string name="qty">Qty</string>
+    <string name="select">Select</string>
+    <string name="enter_all_the_value">Enter all the value</string>
+    <string name="please_enter_the_customer_details">please enter the customer details</string>
+    <string name="enter_the_value">Enter the value</string>
+    <string name="successfully_generated">Successfully Generated</string>
+    <string name="please_add_product_first">Please add  product first!</string>
+    <string name="you_cannot_add_more_then_10_value">you cannot add more then 10 value</string>
+    <string name="add_values">add values</string>
 
 
 </resources>

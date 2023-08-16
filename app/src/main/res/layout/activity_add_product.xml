@@ -23,7 +23,7 @@
             android:layout_row="1"
             android:layout_column="0"
             android:text="@string/product_name"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:gravity="center"/>
         <EditText
             android:id="@+id/Product_Edit"
@@ -41,16 +41,17 @@
             android:layout_row="0"
             android:layout_column="0"
             android:text="@string/product_id"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:gravity="center"/>
+
         <TextView
             android:id="@+id/IdText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_width="221dp"
+            android:layout_height="30dp"
             android:layout_row="0"
             android:layout_column="1"
-            android:ems="10"/>
+            android:layout_margin="10dp"
+            android:ems="10" />
         <TextView
             android:id="@+id/Quantity_Text"
             android:layout_width="wrap_content"
@@ -59,7 +60,7 @@
             android:layout_row="2"
             android:layout_column="0"
             android:text="@string/net_quantity"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:gravity="center"/>
 
         <EditText
@@ -79,7 +80,7 @@
             android:layout_row="3"
             android:layout_column="0"
             android:text="@string/unit_cost"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:gravity="center_horizontal"/>
         <EditText
             android:id="@+id/Cost_Edit"
