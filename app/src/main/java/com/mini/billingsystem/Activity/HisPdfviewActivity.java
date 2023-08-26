@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -36,11 +37,14 @@ public class HisPdfviewActivity extends AppCompatActivity {
     Long to_time;
     Long from_time;
     File file;
+    String hisFrom;
+    String hisTo;
 
     PDFView pdfView1;
     ImageButton filter;
     ImageButton save;
     ImageButton share;
+    String  fileName;
     private DataBaseHandler db = new DataBaseHandler(this);
 
     @Override
@@ -54,6 +58,21 @@ public class HisPdfviewActivity extends AppCompatActivity {
         pdfView1=(PDFView) findViewById(R.id.pdfView2);
         filter=(ImageButton)findViewById(R.id.filter);
 
+        Intent i=getIntent();
+        to_time=i.getExtras().getLong("to_time");
+        from_time=i.getExtras().getLong("from");
+        DateFormat obj = new SimpleDateFormat("dd MMM yyyy");
+        Date res = new Date(from_time);
+        Date res1=new Date(to_time);
+        hisFrom=obj.format(res);
+        hisTo=obj.format(res1);
+       fileName=hisFrom+" TO "+hisTo+".pdf";
+
+        String query="SELECT * FROM Transation JOIN customer ON Transation.cus_id=customer.cus_id  WHERE Transation.time BETWEEN "+from_time+ " AND " +to_time ;
+
+        Pdf(query);
+
+
 
         StrictMode.VmPolicy.Builder builder= new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
@@ -62,8 +81,11 @@ public class HisPdfviewActivity extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                File from = new File(Environment.getExternalStorageDirectory(), "his.pdf");
-                File to = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(),"Bill.pdf");
+                File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
+                File  subdir= new File(dir,"HISTORYS");
+
+                File from = new File(subdir, fileName);
+                File to = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(),fileName);
                 from.renameTo(to);
                 Toast.makeText(HisPdfviewActivity.this,"file saved",Toast.LENGTH_SHORT).show();
 
@@ -76,10 +98,13 @@ public class HisPdfviewActivity extends AppCompatActivity {
             public void onClick(View view) {
                 File outputFile;
 
-                outputFile= new File(Environment.getExternalStorageDirectory(), "his.pdf");
+                File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
+                File  subdir= new File(dir,"HISTORYS");
+
+                outputFile= new File(subdir, fileName);
 
                 while (!outputFile.exists()){
-                    outputFile= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"Bill.pdf");
+                    outputFile= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),fileName);
                 }
                 if(outputFile.exists()){
                     Uri uri = FileProvider.getUriForFile(HisPdfviewActivity.this, HisPdfviewActivity.this.getPackageName() + ".provider", outputFile);
@@ -97,18 +122,6 @@ public class HisPdfviewActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-        Intent i=getIntent();
-        to_time=i.getExtras().getLong("to_time");
-        from_time=i.getExtras().getLong("from");
-        System.out.println(to_time);
-        System.out.println(from_time);
-
-        String query="SELECT * FROM Transation JOIN customer ON Transation.cus_id=customer.cus_id  WHERE Transation.time BETWEEN "+from_time+ " AND " +to_time ;
-
-        Pdf(query);
-
 
 
         filter.setOnClickListener(new View.OnClickListener() {
@@ -272,9 +285,17 @@ public class HisPdfviewActivity extends AppCompatActivity {
         canvas.drawText("Shopping Center",pageWidth/2,80,titlePaint);
 
         document.finishPage(page);
-        String fileName="his.pdf";
         try {
-            file= new File(Environment.getExternalStorageDirectory(),fileName);
+            File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
+            if (!dir.exists()) {
+            dir.mkdir();
+            }
+                File  subdir= new File(dir,"HISTORYS");
+            if (!subdir.exists()) {
+                subdir.mkdir();
+            }
+
+            file= new File(subdir,fileName);
             // file= File.createTempFile(fileName, null, this.getCacheDir());
             FileOutputStream fos=new FileOutputStream(file);
             document.writeTo(fos);

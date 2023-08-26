@@ -10,7 +10,6 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
-import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
@@ -18,38 +17,37 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.mini.billingsystem.R
+import com.mini.billingsystem.databinding.ActivityMain2Binding
 import com.mini.billingsystem.databinding.ActivityMainBinding
 import java.util.Locale
 
-class MainActivity :  AppCompatActivity() {
+class MainActivity2 : AppCompatActivity() {
 
     val storage_RQ=101
 
-    lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMain2Binding
     var checkedItem = 0
+
     var SHARED_PREFS = "shared_prefs"
     private lateinit var sharedpreferences: SharedPreferences
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
 
-
-
         if(sharedpreferences.contains("checkeItem")) {
-                var SPcheckedItem = sharedpreferences.getString("checkeItem", null)
-                if (SPcheckedItem != null) {
-                    checkedItem = Integer.parseInt(SPcheckedItem)
-                    println(checkedItem)
-                }
+            var SPcheckedItem = sharedpreferences.getString("checkeItem", null)
+            if (SPcheckedItem != null) {
+                checkedItem = Integer.parseInt(SPcheckedItem)
+            }
             lodeLocale()
         }
 
-
-
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMain2Binding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
 
         binding.btnlogout.setOnClickListener {
@@ -58,12 +56,14 @@ class MainActivity :  AppCompatActivity() {
             editor.remove("user_key")
             editor.remove("password_key")
 
+
             editor.apply()
 
             val i = Intent(this, LoginActivity::class.java)
             startActivity(i)
             finish()
         }
+
         binding.lan.setOnClickListener {
             ShowChangeLanguage()
         }
@@ -77,25 +77,18 @@ class MainActivity :  AppCompatActivity() {
             val intent = Intent(this, StockActivity::class.java)
             startActivity(intent)
         }
-        binding.addCard.setOnClickListener {
-            val intent = Intent(this, AddProductActivity::class.java)
-            startActivity(intent)
-        }
-        binding.UpdateCard.setOnClickListener {
-            val intent = Intent(this, UpdateActivity::class.java)
-            startActivity(intent)
-        }
         binding.historyCard.setOnClickListener {
             val intent = Intent(this, HistorysActivity::class.java)
             startActivity(intent)
         }
+
 
         binding.recentinvoice.setOnClickListener {
             val intent =Intent(this, RecentInvoiceActivity::class.java)
             startActivity(intent)
         }
 
-        if (SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
                 //request for the permission
                 val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
@@ -117,15 +110,15 @@ class MainActivity :  AppCompatActivity() {
         val lan = arrayOf("English","தமிழ்")
         val alertDialogBuilder = AlertDialog.Builder(this)
         alertDialogBuilder.setTitle("Choose Language...")
-        println(checkedItem)
         alertDialogBuilder.setSingleChoiceItems(lan, checkedItem, DialogInterface.OnClickListener { dialogInterface, i ->
-
             checkedItem = i
+
             val editor = sharedpreferences.edit()
 
             editor.putString("checkeItem", checkedItem.toString())
 
             editor.apply()
+
             if(i==0){
                 setLocale("Eng")
 
@@ -133,7 +126,7 @@ class MainActivity :  AppCompatActivity() {
             }
             else if(i==1){
                 setLocale("ta")
-              recreate()
+                recreate()
             }
             dialogInterface.dismiss()
         })
@@ -143,17 +136,17 @@ class MainActivity :  AppCompatActivity() {
     }
 
     private fun setLocale(lan: String) {
-        val  local=Locale(lan)
+        val  local= Locale(lan)
         Locale.setDefault(local)
-        val config=Configuration()
+        val config= Configuration()
         config.locale=local
         baseContext.resources.updateConfiguration(config,baseContext.resources.displayMetrics)
-       val editor: SharedPreferences.Editor=getSharedPreferences("settings", MODE_PRIVATE).edit()
+        val editor: SharedPreferences.Editor=getSharedPreferences("settings", MODE_PRIVATE).edit()
         editor.putString("My_lang",lan);
         editor.apply()
     }
- fun lodeLocale() {
-        val prefs:SharedPreferences=getSharedPreferences("settings",Activity.MODE_PRIVATE)
+    fun lodeLocale() {
+        val prefs: SharedPreferences =getSharedPreferences("settings", Activity.MODE_PRIVATE)
         val  language: String? =prefs.getString("My_lang","")
         if (language != null) {
             setLocale(language)
@@ -162,13 +155,13 @@ class MainActivity :  AppCompatActivity() {
 
 
     private fun checkForPermission(permission: String,name: String,requstCode:Int){
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.M){
             when{
-                ContextCompat.checkSelfPermission(applicationContext,permission)==PackageManager.PERMISSION_GRANTED->{
-                    Toast.makeText(applicationContext,"$name permission granted",Toast.LENGTH_SHORT).show()
+                ContextCompat.checkSelfPermission(applicationContext,permission)== PackageManager.PERMISSION_GRANTED->{
+                    Toast.makeText(applicationContext,"$name permission granted", Toast.LENGTH_SHORT).show()
                 }
                 shouldShowRequestPermissionRationale(permission)->showDialog(permission,name,requstCode)
-                else->ActivityCompat.requestPermissions(this, arrayOf(permission),requstCode)
+                else-> ActivityCompat.requestPermissions(this, arrayOf(permission),requstCode)
             }
         }
     }
@@ -193,12 +186,12 @@ class MainActivity :  AppCompatActivity() {
     }
     private fun showDialog(permission: String,name: String,requstCode: Int)
     {
-        val builder=AlertDialog.Builder(this)
+        val builder= AlertDialog.Builder(this)
         builder.apply {
             setMessage("Permission to access your $name is required to use this app")
             setTitle("Permission required")
             setPositiveButton("Ok"){dialog,which->
-                ActivityCompat.requestPermissions(this@MainActivity, arrayOf(permission),requstCode)
+                ActivityCompat.requestPermissions(this@MainActivity2, arrayOf(permission),requstCode)
             }
         }
         val dialog=builder.create()

@@ -44,7 +44,6 @@
             tools:ignore="TextFields" />
 
 
-
         <LinearLayout
             android:id="@+id/parent_linear_layout"
             android:layout_width="match_parent"

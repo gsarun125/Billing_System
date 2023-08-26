@@ -3,6 +3,7 @@ package com.mini.billingsystem.Activity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ public class PdfviewActivity extends AppCompatActivity {
         pdfView=(PDFView)findViewById(R.id.pdfView);
         share=(ImageButton)findViewById(R.id.share);
         save=(ImageButton)findViewById(R.id.save);
+        File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
 
         StrictMode.VmPolicy.Builder builder= new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
@@ -39,13 +41,17 @@ public class PdfviewActivity extends AppCompatActivity {
 
         Intent i=getIntent();
         File file = (File)i.getExtras().get("File");
+
+        String filename=i.getExtras().getString("Filename");
         pdfView.fromFile(file).load();
+
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                File from = new File(Environment.getExternalStorageDirectory(), "Bill.pdf");
-                File to = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(),"Bill.pdf");
+
+                File from = new File(dir, filename);
+                File to = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(),filename);
                 from.renameTo(to);
                 Toast.makeText(PdfviewActivity.this,"file saved",Toast.LENGTH_SHORT).show();
 
@@ -57,10 +63,11 @@ public class PdfviewActivity extends AppCompatActivity {
             public void onClick(View view) {
                 File outputFile;
 
-                 outputFile= new File(Environment.getExternalStorageDirectory(), "Bill.pdf");
 
-                 while (!outputFile.exists()){
-                     outputFile= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"Bill.pdf");
+                outputFile= new File(dir, filename);
+
+                while (!outputFile.exists()){
+                     outputFile= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),filename);
                  }
                 if(outputFile.exists()){
                     Uri uri = FileProvider.getUriForFile(PdfviewActivity.this, PdfviewActivity.this.getPackageName() + ".provider", outputFile);
