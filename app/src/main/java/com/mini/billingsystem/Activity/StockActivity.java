@@ -1,10 +1,13 @@
 package com.mini.billingsystem.Activity;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -50,12 +53,6 @@ public class StockActivity extends AppCompatActivity {
         Binding= ActivityStockBinding.inflate(getLayoutInflater());
         setContentView(Binding.getRoot());
        // getSupportActionBar().setTitle("Stock");
-        recyclerView = findViewById(R.id.list);
-        mProduct_ID.add("Product ID");
-        mProduct_Name.add("Product Name");
-        mQuantity.add("quantity");
-        mCost.add("cost");
-
         Refresh_Feed();
         Binding.Imagebutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,26 +126,48 @@ public class StockActivity extends AppCompatActivity {
         }
     }
     void Refresh_Feed(){
-        Cursor c1 = db.get_value("SELECT  * FROM Stock");
-        if (c1.moveToFirst()) {
-            do {
-                @SuppressLint("Range") String data = c1.getString(c1.getColumnIndex("Product_Name"));
-                @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Id"));
-                @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("quantity"));
-                @SuppressLint("Range") String data3 = c1.getString(c1.getColumnIndex("cost"));
 
-                mProduct_ID.add(data1);
-                mProduct_Name.add(data);
-                mQuantity.add(data2);
-                mCost.add(data3);
+        try {
+            Cursor c1 = db.get_value("SELECT  * FROM Stock");
 
-            } while (c1.moveToNext());
+            if (c1.moveToFirst()) {
+                recyclerView = findViewById(R.id.list);
+                mProduct_ID.add("Product Code");
+                mProduct_Name.add("Product Name");
+                mQuantity.add("Quantity");
+                mCost.add("Cost");
+                do {
+                    @SuppressLint("Range") String data = c1.getString(c1.getColumnIndex("Product_Name"));
+                    @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Code"));
+                    @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("quantity"));
+                    @SuppressLint("Range") String data3 = c1.getString(c1.getColumnIndex("cost"));
 
+                    mProduct_ID.add(data1);
+                    mProduct_Name.add(data);
+                    mQuantity.add(data2);
+                    mCost.add(data3);
+
+                } while (c1.moveToNext());
+
+            }
+            recyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
+            NoteAdapter noteAdapter = new NoteAdapter(StockActivity.this, mProduct_ID, mProduct_Name, mQuantity, mCost);
+            recyclerView.setAdapter(noteAdapter);
         }
-        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
-        NoteAdapter noteAdapter = new NoteAdapter(StockActivity.this,mProduct_ID ,mProduct_Name, mQuantity,mCost);
-        recyclerView.setAdapter(noteAdapter);
+        catch (Exception e){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Press OK to add product!");
+            builder.setTitle("No products added...!");
+            builder.setCancelable(false);
+            builder.setPositiveButton("Ok", (DialogInterface.OnClickListener) (dialog, which) -> {
 
+                Intent i=new Intent(StockActivity.this,AddProductActivity.class);
+                startActivity(i);
+
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
 
 
     }

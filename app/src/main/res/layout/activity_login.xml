@@ -68,6 +68,18 @@
             android:text="Login"
             android:textAllCaps="false"
             app:cornerRadius="8dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtClickSignUP"
+            android:text="Click To Sign UP"
+            android:textColor="@color/black"
+            android:layout_gravity="right"
+            android:layout_marginTop="20dp"
+            android:gravity="right"
+            android:padding="5dp"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
 
 
     </LinearLayout>

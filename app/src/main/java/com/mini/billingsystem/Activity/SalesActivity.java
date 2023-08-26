@@ -4,6 +4,7 @@ package com.mini.billingsystem.Activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Canvas;
@@ -16,6 +17,7 @@ import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -24,6 +26,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.mini.billingsystem.DataBase.DataBaseHandler;
@@ -45,8 +48,11 @@ public class SalesActivity extends AppCompatActivity {
     public DataBaseHandler db = new DataBaseHandler(this);
     public  ActivitySalesBinding activitySalesBinding;
     private List<String> mSpinner = new ArrayList();
+    private List<Integer> mAvailable_qty = new ArrayList();
+
     int pageWidth=1200;
     int add_count=0;
+    EditText qty;
    public String Customer_Name="";
    public String PHone_NO="";
    public String Customer_Id="";
@@ -62,7 +68,7 @@ public class SalesActivity extends AppCompatActivity {
     public List<Float> mTotal = new ArrayList();
 
 
-    public List<String> mProduct_id = new ArrayList();
+    public List<String> mProduct_Code = new ArrayList();
 
     public List<String> mCost= new ArrayList();
 
@@ -75,6 +81,11 @@ public class SalesActivity extends AppCompatActivity {
         //getSupportActionBar().setTitle("Sales");
         setContentView(activitySalesBinding.getRoot());
 
+        mAvailable_qty.clear();
+        cusEdit=(EditText) findViewById(R.id.cusName);
+        cusidEdit = (EditText) findViewById(R.id.cusid);
+        phoneEdit=(EditText) findViewById(R.id.PhoneNo);
+
         mSpinner.add(getString(R.string.select));
 
         Spinner_value();
@@ -83,7 +94,7 @@ public class SalesActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(add_count<10) {
                     mQty.clear();
-                    mProduct_id.clear();
+                    mProduct_Code.clear();
                     mTotal.clear();
                     mProduct_name.clear();
                     mCost.clear();
@@ -102,24 +113,29 @@ public class SalesActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                LinearLayout layout = activitySalesBinding.parentLinearLayout;
-                int count= layout.getChildCount();
+               if( CheckAllFields()) {
+                   LinearLayout layout = activitySalesBinding.parentLinearLayout;
+                   int count = layout.getChildCount();
 
-                if (count!=0) {
-                    saveData();
-                }
-                else {
-                    Toast.makeText(SalesActivity.this, R.string.add_values,Toast.LENGTH_LONG).show();
-                }
-
+                   if (count != 0) {
+                       saveData();
+                   }else{
+                       Toast.makeText(SalesActivity.this,"add product information",Toast.LENGTH_SHORT).show();
+                   }
+               }
             }
         });
     }
 
+    public void onDelete(View v) {
+        activitySalesBinding.parentLinearLayout.removeView((View) v.getParent());
+    }
     private final void addNewView() {
+
         View  inflater = LayoutInflater.from((Context)this).inflate(R.layout.row_add_language, null);
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
         Intrinsics.checkNotNullExpressionValue(layout, "binding.parentLinearLayout");
+
         layout.addView(inflater, layout.getChildCount());
 
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mSpinner);
@@ -138,15 +154,26 @@ public class SalesActivity extends AppCompatActivity {
 
                 System.out.println(spinnerSelectedValue);
                 if (spinnerSelectedValue!=getString(R.string.select)) {
-                    Cursor c1 = db.get_value("SELECT  Product_Name FROM Stock WHERE Product_Id=" + spinnerSelectedValue);
+                    Cursor c1 = db.get_value("SELECT  Product_Name,quantity FROM Stock WHERE Product_Code=" + spinnerSelectedValue);
                     if (c1.moveToFirst()) {
                         do {
                             p_name = (TextView) inflater.findViewById(R.id.productname);
                             p_name.setText("");
 
+                            qty = (EditText) inflater.findViewById(R.id.et_Qty);
+
                             @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Name"));
-                            System.out.println(data1);
+
+                            @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("quantity"));
                             p_name.setText(data1);
+                            mAvailable_qty.add(Integer.valueOf(data2));
+                            if (!data2.equals("0")) {
+                                String available = "Available QTY ";
+                                qty.setHint(available + data2);
+
+                            }else {
+                                qty.setHint("No Stock Available ");
+                            }
 
                         } while (c1.moveToNext());
                     }
@@ -167,22 +194,37 @@ public class SalesActivity extends AppCompatActivity {
 
        for (int i=0;i<count;i++){
 
+
            v = this.activitySalesBinding.parentLinearLayout.getChildAt(i);
 
-           EditText qty=(EditText) v.findViewById(R.id.et_Qty);
-           String QTY= qty.getText().toString();
-           mQty.add(QTY);
+           qty=(EditText) v.findViewById(R.id.et_Qty);
+
 
            p_name=(TextView) v.findViewById(R.id.productname);
            mProduct_name.add(p_name.getText().toString());
 
 
+           String QTY= qty.getText().toString();
+           if (QTY.length()!=0) {
+               int tempQTY = Integer.parseInt(qty.getText().toString());
+               System.out.println(tempQTY);
+               System.out.println(mAvailable_qty.get(i));
+               if (mAvailable_qty.get(i) > tempQTY) {
+                   mQty.add(QTY);
+               } else {
+                   qty.setError("invalid QTY");
+                   return;
+               }
+           }
+
+
            Spinner spinner = (Spinner) v.findViewById(R.id.sproductid);
            String Position = spinner.getSelectedItem().toString();
 
-           mProduct_id.add(Position);
                 if(Position.length()!=0& QTY.length()!=0) {
-                    Cursor c1 = db.get_value("SELECT  cost FROM Stock WHERE Product_Id=" + Position);
+
+                    mProduct_Code.add(Position);
+                    Cursor c1 = db.get_value("SELECT  cost FROM Stock WHERE Product_Code=" + Position);
                     if (c1.moveToFirst()) {
                         do {
                             @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("cost"));
@@ -198,28 +240,48 @@ public class SalesActivity extends AppCompatActivity {
                 }
            }
 
-
-        cusEdit=(EditText) findViewById(R.id.cusName);
-        cusidEdit = (EditText) findViewById(R.id.cusid);
-        phoneEdit=(EditText) findViewById(R.id.PhoneNo);
-
-        if (cusEdit.getText().toString().length()!=0||phoneEdit.getText().toString().length()!=0||cusidEdit.getText().toString().length()!=0) {
-            Customer_Id=cusidEdit.getText().toString();
-            Customer_Name = cusEdit.getText().toString();
-            PHone_NO=phoneEdit.getText().toString();
             PDF();
-        }
-        else {
-            Toast.makeText(SalesActivity.this, R.string.please_enter_the_customer_details,Toast.LENGTH_SHORT).show();
+
+    }
+
+    private boolean CheckAllFields() {
+        if (cusEdit.length() == 0) {
+            cusEdit.setError("Customer Name is required");
+            cusEdit.setFocusable(true);
+            cusEdit.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(cusEdit, InputMethodManager.SHOW_IMPLICIT);
+            return false;
         }
 
+        if (cusidEdit.length() == 0) {
+            cusidEdit.setError("Customer ID is required");
+            cusidEdit.setFocusable(true);
+            cusidEdit.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(cusidEdit, InputMethodManager.SHOW_IMPLICIT);
+            return false;
+        }
 
+        if (phoneEdit.length() == 0) {
+            phoneEdit.setError("Customer Phone No is required");
+            phoneEdit.setFocusable(true);
+            phoneEdit.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(phoneEdit, InputMethodManager.SHOW_IMPLICIT);
+            return false;
+        }
+        // after all validation return true.
+        return true;
     }
 
 
 
     public void PDF(){
-
+        Customer_Name=cusEdit.getText().toString();
+        Customer_Id=cusidEdit.getText().toString();
+        PHone_NO=phoneEdit.getText().toString();
+        mAvailable_qty.clear();
         PdfDocument document=new PdfDocument();
         Paint myPaint=new Paint();
         Paint titlePaint=new Paint();
@@ -327,15 +389,18 @@ public class SalesActivity extends AppCompatActivity {
             try {
 
 
+                update_stock(mProduct_Code.get(i), Integer.parseInt(mQty.get(i)));
+
                 canvas.drawText(String.valueOf(i + 1), start_item1, end_item, myPaint);
-                canvas.drawText(mProduct_id.get(i), start_item2, end_item, myPaint);
+                canvas.drawText(mProduct_Code.get(i), start_item2, end_item, myPaint);
                 canvas.drawText(mProduct_name.get(i), start_item3, end_item, myPaint);
                 canvas.drawText(mQty.get(i), start_item4, end_item, myPaint);
                 canvas.drawText(mCost.get(i), start_item5, end_item, myPaint);
                 canvas.drawText(String.valueOf(mTotal.get(i)), start_item6, end_item, myPaint);
                 end_item = end_item + 70;
 
-                db.insertData_to_trancation(Customer_Id,Bill_NO,mProduct_id.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),Net_AMT,time);
+
+                db.insertData_to_trancation(Customer_Id,Bill_NO,mProduct_Code.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),Net_AMT,time);
 
                 db.insertData_to_Customer(Customer_Id,Customer_Name,PHone_NO);
 
@@ -365,11 +430,16 @@ public class SalesActivity extends AppCompatActivity {
 
         cusEdit.setText("");
         phoneEdit.setText("");
-        //File downloadsDir= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        String fileName="Bill.pdf";
+        cusidEdit.setText("");
+
+        String fileName="Invoice"+Bill_NO+".pdf";
         File file;
         try {
-            file= new File(Environment.getExternalStorageDirectory(),fileName);
+          File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
+          if (!dir.exists()) {
+          dir.mkdir();
+          }
+            file= new File(dir,fileName);
             // file= File.createTempFile(fileName, null, this.getCacheDir());
             FileOutputStream fos=new FileOutputStream(file);
             document.writeTo(fos);
@@ -387,26 +457,53 @@ public class SalesActivity extends AppCompatActivity {
 
         Intent i=new Intent(this,PdfviewActivity.class);
         i.putExtra("File",file);
+        i.putExtra("Filename",fileName);
         startActivity(i);
 
     }
-    void Spinner_value(){
-        try {
-            Cursor c1 = db.get_value("SELECT Product_Id FROM Stock");
-            if (c1.moveToFirst()) {
-                do {
-                    @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Id"));
-                    mSpinner.add(data1);
 
-                } while (c1.moveToNext());
+
+
+    void Spinner_value(){
+
+            Cursor c1 = db.get_value("SELECT Product_Code FROM Stock");
+            if (c1.getCount()>0) {
+                if (c1.moveToFirst()) {
+                    do {
+                        @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Code"));
+                        mSpinner.add(data1);
+                    } while (c1.moveToNext());
+                }
             }
-        }
-        catch (Exception e){
-            Toast.makeText(this, R.string.please_add_product_first,Toast.LENGTH_LONG).show();
+            else {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Press OK to add product!");
+                builder.setTitle("No products added...!");
+                builder.setCancelable(false);
+                builder.setPositiveButton("Ok", (DialogInterface.OnClickListener) (dialog, which) -> {
+                    Intent i = new Intent(SalesActivity.this, AddProductActivity.class);
+                    startActivity(i);
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            }
+    }
+
+
+    private void update_stock(String mProductCode, int mQty) {
+        Cursor c1 = db.get_value("SELECT  quantity FROM Stock WHERE Product_Code="+mProductCode);
+        if (c1.moveToFirst()) {
+            do {
+                @SuppressLint("Range") int data1 = c1.getInt(c1.getColumnIndex("quantity"));
+                int update_qty=data1-mQty;
+
+                db.update_stock(Integer.parseInt(mProductCode),update_qty);
+
+            } while (c1.moveToNext());
         }
 
     }
-
     void removeView(){
 
         View  inflater = LayoutInflater.from((Context)this).inflate(R.layout.row_add_language, null);
