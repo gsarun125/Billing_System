@@ -99,7 +99,7 @@ class MainActivity :  AppCompatActivity() {
             startActivity(intent)
         }
         binding.UpdateCard.setOnClickListener {
-            val intent = Intent(this, UpdateActivity::class.java)
+            val intent = Intent(this, UpdateActivity2::class.java)
             startActivity(intent)
         }
         binding.historyCard.setOnClickListener {
