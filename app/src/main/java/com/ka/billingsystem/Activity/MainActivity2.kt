@@ -1,4 +1,4 @@
-package com.mini.billingsystem.Activity
+package com.ka.billingsystem.Activity
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -17,9 +17,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.mini.billingsystem.R
-import com.mini.billingsystem.databinding.ActivityMain2Binding
-import com.mini.billingsystem.databinding.ActivityMainBinding
+import com.ka.billingsystem.databinding.ActivityMain2Binding
 import java.util.Locale
 
 class MainActivity2 : AppCompatActivity() {
@@ -48,21 +46,35 @@ class MainActivity2 : AppCompatActivity() {
         binding = ActivityMain2Binding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-
         binding.btnlogout.setOnClickListener {
-            val editor = sharedpreferences.edit()
 
-            editor.remove("user_key")
-            editor.remove("password_key")
+            val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+            builder.setMessage("Press OK to Logout!")
+            builder.setTitle("Alert...!")
+            builder.setCancelable(true)
+            builder.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+                Toast.makeText(this,"You press Cancel button",Toast.LENGTH_SHORT).show()
 
+            }
+            builder.setPositiveButton("Ok",
+                DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
 
-            editor.apply()
+                    val editor = sharedpreferences.edit()
 
-            val i = Intent(this, LoginActivity::class.java)
-            startActivity(i)
-            finish()
+                    editor.remove("user_key")
+                    editor.remove("password_key")
+
+                    editor.apply()
+
+                    val i = Intent(this, LoginActivity::class.java)
+                    startActivity(i)
+                    finish()
+                })
+            val alertDialog = builder.create()
+            alertDialog.show()
         }
+
 
         binding.lan.setOnClickListener {
             ShowChangeLanguage()
@@ -73,10 +85,7 @@ class MainActivity2 : AppCompatActivity() {
             val intent = Intent(this, SalesActivity::class.java)
             startActivity(intent)
         }
-        binding.StockCard.setOnClickListener {
-            val intent = Intent(this, StockActivity::class.java)
-            startActivity(intent)
-        }
+       
         binding.historyCard.setOnClickListener {
             val intent = Intent(this, HistorysActivity::class.java)
             startActivity(intent)

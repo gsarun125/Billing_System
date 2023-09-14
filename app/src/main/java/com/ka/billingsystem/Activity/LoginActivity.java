@@ -1,4 +1,4 @@
-package com.mini.billingsystem.Activity;
+package com.ka.billingsystem.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,8 +13,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mini.billingsystem.DataBase.DataBaseHandler;
-import com.mini.billingsystem.R;
+import com.ka.billingsystem.R;
+import com.ka.billingsystem.DataBase.DataBaseHandler;
+
 
 public class LoginActivity extends AppCompatActivity {
 

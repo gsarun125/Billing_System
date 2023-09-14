@@ -1,7 +1,6 @@
-package com.mini.billingsystem.DataBase
+package com.ka.billingsystem.DataBase
 
 
-import android.R.attr
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -20,6 +19,8 @@ val COL_COST = "cost"
 
 val TABLENAME2 = "Transation"
 val COL_BILL_NO="Bill_No"
+
+val COL_SALES_USER="sales_user"
 val COL_PRODUCT_ID2 = "Product_Id"
 val COl_QUANTITY2="quantity"
 val COL_RATE = "rate"
@@ -44,7 +45,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         val createTable = "CREATE TABLE " + TABLENAME1 + " (" + COL_PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_Code + " VARCHAR(1000)," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY + " INTEGER," + COL_COST + " INTEGER)"
         db?.execSQL(createTable)
 
-       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER  ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_ID2 + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
+       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_ID2 + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
 
         db?.execSQL(createTable2)
 
@@ -80,16 +81,14 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
     }
 
 
-    fun update( Product_id :Int , Product_Name: String,quantity:Int,cost:Int) {
+    fun update( Product_Name: String,quantity:Int,cost:Int) {
 
         val db = this.writableDatabase
         val values = ContentValues()
-
-        values.put(COL_PRODUCT_NAME, Product_Name)
         values.put(COl_QUANTITY,quantity)
         values.put(COL_COST,cost)
 
-        db.update(TABLENAME1, values, "Product_Id=?", arrayOf<String>(Product_id.toString()))
+        db.update(TABLENAME1, values, "Product_Name=?", arrayOf<String>(Product_Name))
         ///db.close()
     }
 
@@ -124,7 +123,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
 
 
-    fun insertData_to_trancation(Cus_Id:String,Bill_id:Int,product_id:String,Product_Name: String,quantity:String,rate:String,amount:Float,tamount:Float,time:Long) {
+    fun insertData_to_trancation(Cus_Id:Int,Bill_id:Int,product_id:String,Product_Name: String,quantity:String,rate:String,amount:Float,tamount:Float,time:Long,UserName:String) {
         val database = this.writableDatabase
         val contentValues = ContentValues()
 
@@ -139,6 +138,8 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         contentValues.put(CoL_TOTAL_AMOUNT,tamount)
         contentValues.put(COL_TIMESTAMP,time)
 
+        contentValues.put(COL_SALES_USER,UserName)
+
         val result = database.insert(TABLENAME2, null, contentValues)
         if (result == (0).toLong()) {
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
@@ -147,7 +148,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         }
     }
 
-    fun insertData_to_Customer(Cus_Id:String,Cus_name:String,Phoneno:String) {
+    fun insertData_to_Customer(Cus_Id:Int,Cus_name:String,Phoneno:String) {
         val database = this.writableDatabase
         val contentValues = ContentValues()
 

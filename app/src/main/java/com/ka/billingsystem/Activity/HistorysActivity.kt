@@ -1,15 +1,17 @@
-package com.mini.billingsystem.Activity
+package com.ka.billingsystem.Activity
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointBackward
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.mini.billingsystem.R
-import com.mini.billingsystem.databinding.ActivityHistorysBinding
+import com.ka.billingsystem.R
+import com.ka.billingsystem.databinding.ActivityHistorysBinding
+
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -107,7 +109,7 @@ class HistorysActivity : AppCompatActivity() {
         }
 
         binding.view.setOnClickListener {
-
+            if (CheckAllFields()){
             if(To_time>=From_time){
                 val i = Intent(this, HisPdfviewActivity::class.java)
                 i.putExtra("to_time",To_time)
@@ -120,8 +122,28 @@ class HistorysActivity : AppCompatActivity() {
             }
 
         }
+        }
 
 
+    }
+    private fun CheckAllFields(): Boolean{
+        if (binding.Fromdate.editText?.text?.length == 0){
+            binding.Fromdate.error = "From Date is required"
+            binding.Fromdate.isFocusable = true
+            binding.Fromdate.requestFocus()
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.Fromdate.editText, InputMethodManager.SHOW_IMPLICIT)
+            return false
+        }
+        if (binding.Todate.editText?.text?.length == 0){
+            binding.Todate.error = "To Date is required"
+            binding.Todate.isFocusable = true
+            binding.Todate.requestFocus()
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.Fromdate.editText, InputMethodManager.SHOW_IMPLICIT)
+            return false
+        }
+        return true
     }
 
 }

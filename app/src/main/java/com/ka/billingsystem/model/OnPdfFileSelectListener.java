@@ -1,4 +1,4 @@
-package com.mini.billingsystem.model;
+package com.ka.billingsystem.model;
 
 import java.io.File;
 

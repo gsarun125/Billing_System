@@ -4,7 +4,7 @@
     <string name="product_name">பொருளின் பெயர்</string>
     <string name="product_id">தயாரிப்பு எண்</string>
     <string name="net_quantity">நிகர அளவு</string>
-    <string name="unit_cost">அலகு விலை</string>
+    <string name="unit_cost">அலகு விலை (Kg)</string>
     <string name="invoice">விலைப்பட்டியல்</string>
     <string name="stock">" சேகரிப்பு"</string>
     <string name="update_product">தயாரிப்பு புதுப்பிக்கவும்</string>

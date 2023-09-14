@@ -1,4 +1,4 @@
-package com.mini.billingsystem.Activity;
+package com.ka.billingsystem.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -8,9 +8,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 
-import com.mini.billingsystem.R;
-import com.mini.billingsystem.model.OnPdfFileSelectListener;
-import com.mini.billingsystem.model.PdfAdapter;
+import com.ka.billingsystem.R;
+import com.ka.billingsystem.model.OnPdfFileSelectListener;
+import com.ka.billingsystem.model.PdfAdapter;
 
 import java.io.File;
 import java.util.ArrayList;

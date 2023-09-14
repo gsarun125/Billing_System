@@ -3,7 +3,7 @@
     <string name="product_name">Product Name</string>
     <string name="product_id">Product ID</string>
     <string name="net_quantity">Net Quantity</string>
-    <string name="unit_cost">Unit Cost</string>
+    <string name="unit_cost">Unit Cost (Kg)</string>
     <string name="invoice">Invoice</string>
     <string name="stock">Stock</string>
     <string name="update_product">Update Product</string>

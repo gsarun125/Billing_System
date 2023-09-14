@@ -1,4 +1,4 @@
-package com.mini.billingsystem.Activity;
+package com.ka.billingsystem.Activity;
 
 
 
@@ -6,17 +6,19 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -29,9 +31,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mini.billingsystem.DataBase.DataBaseHandler;
-import com.mini.billingsystem.R;
-import com.mini.billingsystem.databinding.ActivitySalesBinding;
+import com.ka.billingsystem.R;
+import com.ka.billingsystem.databinding.ActivitySalesBinding;
+import com.ka.billingsystem.DataBase.DataBaseHandler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -46,31 +48,36 @@ import kotlin.jvm.internal.Intrinsics;
 
 public class SalesActivity extends AppCompatActivity {
     public DataBaseHandler db = new DataBaseHandler(this);
-    public  ActivitySalesBinding activitySalesBinding;
+    public ActivitySalesBinding activitySalesBinding;
     private List<String> mSpinner = new ArrayList();
     private List<Integer> mAvailable_qty = new ArrayList();
 
     int pageWidth=1200;
     int add_count=0;
     EditText qty;
+    TextView Pcode;
    public String Customer_Name="";
    public String PHone_NO="";
-   public String Customer_Id="";
    int Bill_NO;
-   private TextView  p_name;
+
+    int Customer_Id;
+
     public List<String> mQty = new ArrayList();
 
     public List<String> mProduct_name = new ArrayList();
 
     EditText cusEdit;
     EditText phoneEdit;
-    EditText cusidEdit;
     public List<Float> mTotal = new ArrayList();
 
 
     public List<String> mProduct_Code = new ArrayList();
 
     public List<String> mCost= new ArrayList();
+    String SHARED_PREFS = "shared_prefs";
+    String USER_KEY = "user_key";
+    String SPuser;
+    SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +90,11 @@ public class SalesActivity extends AppCompatActivity {
 
         mAvailable_qty.clear();
         cusEdit=(EditText) findViewById(R.id.cusName);
-        cusidEdit = (EditText) findViewById(R.id.cusid);
+
+        sharedpreferences= getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+
+        SPuser = sharedpreferences.getString(USER_KEY,null);
+
         phoneEdit=(EditText) findViewById(R.id.PhoneNo);
 
         mSpinner.add(getString(R.string.select));
@@ -94,14 +105,15 @@ public class SalesActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(add_count<10) {
                     mQty.clear();
-                    mProduct_Code.clear();
+
                     mTotal.clear();
                     mProduct_name.clear();
                     mCost.clear();
 
                     addNewView();
-
                     add_count++;
+
+
 
                 }
                 else {
@@ -128,6 +140,7 @@ public class SalesActivity extends AppCompatActivity {
     }
 
     public void onDelete(View v) {
+        add_count--;
         activitySalesBinding.parentLinearLayout.removeView((View) v.getParent());
     }
     private final void addNewView() {
@@ -154,18 +167,17 @@ public class SalesActivity extends AppCompatActivity {
 
                 System.out.println(spinnerSelectedValue);
                 if (spinnerSelectedValue!=getString(R.string.select)) {
-                    Cursor c1 = db.get_value("SELECT  Product_Name,quantity FROM Stock WHERE Product_Code=" + spinnerSelectedValue);
+                    Cursor c1 = db.get_value("SELECT  Product_Code,quantity FROM Stock WHERE Product_Name="+"'"+spinnerSelectedValue+"'");
                     if (c1.moveToFirst()) {
                         do {
-                            p_name = (TextView) inflater.findViewById(R.id.productname);
-                            p_name.setText("");
+
 
                             qty = (EditText) inflater.findViewById(R.id.et_Qty);
 
-                            @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Name"));
+
 
                             @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("quantity"));
-                            p_name.setText(data1);
+
                             mAvailable_qty.add(Integer.valueOf(data2));
                             if (!data2.equals("0")) {
                                 String available = "Available QTY ";
@@ -191,17 +203,11 @@ public class SalesActivity extends AppCompatActivity {
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
        int count= layout.getChildCount();
        View v = null;
-
        for (int i=0;i<count;i++){
-
 
            v = this.activitySalesBinding.parentLinearLayout.getChildAt(i);
 
            qty=(EditText) v.findViewById(R.id.et_Qty);
-
-
-           p_name=(TextView) v.findViewById(R.id.productname);
-           mProduct_name.add(p_name.getText().toString());
 
 
            String QTY= qty.getText().toString();
@@ -209,7 +215,7 @@ public class SalesActivity extends AppCompatActivity {
                int tempQTY = Integer.parseInt(qty.getText().toString());
                System.out.println(tempQTY);
                System.out.println(mAvailable_qty.get(i));
-               if (mAvailable_qty.get(i) > tempQTY) {
+               if (mAvailable_qty.get(i) >= tempQTY && tempQTY!=0) {
                    mQty.add(QTY);
                } else {
                    qty.setError("invalid QTY");
@@ -223,11 +229,15 @@ public class SalesActivity extends AppCompatActivity {
 
                 if(Position.length()!=0& QTY.length()!=0) {
 
-                    mProduct_Code.add(Position);
-                    Cursor c1 = db.get_value("SELECT  cost FROM Stock WHERE Product_Code=" + Position);
+                    mProduct_name.add(Position);
+
+                    Cursor c1 = db.get_value("SELECT  cost,Product_Code FROM Stock WHERE Product_Name="+"'"+ Position+"'");
                     if (c1.moveToFirst()) {
                         do {
                             @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("cost"));
+                            @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("Product_Code"));
+                            mProduct_Code.add(data2);
+
                             mCost.add(data1);
                             float addTotal = Float.parseFloat(data1) * Float.parseFloat(QTY);
                             mTotal.add(addTotal);
@@ -254,15 +264,6 @@ public class SalesActivity extends AppCompatActivity {
             return false;
         }
 
-        if (cusidEdit.length() == 0) {
-            cusidEdit.setError("Customer ID is required");
-            cusidEdit.setFocusable(true);
-            cusidEdit.requestFocus();
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(cusidEdit, InputMethodManager.SHOW_IMPLICIT);
-            return false;
-        }
-
         if (phoneEdit.length() == 0) {
             phoneEdit.setError("Customer Phone No is required");
             phoneEdit.setFocusable(true);
@@ -279,45 +280,70 @@ public class SalesActivity extends AppCompatActivity {
 
     public void PDF(){
         Customer_Name=cusEdit.getText().toString();
-        Customer_Id=cusidEdit.getText().toString();
         PHone_NO=phoneEdit.getText().toString();
         mAvailable_qty.clear();
         PdfDocument document=new PdfDocument();
         Paint myPaint=new Paint();
         Paint titlePaint=new Paint();
-
         PdfDocument.PageInfo myPageInfo1=new PdfDocument.PageInfo.Builder(1200,2010,1).create();
         PdfDocument.Page page=document.startPage(myPageInfo1);
         Canvas canvas=page.getCanvas();
 
+
+        titlePaint.setTextAlign(Paint.Align.CENTER);
+        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.ITALIC));
+        titlePaint.setTextSize(40);
+        canvas.drawText("TAX INVOICE",pageWidth/2,50,titlePaint);
+
+
         //title
-        titlePaint.setTextAlign(Paint.Align.CENTER);
+        titlePaint.setTextAlign(Paint.Align.LEFT);
+        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.BOLD_ITALIC));
+        titlePaint.setTextSize(50);
+        canvas.drawText("KIRTHANA AGENCIES",20,150,titlePaint);
+
+        //Address
+        String Address="#6,Alikhan Street, Alandur, Chennai-600 016,";
+        String Adddress1="Tamil Nadu,India.";
+        String Tel="+91 44 2231 4628";
+        String Email="kirthana.agencics@outlook.com";
+        String GSTIN="33AEFPJ5208Q1ZB";
+
+        titlePaint.setTextAlign(Paint.Align.LEFT);
         titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.BOLD));
-        titlePaint.setTextSize(70);
-        canvas.drawText("Shopping Center",pageWidth/2,270,titlePaint);
+        titlePaint.setTextSize(20);
+        canvas.drawText(Address,20,200,titlePaint);
+        canvas.drawText(Adddress1,20,225,titlePaint);
+        canvas.drawText("Tel: "+Tel,20,250,titlePaint);
+        canvas.drawText("Email: "+Email,20,275,titlePaint);
+        canvas.drawText("GSTIN: "+GSTIN,20,300,titlePaint);
 
-        myPaint.setColor(Color.rgb(0,133,200));
-        myPaint.setTextSize(30);
-        myPaint.setTextAlign(Paint.Align.RIGHT);
-        canvas.drawText("Call:9443528960",1160,40,myPaint);
+        Paint paint = new Paint();
+        Rect r = new Rect(800, 200, 900, 100);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.WHITE);
+        canvas.drawRect(r, paint);
 
-        titlePaint.setTextAlign(Paint.Align.CENTER);
-        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.ITALIC));
-        titlePaint.setTextSize(70);
-        canvas.drawText("--------------------------------------------------",pageWidth/2,400,titlePaint);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.BLACK);
+        canvas.drawRect(r, paint);
 
 
-        titlePaint.setTextAlign(Paint.Align.CENTER);
-        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.ITALIC));
-        titlePaint.setTextSize(70);
-        canvas.drawText("Invoice",pageWidth/2,500,titlePaint);
+        Cursor cursor = db.get_value("select max(Bill_No) from Transation");
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int id= cursor.getInt(0);
+            Customer_Id=id+1;
+            Bill_NO = id + 1;
+        }
 
         myPaint.setTextAlign(Paint.Align.LEFT);
-        myPaint.setTextSize(35f);
+        myPaint.setTextSize(25f);
         myPaint.setColor(Color.BLACK);
-        canvas.drawText("Customer Id: "+Customer_Id,20,590,myPaint);
-        canvas.drawText("Customer Name: "+Customer_Name,20,650,myPaint);
-        canvas.drawText("Phone No: "+PHone_NO,20,710,myPaint);
+        canvas.drawText("Invoice No : "+Bill_NO,20,400,myPaint);
+       // canvas.drawText("Customer Id: "+Customer_Id,20,590,myPaint);
+        //canvas.drawText("Customer Name: "+Customer_Name,20,650,myPaint);
+        //canvas.drawText("Phone No: "+PHone_NO,20,710,myPaint);
 
 
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
@@ -326,44 +352,43 @@ public class SalesActivity extends AppCompatActivity {
         SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
         Date day = new Date();
 
-        Cursor cursor = db.get_value("select max(Bill_No) from Transation");
-        if (cursor != null) {
-            cursor.moveToFirst();
-            int id= cursor.getInt(0);
-            Bill_NO = id + 1;
-        }
-
 
 
 
         myPaint.setTextAlign(Paint.Align.LEFT);
-        myPaint.setTextSize(35f);
+        myPaint.setTextSize(25f);
         myPaint.setColor(Color.BLACK);
-        canvas.drawText("Bill No : "+Bill_NO,pageWidth-350,590,myPaint);
-        canvas.drawText("Date : "+formatter1.format(day),pageWidth-350,650,myPaint);
-        canvas.drawText("Time : "+formatter.format(date),pageWidth-350,710,myPaint);
 
-        canvas.drawText("--------------------------------------------------",pageWidth/2,780,titlePaint);
+        canvas.drawText("Invoice Date : "+formatter1.format(day),pageWidth-350,400,myPaint);
+        //canvas.drawText("Time : "+formatter.format(date),pageWidth-350,710,myPaint);
 
         //box
+
         myPaint.setStyle(Paint.Style.STROKE);
         myPaint.setStrokeWidth(2);
-        canvas.drawRect(20,800,pageWidth-20,860,myPaint);
+        canvas.drawRect(20,420,pageWidth-20,1260,myPaint);
+        canvas.drawRect(20,420,pageWidth-20,470,myPaint);
+        canvas.drawRect(20,420,100,1260,myPaint);
+        canvas.drawRect(100,420,650,1260,myPaint);
+        canvas.drawRect(650,420,825,1260,myPaint);
+        canvas.drawRect(1000,420,pageWidth-20,1460,myPaint);
+
+        canvas.drawRect(20,1260,pageWidth-20,1400,myPaint);
+        canvas.drawRect(20,1400,pageWidth-20,1460,myPaint);
+        canvas.drawLine(650,1260,650,1460,myPaint);
+        //canvas.drawLine(600,1260,600,1460,myPaint);
+
+
+
 
         myPaint.setTextAlign(Paint.Align.LEFT);
         myPaint.setStyle(Paint.Style.FILL);
-        canvas.drawText("Sl.No.",pageWidth-1168,850,myPaint);
-        canvas.drawText("Pid",pageWidth-1000,850,myPaint);
-        canvas.drawText("Particulars",pageWidth-792,850,myPaint);
-        canvas.drawText("Qty",pageWidth-500,850,myPaint);
-        canvas.drawText("Rate",pageWidth-376,850,myPaint);
-        canvas.drawText("Amount",pageWidth-198,850,myPaint);
+        canvas.drawText("S.No.",pageWidth-1168,460,myPaint);
+        canvas.drawText("Description",pageWidth-900,460,myPaint);
+        canvas.drawText("Quantity",pageWidth-515,460,myPaint);
+        canvas.drawText("Rate",pageWidth-275,460,myPaint);
+        canvas.drawText("Amount",pageWidth-150,460,myPaint);
 
-        canvas.drawLine(pageWidth-1168+120,800,pageWidth-1168+120,860,myPaint);
-        canvas.drawLine(pageWidth-970+100,800,pageWidth-970+100,860,myPaint);
-        canvas.drawLine(pageWidth-792+248,800,pageWidth-792+248,860,myPaint);
-        canvas.drawLine(pageWidth-500+100,800,pageWidth-500+100,860,myPaint);
-        canvas.drawLine(pageWidth-376+148,800,pageWidth-376+148,860,myPaint);
 
         int start_item1=50;
         int start_item2=200;
@@ -371,7 +396,7 @@ public class SalesActivity extends AppCompatActivity {
         int start_item4=700;
         int start_item5=850;
         int start_item6=1000;
-        int end_item=950;
+        int end_item=500;
 
         Float Net_AMT = 0f;
         // max 12
@@ -383,16 +408,12 @@ public class SalesActivity extends AppCompatActivity {
 
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
         int count= layout.getChildCount();
-
         long time= System.currentTimeMillis();
         for (int i=0;i<count;i++){
-            try {
-
 
                 update_stock(mProduct_Code.get(i), Integer.parseInt(mQty.get(i)));
 
                 canvas.drawText(String.valueOf(i + 1), start_item1, end_item, myPaint);
-                canvas.drawText(mProduct_Code.get(i), start_item2, end_item, myPaint);
                 canvas.drawText(mProduct_name.get(i), start_item3, end_item, myPaint);
                 canvas.drawText(mQty.get(i), start_item4, end_item, myPaint);
                 canvas.drawText(mCost.get(i), start_item5, end_item, myPaint);
@@ -400,37 +421,40 @@ public class SalesActivity extends AppCompatActivity {
                 end_item = end_item + 70;
 
 
-                db.insertData_to_trancation(Customer_Id,Bill_NO,mProduct_Code.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),Net_AMT,time);
+                db.insertData_to_trancation(Customer_Id,Bill_NO,mProduct_Code.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),Net_AMT,time,SPuser);
 
                 db.insertData_to_Customer(Customer_Id,Customer_Name,PHone_NO);
 
-            }
-            catch (Exception e){
-                Toast.makeText(this, R.string.enter_the_value,Toast.LENGTH_SHORT).show();
-                return;
-            }
         }
 
-        canvas.drawLine(680,end_item,pageWidth-20,end_item,myPaint);
-        end_item=end_item+50;
 
-        canvas.drawText("Net Amt",730,end_item,myPaint);
-        canvas.drawText(":",970,end_item,myPaint);
-        canvas.drawText(String.valueOf(Net_AMT),1000,end_item,myPaint);
-        end_item=end_item+30;
-        canvas.drawLine(680,end_item,pageWidth-20,end_item,myPaint);
+        canvas.drawText("Sub-Total",830,1300,myPaint);
 
-        end_item=end_item+70;
-        titlePaint.setTextSize(30);
-        canvas.drawText("**THANK YOUR VISIT**",pageWidth/2,end_item,titlePaint);
+        canvas.drawText(String.valueOf(Net_AMT),1010,1300,myPaint);
 
+        canvas.drawText("18% IGST",750,1390,myPaint);
+        canvas.drawText("Total Amount",830,1440,myPaint);
+
+
+        titlePaint.setTextSize(25);
+        titlePaint.setUnderlineText(true);
+        canvas.drawText("OUR BANK DETAILS:",20,1500,titlePaint);
+        titlePaint.setUnderlineText(false);
+        canvas.drawText("FOR KIRTHANA AGENCIES",pageWidth-350,1500,titlePaint);
+
+
+        myPaint.setTextSize(20f);
+        canvas.drawText("KARUR VYSYA BANK,",20,1530,myPaint);
+        canvas.drawText("ALANDUR BRANCH,",20,1555,myPaint);
+        canvas.drawText("A/C Holder Name: KIRTHANA AGENCIES",20,1580,myPaint);
+        canvas.drawText("CA A/C No.: 1104115000010212",20,1605,myPaint);
+        canvas.drawText("IFSC CODE: KVBL0001104",20,1630,myPaint);
 
 
         document.finishPage(page);
 
         cusEdit.setText("");
         phoneEdit.setText("");
-        cusidEdit.setText("");
 
         String fileName="Invoice"+Bill_NO+".pdf";
         File file;
@@ -466,11 +490,11 @@ public class SalesActivity extends AppCompatActivity {
 
     void Spinner_value(){
 
-            Cursor c1 = db.get_value("SELECT Product_Code FROM Stock");
+            Cursor c1 = db.get_value("SELECT Product_Name FROM Stock");
             if (c1.getCount()>0) {
                 if (c1.moveToFirst()) {
                     do {
-                        @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Code"));
+                        @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Name"));
                         mSpinner.add(data1);
                     } while (c1.moveToNext());
                 }
@@ -489,6 +513,7 @@ public class SalesActivity extends AppCompatActivity {
                 alertDialog.show();
             }
     }
+
 
 
     private void update_stock(String mProductCode, int mQty) {
@@ -510,6 +535,7 @@ public class SalesActivity extends AppCompatActivity {
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
         Intrinsics.checkNotNullExpressionValue(layout, "binding.parentLinearLayout");
         layout.removeAllViews();
+
     }
 
 

@@ -1,4 +1,4 @@
-package com.mini.billingsystem.Activity;
+package com.ka.billingsystem.Activity;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,11 +23,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
-import com.mini.billingsystem.DataBase.DataBaseHandler;
-import com.mini.billingsystem.DataBase.DataBaseHandlerKt;
-import com.mini.billingsystem.R;
-import com.mini.billingsystem.databinding.ActivityStockBinding;
-import com.mini.billingsystem.model.NoteAdapter;
+import com.ka.billingsystem.R;
+import com.ka.billingsystem.databinding.ActivityStockBinding;
+import com.ka.billingsystem.DataBase.DataBaseHandler;
+
+import com.ka.billingsystem.model.NoteAdapter;
 
 import java.io.File;
 import java.io.FileNotFoundException;

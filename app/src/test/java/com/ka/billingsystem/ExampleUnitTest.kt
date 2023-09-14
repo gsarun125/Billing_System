@@ -1,4 +1,4 @@
-package com.mini.billingsystem
+package com.ka.billingsystem
 
 import org.junit.Test
 

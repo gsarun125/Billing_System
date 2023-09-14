@@ -1,4 +1,4 @@
-package com.mini.billingsystem.Activity;
+package com.ka.billingsystem.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,8 +10,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.mini.billingsystem.DataBase.DataBaseHandler;
-import com.mini.billingsystem.R;
+import com.ka.billingsystem.R;
+import com.ka.billingsystem.DataBase.DataBaseHandler;
 
 public class SignUpActivity extends AppCompatActivity {
 

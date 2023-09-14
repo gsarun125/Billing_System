@@ -1,4 +1,4 @@
-package com.mini.billingsystem.Activity
+package com.ka.billingsystem.Activity
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -18,7 +18,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.mini.billingsystem.databinding.ActivityMainBinding
+import com.ka.billingsystem.databinding.ActivityMainBinding
+
 import java.util.Locale
 
 class MainActivity :  AppCompatActivity() {
@@ -53,16 +54,32 @@ class MainActivity :  AppCompatActivity() {
 
 
         binding.btnlogout.setOnClickListener {
-            val editor = sharedpreferences.edit()
 
-            editor.remove("user_key")
-            editor.remove("password_key")
+            val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+            builder.setMessage("Press OK to Logout!")
+            builder.setTitle("Alert...!")
+            builder.setCancelable(true)
+            builder.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+                Toast.makeText(this,"You press Cancel button",Toast.LENGTH_SHORT).show()
 
-            editor.apply()
+            }
+            builder.setPositiveButton("Ok",
+                DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
 
-            val i = Intent(this, LoginActivity::class.java)
-            startActivity(i)
-            finish()
+                    val editor = sharedpreferences.edit()
+
+                    editor.remove("user_key")
+                    editor.remove("password_key")
+
+                    editor.apply()
+
+                    val i = Intent(this, LoginActivity::class.java)
+                    startActivity(i)
+                    finish()
+                })
+            val alertDialog = builder.create()
+            alertDialog.show()
         }
         binding.lan.setOnClickListener {
             ShowChangeLanguage()

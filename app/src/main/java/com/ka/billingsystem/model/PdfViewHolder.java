@@ -1,4 +1,4 @@
-package com.mini.billingsystem.model;
+package com.ka.billingsystem.model;
 
 import android.view.View;
 import android.widget.TextView;
@@ -7,7 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mini.billingsystem.R;
+import com.ka.billingsystem.R;
+
 
 public class PdfViewHolder extends RecyclerView.ViewHolder {
     public TextView tvname;

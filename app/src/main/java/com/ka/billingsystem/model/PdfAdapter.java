@@ -1,4 +1,4 @@
-package com.mini.billingsystem.model;
+package com.ka.billingsystem.model;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,7 +8,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mini.billingsystem.R;
+
+import com.ka.billingsystem.R;
 
 import java.io.File;
 import java.util.List;

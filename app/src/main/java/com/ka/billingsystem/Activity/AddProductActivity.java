@@ -1,4 +1,4 @@
-package com.mini.billingsystem.Activity;
+package com.ka.billingsystem.Activity;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -6,14 +6,13 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mini.billingsystem.DataBase.DataBaseHandler;
-import com.mini.billingsystem.databinding.ActivityAddProductBinding;
+import com.ka.billingsystem.databinding.ActivityAddProductBinding;
+import com.ka.billingsystem.DataBase.DataBaseHandler;
 
 
 public class AddProductActivity extends AppCompatActivity {
@@ -107,36 +106,57 @@ public class AddProductActivity extends AppCompatActivity {
             imm.showSoftInput(Binding.CostEdit, InputMethodManager.SHOW_IMPLICIT);
             return false;
         }
+
         String qurry="Select Product_Code from Stock Where Product_Code="+Binding.codeEdit.getText().toString();
         System.out.println(qurry);
         boolean checkuserpass;
+
+        String qurry2="Select Product_Name from Stock Where Product_Name="+"'"+Binding.ProductEdit.getText().toString()+"'";
+        Cursor c2=db.get_value(qurry2);
         Cursor c1=db.get_value(qurry);
-        if(c1.getCount()>0) {
-            System.out.println("6");
+
+        if(c1.getCount()>0 && c2.getCount()>0) {
             checkuserpass = true;
         }
-        else
-            checkuserpass= false;
-
-        if (checkuserpass){
-            System.out.println("7");
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("The product code already available!");
-            builder.setTitle("Alert !");
-            builder.setCancelable(false);
-            builder.setPositiveButton("Ok", (DialogInterface.OnClickListener) (dialog, which) -> {
-                Binding.codeEdit.setText("");
-            });
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
-            Binding.codeEdit.setError("Enter different Product Code ");
-            Binding.codeEdit.setFocusable(true);
-            Binding.codeEdit.requestFocus();
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(Binding.codeEdit,InputMethodManager.SHOW_IMPLICIT);
+        else {
+            if (c1.getCount()>0){
+                    System.out.println("7");
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setMessage("The product code already available!");
+                    builder.setTitle("Alert !");
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("Ok", (DialogInterface.OnClickListener) (dialog, which) -> {
+                        Binding.codeEdit.setText("");
+                    });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    Binding.codeEdit.setError("Enter different Product Code ");
+                    Binding.codeEdit.setFocusable(true);
+                    Binding.codeEdit.requestFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(Binding.codeEdit,InputMethodManager.SHOW_IMPLICIT);
 
 
-            return false;
+                    return false;
+
+            } else if (c2.getCount()>0) {
+                    System.out.println("7");
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setMessage("The product Name already available!");
+                    builder.setTitle("Alert !");
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("Ok", (DialogInterface.OnClickListener) (dialog, which) -> {
+                        Binding.ProductEdit.setText("");
+                    });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    Binding.ProductEdit.setError("Enter different Product Code ");
+                    Binding.ProductEdit.setFocusable(true);
+                    Binding.ProductEdit.requestFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(Binding.ProductEdit,InputMethodManager.SHOW_IMPLICIT);
+                    return false;
+            }
         }
 
         // after all validation return true.

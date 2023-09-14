@@ -1,4 +1,4 @@
-package com.mini.billingsystem.Activity;
+package com.ka.billingsystem.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.github.barteksc.pdfviewer.PDFView;
-import com.mini.billingsystem.R;
+import com.ka.billingsystem.R;
 
 import java.io.File;
 

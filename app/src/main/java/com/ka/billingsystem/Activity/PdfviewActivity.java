@@ -1,9 +1,8 @@
-package com.mini.billingsystem.Activity;
+package com.ka.billingsystem.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,7 +14,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.github.barteksc.pdfviewer.PDFView;
-import com.mini.billingsystem.R;
+import com.ka.billingsystem.R;
 
 import java.io.File;
 
@@ -62,10 +61,7 @@ public class PdfviewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 File outputFile;
-
-
                 outputFile= new File(dir, filename);
-
                 while (!outputFile.exists()){
                      outputFile= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),filename);
                  }

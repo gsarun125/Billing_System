@@ -1,9 +1,11 @@
-package com.mini.billingsystem.Activity;
+package com.ka.billingsystem.Activity;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Canvas;
@@ -21,8 +23,9 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.github.barteksc.pdfviewer.PDFView;
-import com.mini.billingsystem.DataBase.DataBaseHandler;
-import com.mini.billingsystem.R;
+import com.ka.billingsystem.R;
+import com.ka.billingsystem.DataBase.DataBaseHandler;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -173,8 +176,9 @@ public class HisPdfviewActivity extends AppCompatActivity {
     }
     public void Pdf(String query){
 
-        int pageWidth=2480;
+        int pageWidth=0;
         int PageHight=0;
+        int linePageHight=200;
         PdfDocument document=new PdfDocument();
         Paint myPaint=new Paint();
         Paint titlePaint=new Paint();
@@ -187,13 +191,30 @@ public class HisPdfviewActivity extends AppCompatActivity {
         PdfDocument.Page page=document.startPage(myPageInfo1);
         Canvas canvas=page.getCanvas();
         Cursor c1 = null;
+        titlePaint.setTextAlign(Paint.Align.CENTER);
+        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.BOLD));
+        titlePaint.setTextSize(70);
+        canvas.drawText("Shopping Center",2480/2,50,titlePaint);
 
+        Canvas cavaDrawline=page.getCanvas();
+        titlePaint.setTextAlign(Paint.Align.LEFT);
+        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        titlePaint.setTextSize(60);
 
-        canvas.drawLine(0,350,1200,350,line);
+        canvas.drawText( "Bill No",0,200,titlePaint);
+        canvas.drawText( "Date",250,200,titlePaint);
+        canvas.drawText( "Cus id",450,200,titlePaint);
+        canvas.drawText( "Name",550,200,titlePaint);
+        canvas.drawText( "Product Id",750,200,titlePaint);
+        canvas.drawText( "Product Name",1100,200,titlePaint);
+        canvas.drawText( "QTY",1900,200,titlePaint);
+        canvas.drawText( "Cost",2050,200,titlePaint);
+        canvas.drawText( "Amount",2250,200,titlePaint);
+
+        cavaDrawline.drawLine(0,200,2480,200,line);
         System.out.println(query);
         try {
             c1 = db.get_value(query);
-
 
         }
         catch (Exception e){
@@ -203,114 +224,135 @@ public class HisPdfviewActivity extends AppCompatActivity {
         int temp_Bill_No = 0;
         int amt=0;
         Float Total= (float) 0;
-        if (c1.moveToFirst()) {
-            do {
-                @SuppressLint("Range") String Bill_No = c1.getString(c1.getColumnIndex("Bill_No"));
-                @SuppressLint("Range") String cus_id = c1.getString(c1.getColumnIndex("cus_id"));
-                @SuppressLint("Range") String cus_name = c1.getString(c1.getColumnIndex("cus_name"));
-                @SuppressLint("Range") String Product_Id = c1.getString(c1.getColumnIndex("Product_Id"));
-                @SuppressLint("Range") String Product_Name = c1.getString(c1.getColumnIndex("Product_Name"));
+        if (c1.getCount()>0) {
+            if (c1.moveToFirst()) {
+                do {
+                    @SuppressLint("Range") String Bill_No = c1.getString(c1.getColumnIndex("Bill_No"));
+                    @SuppressLint("Range") String cus_id = c1.getString(c1.getColumnIndex("cus_id"));
+                    @SuppressLint("Range") String cus_name = c1.getString(c1.getColumnIndex("cus_name"));
+                    @SuppressLint("Range") String Product_Id = c1.getString(c1.getColumnIndex("Product_Id"));
+                    @SuppressLint("Range") String Product_Name = c1.getString(c1.getColumnIndex("Product_Name"));
 
-                @SuppressLint("Range") String quantity = c1.getString(c1.getColumnIndex("quantity"));
-                @SuppressLint("Range") String rate = c1.getString(c1.getColumnIndex("rate"));
+                    @SuppressLint("Range") String quantity = c1.getString(c1.getColumnIndex("quantity"));
+                    @SuppressLint("Range") String rate = c1.getString(c1.getColumnIndex("rate"));
 
-                @SuppressLint("Range") String amount = c1.getString(c1.getColumnIndex("amount"));
-                @SuppressLint("Range") Long time = c1.getLong(c1.getColumnIndex("time"));
+                    @SuppressLint("Range") String amount = c1.getString(c1.getColumnIndex("amount"));
+                    @SuppressLint("Range") Long time = c1.getLong(c1.getColumnIndex("time"));
 
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                String dateString = formatter.format(new Date(time));
-                System.out.println(dateString);
-                    if (temp_Bill_No!=Integer.parseInt(Bill_No)) {
-                        if(Total!=0f) {
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                    String dateString = formatter.format(new Date(time));
+                    System.out.println(dateString);
+                    if (temp_Bill_No != Integer.parseInt(Bill_No)) {
+                        if (Total != 0f) {
 
+                            cavaDrawline.drawLine(2230, linePageHight, 2230, PageHight - 100, line);
+                            cavaDrawline.drawLine(2000, linePageHight, 2000, PageHight + 100, line);
+
+                            linePageHight = PageHight + 100;
 
                             System.out.println(PageHight);
-                            canvas.drawText(String.valueOf(Total), 2200,PageHight+300 , titlePaint);
+                            cavaDrawline.drawLine(2000, PageHight - 100, 2480, PageHight - 100, line);
+
+                            canvas.drawText("Total:" + String.valueOf(Total), 2100, PageHight, titlePaint);
+                            cavaDrawline.drawLine(0, PageHight + 100, 2480, PageHight + 100, line);
 
                             Total = (float) 0;
+
                         }
-                        titlePaint.setTextAlign(Paint.Align.LEFT);
-                        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-                        titlePaint.setTextSize(60);
+                        PageHight = PageHight + 300;
 
-                        canvas.drawText(Bill_No, 100, PageHight + 300, titlePaint);
-                        canvas.drawText(dateString, 150, PageHight +300, titlePaint);
 
-                        canvas.drawText(cus_id, 500, PageHight + 300, titlePaint);
+                        canvas.drawText(Bill_No, 100, PageHight, titlePaint);
+                        canvas.drawText(dateString, 150, PageHight, titlePaint);
 
-                        canvas.drawText(cus_name, 600, PageHight + 300, titlePaint);
+                        canvas.drawText(cus_id, 500, PageHight, titlePaint);
+
+                        canvas.drawText(cus_name, 600, PageHight, titlePaint);
 
                         PageHight = PageHight + 130;
 
-                        temp_Bill_No=Integer.parseInt(Bill_No);
+                        temp_Bill_No = Integer.parseInt(Bill_No);
                         System.out.println(Bill_No);
                     }
 
 
+                    Total = Total + Float.valueOf(amount);
+                    System.out.println(Total);
+                    canvas.drawText(Product_Id, 900, PageHight, titlePaint);
+                    canvas.drawText(Product_Name, 1200, PageHight, titlePaint);
 
-                        Total= Total+Float.valueOf(amount);
-                     System.out.println(Total);
-                        canvas.drawText(Product_Id, 900, PageHight + 300, titlePaint);
-                        canvas.drawText(Product_Name, 1200, PageHight + 300, titlePaint);
+                    canvas.drawText(quantity, 1900, PageHight, titlePaint);
+                    canvas.drawText(rate, 2050, PageHight, titlePaint);
 
-                        canvas.drawText(quantity, 1500, PageHight + 300, titlePaint);
-                        canvas.drawText(rate, 1800, PageHight + 300, titlePaint);
+                    canvas.drawText(amount, 2300, PageHight, titlePaint);
 
-                        canvas.drawText(amount, 2100, PageHight + 300, titlePaint);
+                    amt = amt + 230 + 70;
 
-                        amt=amt+230+70;
-
-                        PageHight=PageHight + 150;
-
+                    PageHight = PageHight + 150;
 
 
+                } while (c1.moveToNext());
 
-            } while (c1.moveToNext());
-
-        }
-        if(Total!=0f) {
-
-            canvas.drawText(String.valueOf(Total), 2200, PageHight+300 , titlePaint);
-
-        }
-
-
-
-
-
-
-        titlePaint.setTextAlign(Paint.Align.CENTER);
-        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.BOLD));
-        titlePaint.setTextSize(70);
-        canvas.drawText("Shopping Center",pageWidth/2,80,titlePaint);
-
-        document.finishPage(page);
-        try {
-            File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
-            if (!dir.exists()) {
-            dir.mkdir();
             }
-                File  subdir= new File(dir,"HISTORYS");
-            if (!subdir.exists()) {
-                subdir.mkdir();
+            if (Total != 0f) {
+
+                //cavaDrawline.drawLine(2000,linePageHight-PageHight,2000,PageHight-100,line);
+                //linePageHight=linePageHight+PageHight-100;
+
+
+                cavaDrawline.drawLine(2000, PageHight - 100, 2480, PageHight - 100, line);
+
+                canvas.drawText("Total:" + String.valueOf(Total), 2100, PageHight, titlePaint);
+
+                cavaDrawline.drawLine(0, PageHight + 100, 2480, PageHight + 100, line);
+
+
             }
 
-            file= new File(subdir,fileName);
-            // file= File.createTempFile(fileName, null, this.getCacheDir());
-            FileOutputStream fos=new FileOutputStream(file);
-            document.writeTo(fos);
-            document.close();
-            fos.close();
-            Toast.makeText(HisPdfviewActivity.this,"Successfully",Toast.LENGTH_SHORT).show();
+            document.finishPage(page);
+            try {
+                File dir = new File(Environment.getExternalStorageDirectory(), "DATA");
+                if (!dir.exists()) {
+                    dir.mkdir();
+                }
+                File subdir = new File(dir, "HISTORYS");
+                if (!subdir.exists()) {
+                    subdir.mkdir();
+                }
 
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+                file = new File(subdir, fileName);
+                // file= File.createTempFile(fileName, null, this.getCacheDir());
+                FileOutputStream fos = new FileOutputStream(file);
+                document.writeTo(fos);
+                document.close();
+                fos.close();
+                Toast.makeText(HisPdfviewActivity.this, "Successfully", Toast.LENGTH_SHORT).show();
+
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            pdfView1.fromFile(file).load();
+        }else {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setMessage("you have no history");
+            builder.setTitle("Alert...!");
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
-
-        pdfView1.fromFile(file).load();
-
     }
 
 }

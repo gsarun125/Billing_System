@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.mini.billingsystem'
+    namespace 'com.ka.billingsystem'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.mini.billingsystem"
+        applicationId "com.ka.billingsystem"
         minSdk 24
         targetSdk 33
         versionCode 1
