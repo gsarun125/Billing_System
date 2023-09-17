@@ -13,13 +13,12 @@ val DATABASENAME = "BILLING_SYSTEM"
 val TABLENAME1 = "Stock"
 val COL_PRODUCT_NAME = "Product_Name"
 val COL_PRODUCT_ID = "Product_Id"
-val COL_Code="Product_Code"
 val COl_QUANTITY="quantity"
 val COL_COST = "cost"
 
 val TABLENAME2 = "Transation"
 val COL_BILL_NO="Bill_No"
-
+val COL_FILE_PATH="file_Path"
 val COL_SALES_USER="sales_user"
 val COL_PRODUCT_ID2 = "Product_Id"
 val COl_QUANTITY2="quantity"
@@ -29,6 +28,7 @@ val COL_TIMESTAMP="time"
 val CoL_TOTAL_AMOUNT="tamount"
 
 val TABLENAME3 = "customer"
+val Col_CUSTId="tratiction_id"
 val COL_CUSID="cus_id"
 val COL_CUSNAME= "cus_name"
 val COl_CUSPHONE="cus_Phone"
@@ -42,14 +42,14 @@ val COL_TIMESTAMP_MODIFIE="modified_date"
 class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASENAME, null,
     1) {
     override fun onCreate(db: SQLiteDatabase?) {
-        val createTable = "CREATE TABLE " + TABLENAME1 + " (" + COL_PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_Code + " VARCHAR(1000)," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY + " INTEGER," + COL_COST + " INTEGER)"
+        val createTable = "CREATE TABLE " + TABLENAME1 + " (" + COL_PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY + " INTEGER," + COL_COST + " INTEGER)"
         db?.execSQL(createTable)
 
-       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_ID2 + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
+       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_ID2 + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
 
         db?.execSQL(createTable2)
 
-        val createTable3 = "CREATE TABLE " + TABLENAME3 + " (" + COL_CUSID  + " INTEGER UNIQUE  ," + COL_CUSNAME + " VARCHAR(1000)," + COl_CUSPHONE + " INTEGER)"
+        val createTable3 = "CREATE TABLE " + TABLENAME3 + " (" + COL_CUSID  + " INTEGER UNIQUE," + COL_CUSNAME + " VARCHAR(1000)," + COl_CUSPHONE + " INTEGER)"
 
         db?.execSQL(createTable3)
 
@@ -63,12 +63,12 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         //onCreate(db);
     }
 
-    fun insertData(Code:String, product_name: String,quantity:Int,cost:Int) {
+    fun insertData(product_name: String,quantity:Int,cost:Int) {
         val database = this.writableDatabase
         val contentValues = ContentValues()
 
         contentValues.put(COL_PRODUCT_NAME,product_name)
-        contentValues.put(COL_Code,Code)
+
         contentValues.put(COl_QUANTITY,quantity)
         contentValues.put(COL_COST,cost)
 
@@ -98,7 +98,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         val values = ContentValues()
 
         values.put(COl_QUANTITY,quantity)
-        db.update(TABLENAME1, values, "Product_Code=?", arrayOf<String>(productcode.toString()))
+        db.update(TABLENAME1, values, "Product_Id=?", arrayOf<String>(productcode.toString()))
         ///db.close()
     }
 
@@ -139,6 +139,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         contentValues.put(COL_TIMESTAMP,time)
 
         contentValues.put(COL_SALES_USER,UserName)
+
 
         val result = database.insert(TABLENAME2, null, contentValues)
         if (result == (0).toLong()) {
@@ -196,5 +197,15 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         values.put(COL_USER, user)
         values.put(COL_PASS, pass)
         db?.insert(TABLENAME4, null, values)
+    }
+
+    fun filePath( Bill_No :Int ,Path:String) {
+
+        val db = this.writableDatabase
+        val values = ContentValues()
+
+        values.put(COL_FILE_PATH,Path)
+        db.update(TABLENAME2, values, "Bill_No=?", arrayOf<String>(Bill_No.toString()))
+        ///db.close()
     }
 }

@@ -51,16 +51,15 @@ public class AddProductActivity extends AppCompatActivity {
                         String Product_Name = Binding.ProductEdit.getText().toString();
                         String Quantity = Binding.QuantityEdit.getText().toString();
                         String Cost = Binding.CostEdit.getText().toString();
-                        String Product_Code=Binding.codeEdit.getText().toString();
 
                         int Quantity1 = Integer.parseInt(Quantity);
                         int Cost1 = Integer.parseInt(Cost);
-                        db.insertData(Product_Code,Product_Name, Quantity1, Cost1);
+                        db.insertData(Product_Name, Quantity1, Cost1);
 
                         Binding.ProductEdit.setText("");
                         Binding.QuantityEdit.setText("");
                         Binding.CostEdit.setText("");
-                        Binding.codeEdit.setText("");
+
                         System.out.println(Product_Name);
                         System.out.println(Quantity);
                         System.out.println(Cost);
@@ -71,14 +70,6 @@ public class AddProductActivity extends AppCompatActivity {
 
         }
     private boolean CheckAllFields() {
-        if (Binding.codeEdit.length() == 0) {
-            Binding.codeEdit.setError("Product Code is required");
-            Binding.codeEdit.setFocusable(true);
-            Binding.codeEdit.requestFocus();
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(Binding.codeEdit,InputMethodManager.SHOW_IMPLICIT);
-            return false;
-        }
 
         if (Binding.ProductEdit.length() == 0) {
             Binding.ProductEdit.setError("Product Name is required");
@@ -107,40 +98,13 @@ public class AddProductActivity extends AppCompatActivity {
             return false;
         }
 
-        String qurry="Select Product_Code from Stock Where Product_Code="+Binding.codeEdit.getText().toString();
-        System.out.println(qurry);
-        boolean checkuserpass;
+
+
 
         String qurry2="Select Product_Name from Stock Where Product_Name="+"'"+Binding.ProductEdit.getText().toString()+"'";
         Cursor c2=db.get_value(qurry2);
-        Cursor c1=db.get_value(qurry);
+        if (c2.getCount()>0) {
 
-        if(c1.getCount()>0 && c2.getCount()>0) {
-            checkuserpass = true;
-        }
-        else {
-            if (c1.getCount()>0){
-                    System.out.println("7");
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage("The product code already available!");
-                    builder.setTitle("Alert !");
-                    builder.setCancelable(false);
-                    builder.setPositiveButton("Ok", (DialogInterface.OnClickListener) (dialog, which) -> {
-                        Binding.codeEdit.setText("");
-                    });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
-                    Binding.codeEdit.setError("Enter different Product Code ");
-                    Binding.codeEdit.setFocusable(true);
-                    Binding.codeEdit.requestFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(Binding.codeEdit,InputMethodManager.SHOW_IMPLICIT);
-
-
-                    return false;
-
-            } else if (c2.getCount()>0) {
-                    System.out.println("7");
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setMessage("The product Name already available!");
                     builder.setTitle("Alert !");
@@ -157,9 +121,8 @@ public class AddProductActivity extends AppCompatActivity {
                     imm.showSoftInput(Binding.ProductEdit,InputMethodManager.SHOW_IMPLICIT);
                     return false;
             }
-        }
 
-        // after all validation return true.
+
         return true;
     }
 

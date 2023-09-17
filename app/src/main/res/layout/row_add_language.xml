@@ -4,60 +4,67 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:elevation="20dp"
-    android:layout_marginTop="10dp"
-    android:layout_marginBottom="10dp"
-    android:orientation="vertical">
 
-    <ImageButton
-        android:layout_width="30dp"
+    android:layout_marginBottom="20dp"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="275dp"
         android:layout_height="wrap_content"
-        android:onClick="onDelete"
-        android:layout_marginRight="25dp"
-        android:backgroundTint="@color/white"
-        android:layout_gravity="right"
-        android:src="@drawable/baseline_close_24" />
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/round"
+        android:orientation="vertical">
 
-    <GridLayout
-        android:id="@+id/gridLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:columnCount="1"
-        android:rowCount="4">
 
-        <Spinner
-            android:id="@+id/sproductid"
-            android:layout_width="271dp"
-            android:layout_height="47dp"
-            android:layout_row="0"
-            android:layout_column="0"
+        <GridLayout
+            android:id="@+id/gridLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:columnCount="1"
+            android:layout_marginBottom="20dp"
+            android:rowCount="2">
+
+
+            <Spinner
+                android:id="@+id/sproductid"
+                android:layout_width="wrap_content"
+                android:layout_height="47dp"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_gravity="fill_vertical"
+
+                android:gravity="center"
+                android:hint="@string/product_id"
+                android:textSize="20sp" />
+
+            <EditText
+                android:paddingBottom="30dp"
+                android:id="@+id/et_Qty"
+                android:layout_width="266dp"
+                android:layout_height="66dp"
+                android:layout_row="1"
+                android:layout_column="0"
+                android:layout_gravity="center"
+                android:hint="@string/qty"
+                android:inputType="number"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </GridLayout>
+
+    </LinearLayout>
+
+
+        <ImageButton
+            android:background="@drawable/round"
+        android:layout_marginStart="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
 
-            android:gravity="center"
-            android:hint="@string/product_id"
-            android:textSize="20sp" />
-
-
-
-
-    </GridLayout>
-
-    <GridLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-
-        android:layout_marginRight="10dp">
-
-        <EditText
-            android:id="@+id/et_Qty"
-            android:layout_width="350dp"
-            android:layout_height="70dp"
-            android:layout_gravity="center"
-            android:hint="@string/qty"
-            android:inputType="number"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </GridLayout>
+            android:backgroundTint="#0D174E13"
+            android:onClick="onDelete"
+            android:src="@drawable/baseline_close_24" />
 
 </LinearLayout>

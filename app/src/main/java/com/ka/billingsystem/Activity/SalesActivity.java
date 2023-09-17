@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -39,6 +40,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,12 +49,12 @@ import java.util.List;
 import kotlin.jvm.internal.Intrinsics;
 
 public class SalesActivity extends AppCompatActivity {
-    public DataBaseHandler db = new DataBaseHandler(this);
-    public ActivitySalesBinding activitySalesBinding;
+    private DataBaseHandler db = new DataBaseHandler(this);
+    private ActivitySalesBinding activitySalesBinding;
     private List<String> mSpinner = new ArrayList();
     private List<Integer> mAvailable_qty = new ArrayList();
 
-    int pageWidth=1200;
+   int pageWidth=1200;
     int add_count=0;
     EditText qty;
     TextView Pcode;
@@ -68,7 +70,7 @@ public class SalesActivity extends AppCompatActivity {
 
     EditText cusEdit;
     EditText phoneEdit;
-    public List<Float> mTotal = new ArrayList();
+    public List<Long> mTotal = new ArrayList();
 
 
     public List<String> mProduct_Code = new ArrayList();
@@ -89,6 +91,7 @@ public class SalesActivity extends AppCompatActivity {
         setContentView(activitySalesBinding.getRoot());
 
         mAvailable_qty.clear();
+
         cusEdit=(EditText) findViewById(R.id.cusName);
 
         sharedpreferences= getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
@@ -101,19 +104,20 @@ public class SalesActivity extends AppCompatActivity {
 
         Spinner_value();
            activitySalesBinding.buttonAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
+
+
+               @Override
             public void onClick(View view) {
-                if(add_count<10) {
-                    mQty.clear();
-
-                    mTotal.clear();
-                    mProduct_name.clear();
-                    mCost.clear();
-
+                if(add_count<10 ) {
+                    if (add_count!=0){
+                        if (checkQTY(add_count-1)){
+                            addNewView();
+                            add_count++;
+                        }
+                    }else {
                     addNewView();
                     add_count++;
-
-
+                    }
 
                 }
                 else {
@@ -167,7 +171,7 @@ public class SalesActivity extends AppCompatActivity {
 
                 System.out.println(spinnerSelectedValue);
                 if (spinnerSelectedValue!=getString(R.string.select)) {
-                    Cursor c1 = db.get_value("SELECT  Product_Code,quantity FROM Stock WHERE Product_Name="+"'"+spinnerSelectedValue+"'");
+                    Cursor c1 = db.get_value("SELECT  quantity FROM Stock WHERE Product_Name="+"'"+spinnerSelectedValue+"'");
                     if (c1.moveToFirst()) {
                         do {
 
@@ -178,7 +182,8 @@ public class SalesActivity extends AppCompatActivity {
 
                             @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("quantity"));
 
-                            mAvailable_qty.add(Integer.valueOf(data2));
+                            mAvailable_qty.add(layout.getChildCount()-1,Integer.valueOf(data2));
+                          System.out.println();
                             if (!data2.equals("0")) {
                                 String available = "Available QTY ";
                                 qty.setHint(available + data2);
@@ -199,6 +204,35 @@ public class SalesActivity extends AppCompatActivity {
         });
 
     }
+    public  boolean checkQTY(int i){
+        View v = null;
+            v = this.activitySalesBinding.parentLinearLayout.getChildAt(i);
+            qty=(EditText) v.findViewById(R.id.et_Qty);
+            String QTY= qty.getText().toString();
+
+        if (qty.getText().toString().length() == 0) {
+            qty.setError("Net Quantity is required");
+            qty.setFocusable(true);
+            qty.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(qty, InputMethodManager.SHOW_IMPLICIT);
+            return false;
+        }
+
+        if (QTY.length()!=0) {
+                int tempQTY = Integer.parseInt(qty.getText().toString());
+                System.out.println(tempQTY);
+                System.out.println(mAvailable_qty.get(i));
+                if (mAvailable_qty.get(i) >= tempQTY && tempQTY!=0) {
+                    mQty.add(QTY);
+                } else {
+                    qty.setError("invalid QTY");
+                    qty.setText("");
+                    return false;
+                }
+            }
+    return true;
+    }
     void saveData() {
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
        int count= layout.getChildCount();
@@ -209,8 +243,15 @@ public class SalesActivity extends AppCompatActivity {
 
            qty=(EditText) v.findViewById(R.id.et_Qty);
 
-
            String QTY= qty.getText().toString();
+           if (qty.getText().toString().length() == 0) {
+               qty.setError("Net Quantity is required");
+               qty.setFocusable(true);
+               qty.requestFocus();
+               InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+               imm.showSoftInput(qty, InputMethodManager.SHOW_IMPLICIT);
+               return;
+           }
            if (QTY.length()!=0) {
                int tempQTY = Integer.parseInt(qty.getText().toString());
                System.out.println(tempQTY);
@@ -223,7 +264,6 @@ public class SalesActivity extends AppCompatActivity {
                }
            }
 
-
            Spinner spinner = (Spinner) v.findViewById(R.id.sproductid);
            String Position = spinner.getSelectedItem().toString();
 
@@ -231,15 +271,15 @@ public class SalesActivity extends AppCompatActivity {
 
                     mProduct_name.add(Position);
 
-                    Cursor c1 = db.get_value("SELECT  cost,Product_Code FROM Stock WHERE Product_Name="+"'"+ Position+"'");
+                    Cursor c1 = db.get_value("SELECT  cost,Product_Id FROM Stock WHERE Product_Name="+"'"+ Position+"'");
                     if (c1.moveToFirst()) {
                         do {
                             @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("cost"));
-                            @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("Product_Code"));
+                            @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("Product_Id"));
                             mProduct_Code.add(data2);
 
                             mCost.add(data1);
-                            float addTotal = Float.parseFloat(data1) * Float.parseFloat(QTY);
+                            Long addTotal = Long.parseLong(data1) * Long.parseLong(QTY);
                             mTotal.add(addTotal);
                         } while (c1.moveToNext());
                     }
@@ -398,9 +438,9 @@ public class SalesActivity extends AppCompatActivity {
         int start_item6=1000;
         int end_item=500;
 
-        Float Net_AMT = 0f;
+        long Net_AMT = 0;
         // max 12
-        for (Float total :mTotal){
+        for (Long total :mTotal){
 
             Net_AMT = Net_AMT+total;
 
@@ -421,11 +461,11 @@ public class SalesActivity extends AppCompatActivity {
                 end_item = end_item + 70;
 
 
-                db.insertData_to_trancation(Customer_Id,Bill_NO,mProduct_Code.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),Net_AMT,time,SPuser);
-
-                db.insertData_to_Customer(Customer_Id,Customer_Name,PHone_NO);
+               db.insertData_to_trancation(Customer_Id,Bill_NO,mProduct_Code.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),Net_AMT,time,SPuser);
+System.out.println("gghghggh");
 
         }
+        db.insertData_to_Customer(Customer_Id,Customer_Name,PHone_NO);
 
 
         canvas.drawText("Sub-Total",830,1300,myPaint);
@@ -434,6 +474,8 @@ public class SalesActivity extends AppCompatActivity {
 
         canvas.drawText("18% IGST",750,1390,myPaint);
         canvas.drawText("Total Amount",830,1440,myPaint);
+
+        canvas.drawText(numbertoword.convert(Net_AMT)+" only",50,1440,myPaint);
 
 
         titlePaint.setTextSize(25);
@@ -456,6 +498,12 @@ public class SalesActivity extends AppCompatActivity {
         cusEdit.setText("");
         phoneEdit.setText("");
 
+        mQty.clear();
+        mTotal.clear();
+        mProduct_name.clear();
+        mCost.clear();
+
+
         String fileName="Invoice"+Bill_NO+".pdf";
         File file;
         try {
@@ -464,6 +512,8 @@ public class SalesActivity extends AppCompatActivity {
           dir.mkdir();
           }
             file= new File(dir,fileName);
+       //   System.out.println("Path"+file.getAbsolutePath());
+          db.filePath(Bill_NO,file.getAbsolutePath());
             // file= File.createTempFile(fileName, null, this.getCacheDir());
             FileOutputStream fos=new FileOutputStream(file);
             document.writeTo(fos);
@@ -517,7 +567,7 @@ public class SalesActivity extends AppCompatActivity {
 
 
     private void update_stock(String mProductCode, int mQty) {
-        Cursor c1 = db.get_value("SELECT  quantity FROM Stock WHERE Product_Code="+mProductCode);
+        Cursor c1 = db.get_value("SELECT  quantity FROM Stock WHERE Product_Id="+mProductCode);
         if (c1.moveToFirst()) {
             do {
                 @SuppressLint("Range") int data1 = c1.getInt(c1.getColumnIndex("quantity"));
@@ -537,6 +587,4 @@ public class SalesActivity extends AppCompatActivity {
         layout.removeAllViews();
 
     }
-
-
 }

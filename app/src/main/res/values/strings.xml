@@ -23,6 +23,11 @@
     <string name="please_add_product_first">Please add  product first!</string>
     <string name="you_cannot_add_more_then_10_value">you cannot add more then 10 value</string>
     <string name="add_values">add values</string>
-
+    <string name="name">Name</string>
+<string name="age">Age</string>
+<string name="agree_to_terms">I agree to the terms and conditions.</string>
+<string name="submit">Submit</string>
+<string name="open_custom_dialog">Open Custom Dialog</string>
+<string name="custom_dialog">Custom Dialog</string>
 
 </resources>

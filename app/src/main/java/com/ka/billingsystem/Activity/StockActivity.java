@@ -138,7 +138,7 @@ public class StockActivity extends AppCompatActivity {
                 mCost.add("Cost");
                 do {
                     @SuppressLint("Range") String data = c1.getString(c1.getColumnIndex("Product_Name"));
-                    @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Code"));
+                    @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Id"));
                     @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("quantity"));
                     @SuppressLint("Range") String data3 = c1.getString(c1.getColumnIndex("cost"));
 

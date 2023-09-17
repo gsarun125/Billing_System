@@ -107,7 +107,7 @@ public class UpdateActivity extends AppCompatActivity  {
                             NetQty= Integer.parseInt(binding.QuantityEdit.getText().toString());
                             UnitCost= Integer.parseInt(binding.CostEdit.getText().toString());
 
-                            db.update(Product_Name, NetQty, UnitCost);
+                           // db.update(Product_Name, NetQty, UnitCost);
 
                             binding.QuantityEdit.setText("");
                             binding.CostEdit.setText("");
