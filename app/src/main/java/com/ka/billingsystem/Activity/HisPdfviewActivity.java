@@ -143,7 +143,6 @@ public class HisPdfviewActivity extends AppCompatActivity {
                             String query="SELECT * FROM Transation JOIN customer ON Transation.cus_id=customer.cus_id  WHERE Transation.time BETWEEN "+from_time+ " AND " +to_time+" ORDER BY time DESC" ;
                             Pdf(query);
 
-
                         }
                         else if (ch==R.id.billno) {
                             String query="SELECT * FROM Transation JOIN customer ON Transation.cus_id=customer.cus_id  WHERE Transation.time BETWEEN "+from_time+ " AND " +to_time+" ORDER BY Bill_No ASC" ;

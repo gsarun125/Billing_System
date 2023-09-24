@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/lan"
+        android:title="Language"
+        android:icon="@drawable/baseline_language_24"
+        />
+    <item android:id="@+id/Export"
+        android:title="Export Data"
+        android:icon="@drawable/baseline_ios_share_24"
+        />
+    <item android:id="@+id/Import"
+        android:title="Import Data"
+        android:icon="@drawable/baseline_import_export_24"
+        />
+    <item
+        android:id="@+id/Logout"
+        android:title="Logout"
+        android:icon="@drawable/baseline_logout_24"
+        />
+</menu>

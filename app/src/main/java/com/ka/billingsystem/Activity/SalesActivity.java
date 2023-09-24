@@ -11,9 +11,7 @@ import android.database.Cursor;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
@@ -32,9 +30,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.barteksc.pdfviewer.PDFView;
 import com.ka.billingsystem.R;
 import com.ka.billingsystem.databinding.ActivitySalesBinding;
 import com.ka.billingsystem.DataBase.DataBaseHandler;
+import com.ka.billingsystem.java.numbertoword;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -61,6 +61,7 @@ public class SalesActivity extends AppCompatActivity {
    public String Customer_Name="";
    public String PHone_NO="";
    int Bill_NO;
+   int end_item=500;
 
     int Customer_Id;
 
@@ -75,7 +76,7 @@ public class SalesActivity extends AppCompatActivity {
 
     public List<String> mProduct_Code = new ArrayList();
 
-    public List<String> mCost= new ArrayList();
+    public List<Long> mCost= new ArrayList();
     String SHARED_PREFS = "shared_prefs";
     String USER_KEY = "user_key";
     String SPuser;
@@ -274,12 +275,12 @@ public class SalesActivity extends AppCompatActivity {
                     Cursor c1 = db.get_value("SELECT  cost,Product_Id FROM Stock WHERE Product_Name="+"'"+ Position+"'");
                     if (c1.moveToFirst()) {
                         do {
-                            @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("cost"));
+                            @SuppressLint("Range") long data1 = c1.getLong(c1.getColumnIndex("cost"));
                             @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("Product_Id"));
                             mProduct_Code.add(data2);
 
                             mCost.add(data1);
-                            Long addTotal = Long.parseLong(data1) * Long.parseLong(QTY);
+                            Long addTotal = data1 * Long.parseLong(QTY);
                             mTotal.add(addTotal);
                         } while (c1.moveToNext());
                     }
@@ -319,9 +320,12 @@ public class SalesActivity extends AppCompatActivity {
 
 
     public void PDF(){
+        DecimalFormat chosenFormat = new DecimalFormat("#,###");
         Customer_Name=cusEdit.getText().toString();
         PHone_NO=phoneEdit.getText().toString();
         mAvailable_qty.clear();
+        add_count=0;
+
         PdfDocument document=new PdfDocument();
         Paint myPaint=new Paint();
         Paint titlePaint=new Paint();
@@ -426,17 +430,17 @@ public class SalesActivity extends AppCompatActivity {
         canvas.drawText("S.No.",pageWidth-1168,460,myPaint);
         canvas.drawText("Description",pageWidth-900,460,myPaint);
         canvas.drawText("Quantity",pageWidth-515,460,myPaint);
-        canvas.drawText("Rate",pageWidth-275,460,myPaint);
+        canvas.drawText("Rate",pageWidth-310,460,myPaint);
         canvas.drawText("Amount",pageWidth-150,460,myPaint);
 
 
         int start_item1=50;
         int start_item2=200;
-        int start_item3=400;
+        int start_item3=150;
         int start_item4=700;
         int start_item5=850;
-        int start_item6=1000;
-        int end_item=500;
+        int start_item6=1020;
+
 
         long Net_AMT = 0;
         // max 12
@@ -446,6 +450,8 @@ public class SalesActivity extends AppCompatActivity {
 
         }
 
+        long IGST= (long) (Net_AMT*0.18);
+        long TotalAmount=Net_AMT+IGST;
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
         int count= layout.getChildCount();
         long time= System.currentTimeMillis();
@@ -455,9 +461,11 @@ public class SalesActivity extends AppCompatActivity {
 
                 canvas.drawText(String.valueOf(i + 1), start_item1, end_item, myPaint);
                 canvas.drawText(mProduct_name.get(i), start_item3, end_item, myPaint);
-                canvas.drawText(mQty.get(i), start_item4, end_item, myPaint);
-                canvas.drawText(mCost.get(i), start_item5, end_item, myPaint);
-                canvas.drawText(String.valueOf(mTotal.get(i)), start_item6, end_item, myPaint);
+             print_next_line(canvas,myPaint,start_item3,end_item,500,mProduct_name.get(i)+"ghghgfhggfgdgfjjhhjsszdsdzsawewweqerrtyyuuiuiooiuijhhjjkjkjkjkjkjkjjjkjkjkjkjkjkjkouiuioyuytfdgchvgvhhjhkopopilkjkjjkhjhhgggghsgjjjjkklllfdhjdkjgfhghjgdfjh");
+
+            canvas.drawText(mQty.get(i), start_item4, end_item, myPaint);
+                canvas.drawText(chosenFormat.format(mCost.get(i)), start_item5, end_item, myPaint);
+                canvas.drawText(chosenFormat.format(mTotal.get(i)), start_item6, end_item, myPaint);
                 end_item = end_item + 70;
 
 
@@ -470,12 +478,20 @@ System.out.println("gghghggh");
 
         canvas.drawText("Sub-Total",830,1300,myPaint);
 
-        canvas.drawText(String.valueOf(Net_AMT),1010,1300,myPaint);
+        canvas.drawText(chosenFormat.format(Net_AMT),1010,1300,myPaint);
 
         canvas.drawText("18% IGST",750,1390,myPaint);
+        canvas.drawText(chosenFormat.format(IGST),1010,1390,myPaint);
         canvas.drawText("Total Amount",830,1440,myPaint);
+        canvas.drawText(chosenFormat.format(TotalAmount),1010,1440,myPaint);
 
-        canvas.drawText(numbertoword.convert(Net_AMT)+" only",50,1440,myPaint);
+        //canvas.drawText(numbertoword.convert((int) TotalAmount)+" Only",50,1300,myPaint);
+
+        print_next_line(canvas,myPaint,50,1300,600,numbertoword.convert((int) TotalAmount)+" Only");
+
+        canvas.drawText("DC No. : "+Bill_NO,50,1440,myPaint);
+        canvas.drawText("DC Date : "+formatter1.format(day),350,1440,myPaint);
+
 
 
         titlePaint.setTextSize(25);
@@ -502,6 +518,7 @@ System.out.println("gghghggh");
         mTotal.clear();
         mProduct_name.clear();
         mCost.clear();
+        end_item=500;
 
 
         String fileName="Invoice"+Bill_NO+".pdf";
@@ -585,6 +602,31 @@ System.out.println("gghghggh");
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
         Intrinsics.checkNotNullExpressionValue(layout, "binding.parentLinearLayout");
         layout.removeAllViews();
+
+    }
+
+    void  print_next_line(Canvas canvas,Paint paint,float x,float y,float maxWidth,String multiLineText){
+
+
+        StringBuilder currentLine = new StringBuilder();
+
+        for (char c : multiLineText.toCharArray()) {
+            float textWidth = paint.measureText(currentLine.toString() + c);
+
+            if (textWidth < maxWidth) {
+                // Add the character to the current line
+                currentLine.append(c);
+            } else {
+                // Draw the current line and move to the next line
+                canvas.drawText(currentLine.toString(), x, y, paint);
+                y += paint.getTextSize() * 1.5f;
+                end_item= (int) (end_item+paint.getTextSize() * 1.5);// Adjust line spacing as needed
+                currentLine = new StringBuilder(String.valueOf(c));
+            }
+        }
+
+        // Draw the remaining part of the text
+        canvas.drawText("-"+currentLine.toString(), x, y, paint);
 
     }
 }

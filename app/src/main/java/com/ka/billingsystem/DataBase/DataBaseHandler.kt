@@ -123,7 +123,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
 
 
-    fun insertData_to_trancation(Cus_Id:Int,Bill_id:Int,product_id:String,Product_Name: String,quantity:String,rate:String,amount:Float,tamount:Float,time:Long,UserName:String) {
+    fun insertData_to_trancation(Cus_Id:Int,Bill_id:Int,product_id:String,Product_Name: String,quantity:String,rate:Long,amount:Float,tamount:Float,time:Long,UserName:String) {
         val database = this.writableDatabase
         val contentValues = ContentValues()
 

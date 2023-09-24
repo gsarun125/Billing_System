@@ -13,13 +13,17 @@ import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Environment
+import android.print.pdf.PrintedPdfDocument
 import android.provider.Settings
+import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.ka.billingsystem.R
 import com.ka.billingsystem.databinding.ActivityMainBinding
-
+import com.ka.billingsystem.java.Export
 import java.util.Locale
 
 class MainActivity :  AppCompatActivity() {
@@ -30,6 +34,7 @@ class MainActivity :  AppCompatActivity() {
     var checkedItem = 0
     var SHARED_PREFS = "shared_prefs"
     private lateinit var sharedpreferences: SharedPreferences
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,37 +59,28 @@ class MainActivity :  AppCompatActivity() {
 
 
         binding.btnlogout.setOnClickListener {
-
-            val builder = androidx.appcompat.app.AlertDialog.Builder(this)
-            builder.setMessage("Press OK to Logout!")
-            builder.setTitle("Alert...!")
-            builder.setCancelable(true)
-            builder.setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
-                Toast.makeText(this,"You press Cancel button",Toast.LENGTH_SHORT).show()
-
+            println("clicked")
+            val popupMenu = PopupMenu(this@MainActivity, it)
+            popupMenu.menuInflater.inflate(R.menu.threedotadmin, popupMenu.menu)
+            popupMenu.setOnMenuItemClickListener { menuItem ->
+                val ch = menuItem.itemId
+                if (ch==R.id.lan){
+                    ShowChangeLanguage()
+                }
+                else if (ch==R.id.Logout){
+                    logOut()
+                }
+                else if (ch==R.id.Export){
+                    val packagesname:String= packageName
+                   val status :String = Export.ExportData(packagesname);
+                    Toast.makeText(applicationContext,status,Toast.LENGTH_SHORT).show()
+                }
+                true
             }
-            builder.setPositiveButton("Ok",
-                DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
+            popupMenu.setForceShowIcon(true);
+            popupMenu.show()
 
-                    val editor = sharedpreferences.edit()
-
-                    editor.remove("user_key")
-                    editor.remove("password_key")
-
-                    editor.apply()
-
-                    val i = Intent(this, LoginActivity::class.java)
-                    startActivity(i)
-                    finish()
-                })
-            val alertDialog = builder.create()
-            alertDialog.show()
         }
-        binding.lan.setOnClickListener {
-            ShowChangeLanguage()
-        }
-
 
         binding.invoiceCard.setOnClickListener {
             val intent = Intent(this, SalesActivity::class.java)
@@ -128,6 +124,34 @@ class MainActivity :  AppCompatActivity() {
             )
         }
 
+    }
+
+    private fun logOut(){
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setMessage("Press OK to Logout!")
+        builder.setTitle("Alert...!")
+        builder.setCancelable(true)
+        builder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+            Toast.makeText(this,"You press Cancel button",Toast.LENGTH_SHORT).show()
+
+        }
+        builder.setPositiveButton("Ok",
+            DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
+
+                val editor = sharedpreferences.edit()
+
+                editor.remove("user_key")
+                editor.remove("password_key")
+
+                editor.apply()
+
+                val i = Intent(this, LoginActivity::class.java)
+                startActivity(i)
+                finish()
+            })
+        val alertDialog = builder.create()
+        alertDialog.show()
     }
 
     private fun ShowChangeLanguage() {
@@ -221,4 +245,5 @@ class MainActivity :  AppCompatActivity() {
         val dialog=builder.create()
         dialog.show()
     }
+
 }
