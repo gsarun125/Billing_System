@@ -11,8 +11,9 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.ka.billingsystem.databinding.ActivityAddProductBinding;
+
 import com.ka.billingsystem.DataBase.DataBaseHandler;
+import com.ka.billingsystem.databinding.ActivityAddProductBinding;
 
 
 public class AddProductActivity extends AppCompatActivity {

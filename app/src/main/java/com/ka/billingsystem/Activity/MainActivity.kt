@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat
 import com.ka.billingsystem.R
 import com.ka.billingsystem.databinding.ActivityMainBinding
 import com.ka.billingsystem.java.Export
+import com.ka.billingsystem.java.Import
 import java.util.Locale
 
 class MainActivity :  AppCompatActivity() {
@@ -72,7 +73,12 @@ class MainActivity :  AppCompatActivity() {
                 }
                 else if (ch==R.id.Export){
                     val packagesname:String= packageName
-                   val status :String = Export.ExportData(packagesname);
+                     val status :String = Export.ExportData(packagesname);
+                    Toast.makeText(applicationContext,status,Toast.LENGTH_SHORT).show()
+                }
+                else if (ch==R.id.Import){
+                    val packagesname:String= packageName
+                    val status :String = Import.ImportData(packagesname);
                     Toast.makeText(applicationContext,status,Toast.LENGTH_SHORT).show()
                 }
                 true

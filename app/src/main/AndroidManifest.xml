@@ -55,9 +55,6 @@
             android:name=".Activity.StockActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.UpdateActivity"
-            android:exported="false" />
-        <activity
             android:name=".Activity.SalesActivity"
             android:exported="false" />
         <activity

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Billing System</string>
+    <string name="app_name">KIRTHANA AGENCIES</string>
     <string name="product_name">பொருளின் பெயர்</string>
     <string name="product_id">தயாரிப்பு எண்</string>
     <string name="net_quantity">நிகர அளவு</string>

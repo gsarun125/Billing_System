@@ -31,9 +31,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.barteksc.pdfviewer.PDFView;
+
+import com.ka.billingsystem.DataBase.DataBaseHandler;
 import com.ka.billingsystem.R;
 import com.ka.billingsystem.databinding.ActivitySalesBinding;
-import com.ka.billingsystem.DataBase.DataBaseHandler;
 import com.ka.billingsystem.java.numbertoword;
 
 import java.io.File;
@@ -225,7 +226,7 @@ public class SalesActivity extends AppCompatActivity {
                 System.out.println(tempQTY);
                 System.out.println(mAvailable_qty.get(i));
                 if (mAvailable_qty.get(i) >= tempQTY && tempQTY!=0) {
-                    mQty.add(QTY);
+                  //  mQty.add(QTY);
                 } else {
                     qty.setError("invalid QTY");
                     qty.setText("");
@@ -258,7 +259,7 @@ public class SalesActivity extends AppCompatActivity {
                System.out.println(tempQTY);
                System.out.println(mAvailable_qty.get(i));
                if (mAvailable_qty.get(i) >= tempQTY && tempQTY!=0) {
-                   mQty.add(QTY);
+                  mQty.add(QTY);
                } else {
                    qty.setError("invalid QTY");
                    return;
@@ -291,7 +292,7 @@ public class SalesActivity extends AppCompatActivity {
                 }
            }
 
-            PDF();
+            PDF2();
 
     }
 
@@ -319,7 +320,7 @@ public class SalesActivity extends AppCompatActivity {
 
 
 
-    public void PDF(){
+   public void PDF2(){
         DecimalFormat chosenFormat = new DecimalFormat("#,###");
         Customer_Name=cusEdit.getText().toString();
         PHone_NO=phoneEdit.getText().toString();
@@ -362,15 +363,7 @@ public class SalesActivity extends AppCompatActivity {
         canvas.drawText("Email: "+Email,20,275,titlePaint);
         canvas.drawText("GSTIN: "+GSTIN,20,300,titlePaint);
 
-        Paint paint = new Paint();
-        Rect r = new Rect(800, 200, 900, 100);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.WHITE);
-        canvas.drawRect(r, paint);
 
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.BLACK);
-        canvas.drawRect(r, paint);
 
 
         Cursor cursor = db.get_value("select max(Bill_No) from Transation");
@@ -410,6 +403,9 @@ public class SalesActivity extends AppCompatActivity {
 
         myPaint.setStyle(Paint.Style.STROKE);
         myPaint.setStrokeWidth(2);
+
+        //canvas.drawRect(800,100,pageWidth-20,350,myPaint);
+
         canvas.drawRect(20,420,pageWidth-20,1260,myPaint);
         canvas.drawRect(20,420,pageWidth-20,470,myPaint);
         canvas.drawRect(20,420,100,1260,myPaint);
@@ -460,17 +456,17 @@ public class SalesActivity extends AppCompatActivity {
                 update_stock(mProduct_Code.get(i), Integer.parseInt(mQty.get(i)));
 
                 canvas.drawText(String.valueOf(i + 1), start_item1, end_item, myPaint);
-                canvas.drawText(mProduct_name.get(i), start_item3, end_item, myPaint);
-             print_next_line(canvas,myPaint,start_item3,end_item,500,mProduct_name.get(i)+"ghghgfhggfgdgfjjhhjsszdsdzsawewweqerrtyyuuiuiooiuijhhjjkjkjkjkjkjkjjjkjkjkjkjkjkjkouiuioyuytfdgchvgvhhjhkopopilkjkjjkhjhhgggghsgjjjjkklllfdhjdkjgfhghjgdfjh");
+              //  canvas.drawText(mProduct_name.get(i), start_item3, end_item, myPaint);
 
-            canvas.drawText(mQty.get(i), start_item4, end_item, myPaint);
+                canvas.drawText(mQty.get(i), start_item4, end_item, myPaint);
                 canvas.drawText(chosenFormat.format(mCost.get(i)), start_item5, end_item, myPaint);
                 canvas.drawText(chosenFormat.format(mTotal.get(i)), start_item6, end_item, myPaint);
+                print_next_line(canvas,myPaint,start_item3,end_item,500,mProduct_name.get(i));
+
                 end_item = end_item + 70;
 
 
                db.insertData_to_trancation(Customer_Id,Bill_NO,mProduct_Code.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),Net_AMT,time,SPuser);
-System.out.println("gghghggh");
 
         }
         db.insertData_to_Customer(Customer_Id,Customer_Name,PHone_NO);
@@ -507,7 +503,11 @@ System.out.println("gghghggh");
         canvas.drawText("A/C Holder Name: KIRTHANA AGENCIES",20,1580,myPaint);
         canvas.drawText("CA A/C No.: 1104115000010212",20,1605,myPaint);
         canvas.drawText("IFSC CODE: KVBL0001104",20,1630,myPaint);
-
+        myPaint.setTextSize(15f);
+        canvas.drawText("Goods once sold, cannot be taken back or exchanged",20,1680,myPaint);
+        canvas.drawText("'Subject to Chennai jurisdiction only'",20,1700,myPaint);
+        canvas.drawText("Our responsibility ceases after goods left our premises.",20,1720,myPaint);
+        canvas.drawText("Buyer has to do transit insurance on their own.",20,1740,myPaint);
 
         document.finishPage(page);
 
@@ -529,6 +529,7 @@ System.out.println("gghghggh");
           dir.mkdir();
           }
             file= new File(dir,fileName);
+
        //   System.out.println("Path"+file.getAbsolutePath());
           db.filePath(Bill_NO,file.getAbsolutePath());
             // file= File.createTempFile(fileName, null, this.getCacheDir());
@@ -552,7 +553,6 @@ System.out.println("gghghggh");
         startActivity(i);
 
     }
-
 
 
     void Spinner_value(){
