@@ -17,7 +17,7 @@ import com.bill.billingsystem.DataBase.DataBaseHandler;
 
 public class AddProductActivity extends AppCompatActivity {
 
-
+//aeun
     private DataBaseHandler db = new DataBaseHandler(this);
     private ActivityAddProductBinding Binding;
 
