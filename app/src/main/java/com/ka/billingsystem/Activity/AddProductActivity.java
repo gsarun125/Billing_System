@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 import com.ka.billingsystem.DataBase.DataBaseHandler;
+import com.ka.billingsystem.R;
 import com.ka.billingsystem.databinding.ActivityAddProductBinding;
 
 
@@ -29,18 +30,6 @@ public class AddProductActivity extends AppCompatActivity {
 
 
         setContentView(Binding.getRoot());
-        //getSupportActionBar().setTitle("Add Product");
-
-      /*  Cursor cursor = db.get_value("select max(Product_Id) from Stock");
-        if (cursor != null) {
-            cursor.moveToFirst();
-            int id= cursor.getInt(0);
-            Product_id=id+1;
-            System.out.println(id);
-        }
-
-       */
-
 
 
             Binding.get.setOnClickListener(new View.OnClickListener() {
@@ -73,7 +62,7 @@ public class AddProductActivity extends AppCompatActivity {
     private boolean CheckAllFields() {
 
         if (Binding.ProductEdit.length() == 0) {
-            Binding.ProductEdit.setError("Product Name is required");
+            Binding.ProductEdit.setError(getString(R.string.printer_type_is_required));
             Binding.ProductEdit.setFocusable(true);
             Binding.ProductEdit.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -82,7 +71,7 @@ public class AddProductActivity extends AppCompatActivity {
         }
 
         if (Binding.QuantityEdit.length() ==0) {
-            Binding.QuantityEdit.setError("Quantity is required");
+            Binding.QuantityEdit.setError(getString(R.string.quantity_is_required));
             Binding.QuantityEdit.setFocusable(true);
             Binding.QuantityEdit.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -91,7 +80,7 @@ public class AddProductActivity extends AppCompatActivity {
         }
 
         if (Binding.CostEdit.length() == 0) {
-            Binding.CostEdit.setError("Re-type password is required");
+            Binding.CostEdit.setError(getString(R.string.cost_is_required));
             Binding.CostEdit.setFocusable(true);
             Binding.CostEdit.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -107,7 +96,7 @@ public class AddProductActivity extends AppCompatActivity {
         if (c2.getCount()>0) {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage("The product Name already available!");
+                    builder.setMessage(R.string.the_printer_type_already_available);
                     builder.setTitle("Alert !");
                     builder.setCancelable(false);
                     builder.setPositiveButton("Ok", (DialogInterface.OnClickListener) (dialog, which) -> {

@@ -6,27 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".Activity.StockActivity">
 
-    <HorizontalScrollView
-        android:id="@+id/h"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="58dp"
+
             android:scrollbarStyle="outsideInset"
             android:scrollbars="vertical" />
-
-    </HorizontalScrollView>
-
-    <ImageButton
-        android:id="@+id/Imagebutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/h"
-        android:layout_marginEnd="-4dp"
-        android:src="@drawable/baseline_picture_as_pdf_24" />
-
 </RelativeLayout>

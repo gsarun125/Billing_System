@@ -12,8 +12,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.pdf.PdfDocument;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
@@ -27,6 +29,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -128,6 +131,7 @@ public class SalesActivity extends AppCompatActivity {
             }
         });
         activitySalesBinding.button.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.Q)
             @Override
             public void onClick(View view) {
 
@@ -138,7 +142,7 @@ public class SalesActivity extends AppCompatActivity {
                    if (count != 0) {
                        saveData();
                    }else{
-                       Toast.makeText(SalesActivity.this,"add product information",Toast.LENGTH_SHORT).show();
+                       Toast.makeText(SalesActivity.this,"add Printer information",Toast.LENGTH_SHORT).show();
                    }
                }
             }
@@ -213,7 +217,7 @@ public class SalesActivity extends AppCompatActivity {
             String QTY= qty.getText().toString();
 
         if (qty.getText().toString().length() == 0) {
-            qty.setError("Net Quantity is required");
+            qty.setError(getString(R.string.net_quantity_is_required));
             qty.setFocusable(true);
             qty.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -235,6 +239,7 @@ public class SalesActivity extends AppCompatActivity {
             }
     return true;
     }
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     void saveData() {
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
        int count= layout.getChildCount();
@@ -247,7 +252,7 @@ public class SalesActivity extends AppCompatActivity {
 
            String QTY= qty.getText().toString();
            if (qty.getText().toString().length() == 0) {
-               qty.setError("Net Quantity is required");
+               qty.setError(getString(R.string.net_quantity_is_required));
                qty.setFocusable(true);
                qty.requestFocus();
                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -291,14 +296,14 @@ public class SalesActivity extends AppCompatActivity {
                     return;
                 }
            }
+        showAlertDialog();
 
-            PDF2();
 
     }
 
     private boolean CheckAllFields() {
         if (cusEdit.length() == 0) {
-            cusEdit.setError("Customer Name is required");
+            cusEdit.setError(getString(R.string.customer_name_is_required));
             cusEdit.setFocusable(true);
             cusEdit.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -307,7 +312,7 @@ public class SalesActivity extends AppCompatActivity {
         }
 
         if (phoneEdit.length() == 0) {
-            phoneEdit.setError("Customer Phone No is required");
+            phoneEdit.setError(getString(R.string.customer_phone_no_is_required));
             phoneEdit.setFocusable(true);
             phoneEdit.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -319,8 +324,278 @@ public class SalesActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    public void PDF2(){
+        DecimalFormat chosenFormat = new DecimalFormat("#,###");
+        Customer_Name=cusEdit.getText().toString();
+        PHone_NO=phoneEdit.getText().toString();
+        mAvailable_qty.clear();
+        add_count=0;
 
-   public void PDF2(){
+        PdfDocument document=new PdfDocument();
+        Paint myPaint=new Paint();
+        Paint titlePaint=new Paint();
+        PdfDocument.PageInfo myPageInfo1=new PdfDocument.PageInfo.Builder(1200,2010,1).create();
+        PdfDocument.Page page=document.startPage(myPageInfo1);
+        Canvas canvas=page.getCanvas();
+
+
+        titlePaint.setTextAlign(Paint.Align.RIGHT);
+        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.BOLD));
+
+        titlePaint.setTextSize(110);
+
+
+        myPaint.setColor(Color.rgb(132, 187, 60));
+
+        titlePaint.setColor(Color.WHITE);
+
+        canvas.drawRect(10,0,pageWidth-10,300,myPaint);
+
+        myPaint.setColor(Color.rgb(0, 26, 35));
+
+        canvas.drawRoundRect(new RectF(-450, 0, pageWidth/2-20, 300), 200, 200, myPaint);
+
+        canvas.drawRoundRect(new RectF(-450, 1900, pageWidth/2+200, 2010), 100, 150, myPaint);
+
+        canvas.drawText("INVOICE",pageWidth-30,200,titlePaint);
+
+
+        //title
+        titlePaint.setTextAlign(Paint.Align.LEFT);
+        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.BOLD_ITALIC));
+        titlePaint.setTextSize(50);
+        canvas.drawText("KIRTHANA AGENCIES",20,100,titlePaint);
+
+        //Address
+        String Address="#6,Alikhan Street, Alandur, Chennai-600 016,";
+        String Adddress1="Tamil Nadu,India.";
+        String Tel="+91 44 2231 4628";
+        String Email="kirthana.agencics@outlook.com";
+        String GSTIN="33AEFPJ5208Q1ZB";
+
+        titlePaint.setTextAlign(Paint.Align.LEFT);
+        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.NORMAL));
+        titlePaint.setTextSize(25);
+        canvas.drawText(Address,20,150,titlePaint);
+        canvas.drawText(Adddress1,20,175,titlePaint);
+        canvas.drawText("Tel: "+Tel,20,1975,titlePaint);
+        canvas.drawText("Email: "+Email,300,1975,titlePaint);
+        canvas.drawText("GSTIN: "+GSTIN,20,250,titlePaint);
+
+
+
+        myPaint.setColor(Color.rgb(0, 26, 35));
+        //canvas.drawRect(20,420,pageWidth-20,1260,myPaint);
+
+        canvas.drawRect(20,420,pageWidth-20,470,myPaint);
+        myPaint.setColor(Color.rgb(132, 187, 60));
+
+        canvas.drawRect(20,420,pageWidth/2+70,470,myPaint);
+
+
+        //canvas.drawRect(20,420,100,1260,myPaint);
+        //canvas.drawRect(100,420,650,1260,myPaint);
+        //canvas.drawRect(650,420,825,1260,myPaint);
+        //canvas.drawRect(1000,420,pageWidth-20,1460,myPaint);
+
+        //canvas.drawRect(20,1260,pageWidth-20,1400,myPaint);
+        //canvas.drawRect(20,1400,pageWidth-20,1460,myPaint);
+        // canvas.drawLine(650,1260,650,1460,myPaint);
+        //canvas.drawLine(600,1260,600,1460,myPaint);
+
+
+        Cursor cursor = db.get_value("select max(Bill_No) from Transation");
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int id= cursor.getInt(0);
+            Customer_Id=id+1;
+            Bill_NO = id + 1;
+        }
+
+        myPaint.setTextAlign(Paint.Align.LEFT);
+        myPaint.setTextSize(25f);
+        myPaint.setColor(Color.BLACK);
+        canvas.drawText("Invoice No : "+Bill_NO,20,400,myPaint);
+        // canvas.drawText("Customer Id: "+Customer_Id,20,590,myPaint);
+        //canvas.drawText("Customer Name: "+Customer_Name,20,650,myPaint);
+        //canvas.drawText("Phone No: "+PHone_NO,20,710,myPaint);
+
+
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        Date date = new Date();
+
+        SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
+        Date day = new Date();
+
+
+
+
+        myPaint.setTextAlign(Paint.Align.LEFT);
+        myPaint.setTextSize(25f);
+        myPaint.setColor(Color.BLACK);
+
+        canvas.drawText("Invoice Date : "+formatter1.format(day),pageWidth-350,400,myPaint);
+        //canvas.drawText("Time : "+formatter.format(date),pageWidth-350,710,myPaint);
+
+        //box
+
+        myPaint.setStyle(Paint.Style.STROKE);
+        myPaint.setStrokeWidth(2);
+
+
+
+
+
+        myPaint.setTextAlign(Paint.Align.LEFT);
+        myPaint.setStyle(Paint.Style.FILL);
+        myPaint.setColor(Color.WHITE);
+        myPaint.setTextSize(30f);
+
+        canvas.drawText("S.No.",pageWidth-1168,460,myPaint);
+        canvas.drawText("Description",pageWidth-900,460,myPaint);
+        canvas.drawText("Quantity",pageWidth-515,460,myPaint);
+        canvas.drawText("Rate",850,460,myPaint);
+        canvas.drawText("Amount",1020,460,myPaint);
+
+
+        int start_item1=50;
+        int start_item2=200;
+        int start_item3=150;
+        int start_item4=700;
+        int start_item5=850;
+        int start_item6=1020;
+
+
+        long Net_AMT = 0;
+        // max 12
+        for (Long total :mTotal){
+
+            Net_AMT = Net_AMT+total;
+
+        }
+
+        myPaint.setColor(Color.BLACK);
+        myPaint.setTextSize(25f);
+        long IGST= (long) (Net_AMT*0.18);
+        long TotalAmount=Net_AMT+IGST;
+        LinearLayout layout = activitySalesBinding.parentLinearLayout;
+        int count= layout.getChildCount();
+        long time= System.currentTimeMillis();
+        for (int i=0;i<count;i++){
+
+            update_stock(mProduct_Code.get(i), Integer.parseInt(mQty.get(i)));
+
+            canvas.drawText(String.valueOf(i + 1), start_item1, end_item, myPaint);
+            //  canvas.drawText(mProduct_name.get(i), start_item3, end_item, myPaint);
+
+            canvas.drawText(mQty.get(i), start_item4, end_item, myPaint);
+            canvas.drawText(chosenFormat.format(mCost.get(i)), start_item5, end_item, myPaint);
+            canvas.drawText(chosenFormat.format(mTotal.get(i)), start_item6, end_item, myPaint);
+            print_next_line(canvas,myPaint,start_item3,end_item,500,mProduct_name.get(i));
+
+            end_item = end_item + 70;
+
+
+            db.insertData_to_trancation(Customer_Id,Bill_NO,mProduct_Code.get(i),mProduct_name.get(i),mQty.get(i),mCost.get(i),mTotal.get(i),Net_AMT,time,SPuser);
+
+        }
+        db.insertData_to_Customer(Customer_Id,Customer_Name,PHone_NO);
+
+
+        canvas.drawText("Sub-Total",830,1300,myPaint);
+
+        canvas.drawText(chosenFormat.format(Net_AMT),1010,1300,myPaint);
+
+        canvas.drawText("18% IGST",750,1390,myPaint);
+        canvas.drawText(chosenFormat.format(IGST),1010,1390,myPaint);
+        myPaint.setColor(Color.rgb(132, 187, 60));
+        canvas.drawRoundRect(new RectF(830, 1410, 1150, 1450), 6, 6, myPaint);
+        myPaint.setColor(Color.WHITE);
+        canvas.drawText("Total Amount",830,1440,myPaint);
+        canvas.drawText(chosenFormat.format(TotalAmount),1010,1440,myPaint);
+
+        myPaint.setColor(Color.BLACK);
+
+        //canvas.drawText(numbertoword.convert((int) TotalAmount)+" Only",50,1300,myPaint);
+
+        print_next_line(canvas,myPaint,50,1300,600,numbertoword.convert((int) TotalAmount)+" Only");
+
+        canvas.drawText("DC No. : "+Bill_NO,50,1440,myPaint);
+        canvas.drawText("DC Date : "+formatter1.format(day),350,1440,myPaint);
+
+
+
+        titlePaint.setTextSize(25);
+        titlePaint.setUnderlineText(true);
+        canvas.drawText("OUR BANK DETAILS:",20,1500,titlePaint);
+        titlePaint.setUnderlineText(false);
+        canvas.drawText("FOR KIRTHANA AGENCIES",pageWidth-350,1500,titlePaint);
+
+
+        myPaint.setTextSize(20f);
+        canvas.drawText("KARUR VYSYA BANK,",20,1530,myPaint);
+        canvas.drawText("ALANDUR BRANCH,",20,1555,myPaint);
+        canvas.drawText("A/C Holder Name: KIRTHANA AGENCIES",20,1580,myPaint);
+        canvas.drawText("CA A/C No.: 1104115000010212",20,1605,myPaint);
+        canvas.drawText("IFSC CODE: KVBL0001104",20,1630,myPaint);
+        myPaint.setTextSize(20f);
+        myPaint.setColor(Color.rgb(132, 187, 60));
+        canvas.drawText("Terms & Conditions",20,1660,myPaint);
+
+        myPaint.setTextSize(15f);
+        myPaint.setColor(Color.BLACK);
+        canvas.drawText("Goods once sold, cannot be taken back or exchanged",20,1680,myPaint);
+        canvas.drawText("'Subject to Chennai jurisdiction only'",20,1700,myPaint);
+        canvas.drawText("Our responsibility ceases after goods left our premises.",20,1720,myPaint);
+        canvas.drawText("Buyer has to do transit insurance on their own.",20,1740,myPaint);
+
+        document.finishPage(page);
+
+        cusEdit.setText("");
+        phoneEdit.setText("");
+
+        mQty.clear();
+        mTotal.clear();
+        mProduct_name.clear();
+        mCost.clear();
+        end_item=500;
+
+
+        String fileName="Invoice"+Bill_NO+".pdf";
+        File file;
+        try {
+            File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            file= new File(dir,fileName);
+
+            //   System.out.println("Path"+file.getAbsolutePath());
+            db.filePath(Bill_NO,file.getAbsolutePath());
+            // file= File.createTempFile(fileName, null, this.getCacheDir());
+            FileOutputStream fos=new FileOutputStream(file);
+            document.writeTo(fos);
+            document.close();
+            fos.close();
+            Toast.makeText(SalesActivity.this, R.string.successfully_generated,Toast.LENGTH_SHORT).show();
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        removeView();
+
+        Intent i=new Intent(this,PdfviewActivity.class);
+        i.putExtra("File",file);
+        i.putExtra("Filename",fileName);
+        startActivity(i);
+
+    }
+
+   public void PDF1(){
         DecimalFormat chosenFormat = new DecimalFormat("#,###");
         Customer_Name=cusEdit.getText().toString();
         PHone_NO=phoneEdit.getText().toString();
@@ -569,8 +844,8 @@ public class SalesActivity extends AppCompatActivity {
             else {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("Press OK to add product!");
-                builder.setTitle("No products added...!");
+                builder.setMessage(R.string.press_ok_to_add_printer_type);
+                builder.setTitle(R.string.no_printer_type_added);
                 builder.setCancelable(false);
                 builder.setPositiveButton("Ok", (DialogInterface.OnClickListener) (dialog, which) -> {
                     Intent i = new Intent(SalesActivity.this, AddProductActivity.class);
@@ -582,7 +857,33 @@ public class SalesActivity extends AppCompatActivity {
     }
 
 
+    private void showAlertDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(SalesActivity.this);
+        alertDialog.setTitle("AlertDialog");
+        String[] items = {"Select","Invoice1","Invoice2"};
+        int checkedItem = 0;
+        alertDialog.setSingleChoiceItems(items, checkedItem, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        break;
+                    case 1:
+                        PDF1();
+                        break;
+                    case 2:
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            PDF2();
+                        }
+                        break;
 
+                }
+            }
+        });
+        AlertDialog alert = alertDialog.create();
+        alert.setCanceledOnTouchOutside(false);
+        alert.show();
+    }
     private void update_stock(String mProductCode, int mQty) {
         Cursor c1 = db.get_value("SELECT  quantity FROM Stock WHERE Product_Id="+mProductCode);
         if (c1.moveToFirst()) {

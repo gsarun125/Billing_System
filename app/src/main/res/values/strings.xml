@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">KIRTHANA AGENCIES</string>
-    <string name="product_name">Product Name</string>
-    <string name="product_id">Product ID</string>
+    <string name="product_name">Printer Type</string>
+    <string name="product_id">Printer ID</string>
     <string name="net_quantity">Net Quantity</string>
-    <string name="unit_cost">Unit Cost (Kg)</string>
+    <string name="unit_cost">Unit Cost</string>
     <string name="invoice">Invoice</string>
     <string name="stock">Stock</string>
-    <string name="update_product">Update Product</string>
-    <string name="add_product">Add Product</string>
+    <string name="update_product">Update Printer Type</string>
+    <string name="add_product">Add Printer Type</string>
     <string name="history">History</string>
     <string name="recent_invoice">Recent Invoice</string>
     <string name="customer_name">Customer Name</string>
@@ -23,11 +23,21 @@
     <string name="please_add_product_first">Please add  product first!</string>
     <string name="you_cannot_add_more_then_10_value">you cannot add more then 10 value</string>
     <string name="add_values">add values</string>
-    <string name="name">Name</string>
-<string name="age">Age</string>
-<string name="agree_to_terms">I agree to the terms and conditions.</string>
+
+
 <string name="submit">Submit</string>
 <string name="open_custom_dialog">Open Custom Dialog</string>
 <string name="custom_dialog">Custom Dialog</string>
+    <string name="printer_type">Printer Type</string>
+    <string name="the_printer_type_already_available">The Printer Type already available!</string>
+    <string name="cost_is_required">Cost is required</string>
+    <string name="quantity_is_required">Quantity is required</string>
+    <string name="printer_type_is_required">Printer Type is required</string>
+    <string name="press_ok_to_add_printer_type">Press OK to add Printer Type!</string>
+    <string name="net_quantity_is_required">Net Quantity is required</string>
+    <string name="customer_name_is_required">Customer Name is required</string>
+    <string name="customer_phone_no_is_required">Customer Phone No is required</string>
+    <string name="no_printer_type_added">No Printer Type added</string>
+
 
 </resources>

@@ -8,24 +8,25 @@
     android:layout_height="wrap_content">
 
     <TextView
-
+        android:id="@+id/utv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/pname"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:layout_marginStart="17dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="20dp"
+        android:text="Net Available QTY:"
         android:textSize="15sp"
-        android:textStyle="bold"
-        android:text="Net Available QTY:" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/qty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/pname"
         android:layout_alignParentStart="true"
         android:layout_marginStart="152dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="20dp"
         android:text="Qty"
         android:textSize="15sp" />
 
@@ -38,37 +39,41 @@
         android:layout_marginTop="12dp"
         android:gravity="center_horizontal"
         android:text="Product name"
-        android:textSize="30dp"
+        android:textSize="25dp"
+        android:maxLines="4"
+        android:singleLine="false"
         android:textStyle="bold" />
 
     <TextView
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/utv"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:layout_marginStart="17dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="10dp"
+        android:text="Unit Cost:"
         android:textSize="15sp"
-        android:textStyle="bold"
-        android:text="Unit Cost:" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/cost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/qty"
+        android:layout_alignParentStart="true"
         android:layout_marginStart="152dp"
-        android:layout_marginTop="99dp"
-        android:textSize="15sp"
-        android:text="cost" />
+        android:layout_marginTop="10dp"
+        android:text="cost"
+        android:textSize="15sp" />
 
     <ImageButton
         android:id="@+id/edit"
         android:layout_width="49dp"
         android:layout_height="42dp"
+        android:layout_below="@+id/pname"
         android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="15dp"
         android:background="@color/white"
         android:src="@drawable/baseline_edit_24" />
