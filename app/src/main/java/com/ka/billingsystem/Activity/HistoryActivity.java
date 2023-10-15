@@ -51,7 +51,13 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
         activityHistoryBinding.search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (activityHistoryBinding.Hbillno.getText().toString().length() !=0 ){
+                if (activityHistoryBinding.Hbillno.getText().toString().length() !=0 & activityHistoryBinding.Hcusname.getText().toString().length() !=0){
+                    Cursor c1 = db.get_value("SELECT DISTINCT * FROM ( SELECT *  FROM Transation WHERE cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"'  GROUP BY cus_id  UNION ALL SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' AND sorted.cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"' ORDER BY sorted.time DESC");
+                    displayPdf(c1);
+                } else if (activityHistoryBinding.Hcusname.getText().toString().length() !=0&&activityHistoryBinding.HPhoneno.getText().toString().length() !=0) {
+                    Cursor c1 = db.get_value("SELECT * FROM ( SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer  ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' AND customer.cus_Phone = '"+activityHistoryBinding.HPhoneno.getText().toString()+"' ORDER BY sorted.time DESC");
+                    displayPdf(c1);
+                } else if (activityHistoryBinding.Hbillno.getText().toString().length() !=0 ){
                 Cursor c1 = db.get_value("SELECT *  FROM (SELECT * FROM Transation WHERE cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"' GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
                 displayPdf(c1);
                 }
@@ -116,6 +122,9 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
         System.out.println(mPcusPhoneno);
         pdfAdapter=new PdfAdapter(this,pdfList,this,mPbillno,mPtamount,mPDate,mPusername,mPtime,mPcusname,mPcusPhoneno);
         recyclerView.setAdapter(pdfAdapter);
+        activityHistoryBinding.Hbillno.setText("");
+        activityHistoryBinding.Hcusname.setText("");
+        activityHistoryBinding.HPhoneno.setText("");
     }
 
 
