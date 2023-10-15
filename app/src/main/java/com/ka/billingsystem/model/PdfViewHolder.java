@@ -18,6 +18,8 @@ public class PdfViewHolder extends RecyclerView.ViewHolder {
     public TextView IVtime;
     public TextView IVuser;
     public TextView IVtotal;
+    public TextView IVCusName;
+    public TextView IVcuspno;
 
     public PdfViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -28,5 +30,7 @@ public class PdfViewHolder extends RecyclerView.ViewHolder {
         IVtime=itemView.findViewById(R.id.IVTime);
         IVuser=itemView.findViewById(R.id.IVUser);
         IVtotal=itemView.findViewById(R.id.IVTotal);
+        IVCusName=itemView.findViewById(R.id.IVCusName);
+        IVcuspno=itemView.findViewById(R.id.IVcuspno);
     }
 }

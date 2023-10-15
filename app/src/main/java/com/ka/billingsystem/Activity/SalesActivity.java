@@ -296,7 +296,7 @@ public class SalesActivity extends AppCompatActivity {
                     return;
                 }
            }
-        showAlertDialog();
+        PDF2();
 
 
     }
@@ -850,6 +850,7 @@ public class SalesActivity extends AppCompatActivity {
                 builder.setPositiveButton("Ok", (DialogInterface.OnClickListener) (dialog, which) -> {
                     Intent i = new Intent(SalesActivity.this, AddProductActivity.class);
                     startActivity(i);
+                    super.finish();
                 });
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
@@ -857,33 +858,6 @@ public class SalesActivity extends AppCompatActivity {
     }
 
 
-    private void showAlertDialog() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(SalesActivity.this);
-        alertDialog.setTitle("AlertDialog");
-        String[] items = {"Select","Invoice1","Invoice2"};
-        int checkedItem = 0;
-        alertDialog.setSingleChoiceItems(items, checkedItem, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0:
-                        break;
-                    case 1:
-                        PDF1();
-                        break;
-                    case 2:
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            PDF2();
-                        }
-                        break;
-
-                }
-            }
-        });
-        AlertDialog alert = alertDialog.create();
-        alert.setCanceledOnTouchOutside(false);
-        alert.show();
-    }
     private void update_stock(String mProductCode, int mQty) {
         Cursor c1 = db.get_value("SELECT  quantity FROM Stock WHERE Product_Id="+mProductCode);
         if (c1.moveToFirst()) {

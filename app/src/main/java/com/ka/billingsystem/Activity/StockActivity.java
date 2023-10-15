@@ -88,6 +88,7 @@ public class StockActivity extends AppCompatActivity {
 
                 Intent i=new Intent(StockActivity.this,AddProductActivity.class);
                 startActivity(i);
+                super.finish();
 
             });
             AlertDialog alertDialog = builder.create();

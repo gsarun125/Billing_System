@@ -2,7 +2,7 @@
     <string name="app_name">KIRTHANA AGENCIES</string>
     <string name="product_name">Printer Type</string>
     <string name="product_id">Printer ID</string>
-    <string name="net_quantity">Net Quantity</string>
+    <string name="quantity">Quantity</string>
     <string name="unit_cost">Unit Cost</string>
     <string name="invoice">Invoice</string>
     <string name="stock">Stock</string>
@@ -25,9 +25,9 @@
     <string name="add_values">add values</string>
 
 
-<string name="submit">Submit</string>
-<string name="open_custom_dialog">Open Custom Dialog</string>
-<string name="custom_dialog">Custom Dialog</string>
+    <string name="submit">Submit</string>
+    <string name="open_custom_dialog">Open Custom Dialog</string>
+    <string name="custom_dialog">Custom Dialog</string>
     <string name="printer_type">Printer Type</string>
     <string name="the_printer_type_already_available">The Printer Type already available!</string>
     <string name="cost_is_required">Cost is required</string>

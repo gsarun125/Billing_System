@@ -105,7 +105,7 @@ class MainActivity :  AppCompatActivity() {
             startActivity(intent)
         }
         binding.historyCard.setOnClickListener {
-            val intent = Intent(this, HistorysActivity::class.java)
+            val intent = Intent(this, HistoryActivity::class.java)
             startActivity(intent)
         }
 

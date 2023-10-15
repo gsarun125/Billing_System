@@ -31,8 +31,14 @@ public class AddProductActivity extends AppCompatActivity {
 
         setContentView(Binding.getRoot());
 
+        Binding.ProductEdit.setFocusable(true);
+        Binding.ProductEdit.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(Binding.ProductEdit, InputMethodManager.SHOW_IMPLICIT);
 
-            Binding.get.setOnClickListener(new View.OnClickListener() {
+
+
+        Binding.get.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
@@ -47,12 +53,12 @@ public class AddProductActivity extends AppCompatActivity {
                         db.insertData(Product_Name, Quantity1, Cost1);
 
                         Binding.ProductEdit.setText("");
-                        Binding.QuantityEdit.setText("");
+                        Binding.QuantityEdit.setText("1");
                         Binding.CostEdit.setText("");
+                        Binding.ProductEdit.setFocusable(true);
+                        Binding.ProductEdit.requestFocus();
 
-                        System.out.println(Product_Name);
-                        System.out.println(Quantity);
-                        System.out.println(Cost);
+
                     }
                 }
             });

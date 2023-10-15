@@ -26,6 +26,8 @@ private List<String> mPtamount = new ArrayList();
 private List<String> mPDate = new ArrayList();
 private List<String> mPusername = new ArrayList();
 private List<String> mPtime = new ArrayList();
+private  List<String> mPcusname=new ArrayList<>();
+private  List<String>mPcuspnoneno=new ArrayList<>();
 
     @NonNull
     @Override
@@ -43,7 +45,8 @@ private List<String> mPtime = new ArrayList();
         holder.IVtime.setText(mPtime.get(position).toString().toUpperCase());
         holder.IVuser.setText(mPusername.get(position).toString().toUpperCase());
         holder.IVtotal.setText(mPtamount.get(position).toString().toUpperCase());
-
+        holder.IVCusName.setText(mPcusname.get(position).toString().toUpperCase());
+        holder.IVcuspno.setText(mPcuspnoneno.get(position).toString().toUpperCase());
         holder.container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -53,7 +56,7 @@ private List<String> mPtime = new ArrayList();
 
     }
 
-    public PdfAdapter(Context context, List<File> pdfFiles, OnPdfFileSelectListener listener, List<String> mPbillno, List<String> mPtamount, List<String> mPDate, List<String> mPusername, List<String> mPtime ){
+    public PdfAdapter(Context context, List<File> pdfFiles, OnPdfFileSelectListener listener, List<String> mPbillno, List<String> mPtamount, List<String> mPDate, List<String> mPusername, List<String> mPtime ,List<String> mPcusname,List<String> mPcuspnoneno){
         this.context = context;
         this.pdfFiles = pdfFiles;
         this.listener = listener;
@@ -62,10 +65,13 @@ private List<String> mPtime = new ArrayList();
         this.mPDate = mPDate;
         this.mPusername = mPusername;
         this.mPtime=mPtime;
+        this.mPcusname=mPcusname;
+        this.mPcuspnoneno=mPcuspnoneno;
     }
 
     @Override
     public int getItemCount() {
         return pdfFiles.size();
     }
+
 }
