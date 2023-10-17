@@ -5,45 +5,100 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.HistoryActivity">
-<EditText
-    android:id="@+id/Hbillno"
-    android:layout_width="wrap_content"
-    android:layout_height="60dp"
-    android:padding="5dp"
-    android:inputType="number"
-    android:hint="Bill no"
-    />
+
+    <EditText
+        android:id="@+id/Hbillno"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_toEndOf="@+id/editTextDatePickerTO"
+        android:hint="Bill no"
+        android:maxLength="10"
+        android:inputType="number"
+        android:background="@drawable/edit_text_border"
+        android:padding="5dp" />
+
+    <EditText
+        android:background="@drawable/edit_text_border"
+        android:id="@+id/editTextDatePickerTO"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_toEndOf="@+id/editTextDatePickrFrom"
+        android:cursorVisible="false"
+        android:focusable="false"
+        android:hint="To Date"
+        android:inputType="none"
+        android:onClick="showDatePickerDialogTO"
+        android:singleLine="true" />
+
+    <EditText
+        android:background="@drawable/edit_text_border"
+        android:id="@+id/editTextDatePickrFrom"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:cursorVisible="false"
+        android:focusable="false"
+        android:hint="From Date"
+        android:inputType="none"
+        android:onClick="showDatePickerDialogFrom"
+        android:singleLine="true" />
+
 
     <EditText
         android:id="@+id/Hcusname"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="60dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="70dp"
+        android:layout_below="@+id/editTextDatePickrFrom"
+        android:layout_alignParentStart="true"
+        android:singleLine="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
         android:hint="Customer Name"
+        android:background="@drawable/edit_text_border"
         android:padding="5dp" />
 
     <EditText
         android:id="@+id/HPhoneno"
-        android:layout_width="wrap_content"
+        android:layout_width="105dp"
         android:layout_height="60dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="70dp"
-        android:hint="Custome Phone no"
+        android:layout_below="@+id/editTextDatePickerTO"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_toEndOf="@+id/Hcusname"
+         android:singleLine="true"
+        android:inputType="number"
+        android:hint="Phone no"
+        android:maxLength="10"
+        android:background="@drawable/edit_text_border"
         android:padding="5dp" />
 
     <ImageButton
         android:id="@+id/search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/Hbillno"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="5dp"
         android:layout_marginBottom="0dp"
-        android:backgroundTint="@color/white"
-        android:src="@drawable/baseline_search_24" />
+        android:layout_toEndOf="@+id/HPhoneno"
+        android:backgroundTint="#FFFFFF"
+        android:background="@drawable/circular_button_background"
+        android:src="@drawable/baseline_search_24"
+        android:padding="12dp"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/hisrecyle"

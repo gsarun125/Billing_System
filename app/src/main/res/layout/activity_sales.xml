@@ -30,9 +30,10 @@
             android:layout_margin="15dp"
             android:hint="@string/phone_no"
             android:inputType="number"
-            android:maxLines="2"
+            android:maxLines="1"
             android:textColor="@color/black"
             android:textSize="15sp"
+            android:maxLength="10"
             tools:ignore="TextFields" />
 
 

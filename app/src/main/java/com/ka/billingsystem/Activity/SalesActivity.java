@@ -175,16 +175,19 @@ public class SalesActivity extends AppCompatActivity {
                 spinner.setSelection(position);
                 String spinnerSelectedValue = parent.getItemAtPosition(position).toString();
 
+                qty = (EditText) inflater.findViewById(R.id.et_Qty);
+
                 System.out.println(spinnerSelectedValue);
+                if (!spinnerSelectedValue.equals("Select")) {
+                    qty.setEnabled(true);
+                } else {
+                    qty.setHint("Qty");
+                    qty.setEnabled(false);
+                }
                 if (spinnerSelectedValue!=getString(R.string.select)) {
                     Cursor c1 = db.get_value("SELECT  quantity FROM Stock WHERE Product_Name="+"'"+spinnerSelectedValue+"'");
                     if (c1.moveToFirst()) {
                         do {
-
-
-                            qty = (EditText) inflater.findViewById(R.id.et_Qty);
-
-
 
                             @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("quantity"));
 
