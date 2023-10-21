@@ -1,7 +1,7 @@
 package com.ka.billingsystem.Activity;
 
 import android.annotation.SuppressLint;
-
+import android.widget.ArrayAdapter;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelectListener {
@@ -49,6 +51,9 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
     Long FromDate=0l;
     Long ToDate=0l;
     private RecyclerView recyclerView;
+    private HashSet<String> Bill_no_Auto=new HashSet<>();
+    private HashSet<String> Phone_no_Auto=new HashSet<>();
+    private HashSet<String> Customer_Name_Auto=new HashSet<>();
     EditText editTextDatePickerFrom;
     EditText editTextDatePickerTo;
     Calendar calendar;
@@ -64,6 +69,21 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
         editTextDatePickerFrom = findViewById(R.id.editTextDatePickrFrom);
         editTextDatePickerTo = findViewById(R.id.editTextDatePickerTO);
         calendar = Calendar.getInstance();
+
+        Autocompition();
+
+        ArrayAdapter<String> Bill_no_adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(Bill_no_Auto));
+        activityHistoryBinding.Hbillno.setAdapter(Bill_no_adapter);
+        activityHistoryBinding.Hbillno.setThreshold(1);
+
+        ArrayAdapter<String> Cus_Name_adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(Customer_Name_Auto));
+        activityHistoryBinding.Hcusname.setAdapter(Cus_Name_adapter);
+        activityHistoryBinding.Hcusname.setThreshold(1);
+
+        ArrayAdapter<String> Pnone_no_adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(Phone_no_Auto));
+        activityHistoryBinding.HPhoneno.setAdapter(Pnone_no_adapter);
+        activityHistoryBinding.HPhoneno.setThreshold(1);
+
         activityHistoryBinding.search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -251,11 +271,30 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
         }
         System.out.println(mPcusname);
         System.out.println(mPcusPhoneno);
+        System.out.println(mPtamount);
         pdfAdapter=new PdfAdapter(this,pdfList,this,mPbillno,mPtamount,mPDate,mPusername,mPtime,mPcusname,mPcusPhoneno);
         recyclerView.setAdapter(pdfAdapter);
         activityHistoryBinding.Hbillno.setText("");
         activityHistoryBinding.Hcusname.setText("");
         activityHistoryBinding.HPhoneno.setText("");
+    }
+    private void Autocompition(){
+        Cursor c1 = db.get_value("select Bill_No from transation");
+        if (c1.moveToFirst()) {
+            do {
+                @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Bill_No"));
+                 Bill_no_Auto.add(data1);
+            } while (c1.moveToNext());
+        }
+        Cursor c2 = db.get_value("select cus_name,cus_Phone from customer");
+        if (c2.moveToFirst()) {
+            do {
+                @SuppressLint("Range") String data1 = c2.getString(c2.getColumnIndex("cus_name"));
+                @SuppressLint("Range") String data2 = c2.getString(c2.getColumnIndex("cus_Phone"));
+               Customer_Name_Auto.add(data1);
+               Phone_no_Auto.add(data2);
+            } while (c2.moveToNext());
+        }
     }
 
 

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".Activity.HistoryActivity">
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/Hbillno"
         android:layout_width="80dp"
         android:layout_height="50dp"
@@ -55,7 +55,7 @@
         android:singleLine="true" />
 
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/Hcusname"
         android:layout_width="150dp"
         android:layout_height="60dp"
@@ -68,7 +68,7 @@
         android:background="@drawable/edit_text_border"
         android:padding="5dp" />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/HPhoneno"
         android:layout_width="105dp"
         android:layout_height="60dp"

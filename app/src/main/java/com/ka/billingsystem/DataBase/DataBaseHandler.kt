@@ -7,7 +7,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.widget.Toast
-
+import java.util.Random
 
 val DATABASENAME = "BILLING_SYSTEM"
 val TABLENAME1 = "Stock"
@@ -57,6 +57,9 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         db?.execSQL(createTable4)
 
         this.UserData(db, "admin", "admin");
+        //if (db != null) {
+          //  this.generateRandomData(db)
+        //};
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -208,4 +211,51 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         db.update(TABLENAME2, values, "Bill_No=?", arrayOf<String>(Bill_No.toString()))
         ///db.close()
     }
+    private  fun generateRandomData(db: SQLiteDatabase) {
+        // Generate random data for Stock table
+        for (i in 1..10) {
+            val productValues = ContentValues()
+            productValues.put(COL_PRODUCT_NAME, "Product $i")
+            productValues.put(COl_QUANTITY, Random().nextInt(100))
+            productValues.put(COL_COST, Random().nextInt(100))
+            db.insert(TABLENAME1, null, productValues)
+        }
+
+        // Generate random data for Transaction table
+        for (i in 1..10) {
+            val transactionValues = ContentValues()
+            transactionValues.put(COL_CUSID, Random().nextInt(1000))
+            transactionValues.put(COL_BILL_NO, i)
+            transactionValues.put(COL_PRODUCT_ID2, Random().nextInt(100))
+            transactionValues.put(COL_PRODUCT_NAME, "Product $i")
+            transactionValues.put(COl_QUANTITY2, Random().nextInt(100))
+            transactionValues.put(COL_RATE, Random().nextInt(100))
+            transactionValues.put(COL_AMOUNT, Random().nextInt(100))
+            transactionValues.put(CoL_TOTAL_AMOUNT, Random().nextInt(1000))
+            transactionValues.put(COL_TIMESTAMP, System.currentTimeMillis())
+            transactionValues.put(COL_SALES_USER, "SalesUser $i")
+            transactionValues.put(COL_FILE_PATH, "Path $i")
+            db.insert(TABLENAME2, null, transactionValues)
+        }
+
+        // Generate random data for Customer table
+        for (i in 1..10) {
+            val customerValues = ContentValues()
+            customerValues.put(COL_CUSID, i)
+            customerValues.put(COL_CUSNAME, "Customer $i")
+            customerValues.put(COl_CUSPHONE, "123456789$i")
+            db.insert(TABLENAME3, null, customerValues)
+        }
+
+        // Generate random data for User table
+        for (i in 1..10) {
+            val userValues = ContentValues()
+            userValues.put(COL_USER, "User$i")
+            userValues.put(COL_PASS, "password$i")
+            userValues.put(COL_TIMESTAMP_CREATE, System.currentTimeMillis())
+            userValues.put(COL_TIMESTAMP_MODIFIE, System.currentTimeMillis())
+            db.insert(TABLENAME4, null, userValues)
+        }
+    }
+
 }

@@ -5,6 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.PdfviewActivity">
+
+    <Button
+        android:id="@+id/textButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+       android:backgroundTint="@color/black"
+        android:background="@android:color/holo_blue_light"
+        android:text="classic invoice" />
+
     <ImageButton
         android:id="@+id/share"
         android:layout_width="60dp"
