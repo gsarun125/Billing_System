@@ -55,7 +55,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
         val createTable4 = "CREATE TABLE " + TABLENAME4 + " ( "+ COL_ID +  " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_USER + " VARCHAR(1000) UNIQUE," + COL_PASS + " VARCHAR(1000)," + COL_TIMESTAMP_CREATE+ " LONG," + COL_TIMESTAMP_MODIFIE + " LONG)"
         db?.execSQL(createTable4)
-
+//jjhj
         this.UserData(db, "admin", "admin");
         //if (db != null) {
           //  this.generateRandomData(db)
