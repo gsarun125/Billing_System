@@ -7,6 +7,8 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.widget.Toast
+import java.lang.Math.random
+import java.util.Calendar
 import java.util.Random
 
 val DATABASENAME = "BILLING_SYSTEM"
@@ -55,11 +57,11 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
         val createTable4 = "CREATE TABLE " + TABLENAME4 + " ( "+ COL_ID +  " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_USER + " VARCHAR(1000) UNIQUE," + COL_PASS + " VARCHAR(1000)," + COL_TIMESTAMP_CREATE+ " LONG," + COL_TIMESTAMP_MODIFIE + " LONG)"
         db?.execSQL(createTable4)
-//jjhjkkkjhhj
+
         this.UserData(db, "admin", "admin");
-        //if (db != null) {
-          //  this.generateRandomData(db)
-        //};
+        if (db != null) {
+            this.generateRandomData(db)
+        };
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -213,18 +215,19 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
     }
     private  fun generateRandomData(db: SQLiteDatabase) {
         // Generate random data for Stock table
-        for (i in 1..10) {
+        for (i in 1..1000) {
             val productValues = ContentValues()
             productValues.put(COL_PRODUCT_NAME, "Product $i")
             productValues.put(COl_QUANTITY, Random().nextInt(100))
             productValues.put(COL_COST, Random().nextInt(100))
             db.insert(TABLENAME1, null, productValues)
         }
+        val generatedDates = mutableSetOf<Long>()
 
         // Generate random data for Transaction table
-        for (i in 1..10) {
+        for (i in 1..1000) {
             val transactionValues = ContentValues()
-            transactionValues.put(COL_CUSID, Random().nextInt(1000))
+            transactionValues.put(COL_CUSID,i)
             transactionValues.put(COL_BILL_NO, i)
             transactionValues.put(COL_PRODUCT_ID2, Random().nextInt(100))
             transactionValues.put(COL_PRODUCT_NAME, "Product $i")
@@ -232,14 +235,32 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
             transactionValues.put(COL_RATE, Random().nextInt(100))
             transactionValues.put(COL_AMOUNT, Random().nextInt(100))
             transactionValues.put(CoL_TOTAL_AMOUNT, Random().nextInt(1000))
-            transactionValues.put(COL_TIMESTAMP, System.currentTimeMillis())
+
+            val calendar = Calendar.getInstance()
+            val year = 2018 + Random().nextInt(6) // Generate a random year between 2018 and 2023
+            val month = Random().nextInt(12) // Generate a random month
+            val day = 1 + Random().nextInt(calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) // Generate a random day
+            calendar.set(year, month, day)
+
+            var randomTimestamp = calendar.timeInMillis
+            var attempts = 0
+            while (generatedDates.contains(randomTimestamp) && attempts < 10) {
+                calendar.add(Calendar.DAY_OF_MONTH, 1)
+                randomTimestamp = calendar.timeInMillis
+                attempts++
+            }
+            generatedDates.add(randomTimestamp)
+
+            transactionValues.put(COL_TIMESTAMP, randomTimestamp)
+
+
             transactionValues.put(COL_SALES_USER, "SalesUser $i")
-            transactionValues.put(COL_FILE_PATH, "Path $i")
+            transactionValues.put(COL_FILE_PATH, "ghgh")
             db.insert(TABLENAME2, null, transactionValues)
         }
 
         // Generate random data for Customer table
-        for (i in 1..10) {
+        for (i in 1..1000) {
             val customerValues = ContentValues()
             customerValues.put(COL_CUSID, i)
             customerValues.put(COL_CUSNAME, "Customer $i")

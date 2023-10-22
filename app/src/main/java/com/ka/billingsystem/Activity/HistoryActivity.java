@@ -121,7 +121,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
             editTextDatePickerFrom.setText(selectedDay + "-" + (selectedMonth + 1) + "-" + selectedYear);
 
             Calendar calendar1 = Calendar.getInstance();
-            calendar1.set(selectedYear, selectedMonth, selectedDay, 23, 59);
+            calendar1.set(selectedYear, selectedMonth, selectedDay, 0, 0);
 
             Calendar currentDate = Calendar.getInstance(); // Get current date
             if (calendar1.after(currentDate)) {
@@ -250,7 +250,6 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
                 @SuppressLint("Range") String data6 = c1.getString(c1.getColumnIndex("cus_Phone"));
 
                 File file=new File(path);
-                if(file.exists()){
 
                     SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
 
@@ -266,7 +265,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
                     mPcusname.add("Customer Name: "+data5);
                     mPcusPhoneno.add("Cus Phone no: "+data6);
                     pdfList.add(file);
-                }
+
             } while (c1.moveToNext());
         }
         System.out.println(mPcusname);
@@ -274,9 +273,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
         System.out.println(mPtamount);
         pdfAdapter=new PdfAdapter(this,pdfList,this,mPbillno,mPtamount,mPDate,mPusername,mPtime,mPcusname,mPcusPhoneno);
         recyclerView.setAdapter(pdfAdapter);
-        activityHistoryBinding.Hbillno.setText("");
-        activityHistoryBinding.Hcusname.setText("");
-        activityHistoryBinding.HPhoneno.setText("");
+
     }
     private void Autocompition(){
         Cursor c1 = db.get_value("select Bill_No from transation");

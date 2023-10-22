@@ -55,12 +55,12 @@ public class StockActivity extends AppCompatActivity {
     }
 
     void Refresh_Feed(){
+         recyclerView = findViewById(R.id.list);
 
-        try {
             Cursor c1 = db.get_value("SELECT  * FROM Stock");
 
             if (c1.moveToFirst()) {
-                recyclerView = findViewById(R.id.list);
+
                 do {
                     @SuppressLint("Range") String data = c1.getString(c1.getColumnIndex("Product_Name"));
                     @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Product_Id"));
@@ -78,23 +78,6 @@ public class StockActivity extends AppCompatActivity {
             recyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
             NoteAdapter noteAdapter = new NoteAdapter(StockActivity.this, mProduct_ID, mProduct_Name, mQuantity, mCost);
             recyclerView.setAdapter(noteAdapter);
-        }
-        catch (Exception e){
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.press_ok_to_add_printer_type);
-            builder.setTitle(R.string.no_printer_type_added);
-            builder.setCancelable(false);
-            builder.setPositiveButton("Ok", (DialogInterface.OnClickListener) (dialog, which) -> {
-
-                Intent i=new Intent(StockActivity.this,AddProductActivity.class);
-                startActivity(i);
-                super.finish();
-
-            });
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
-        }
-
 
     }
 
