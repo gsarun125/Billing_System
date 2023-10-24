@@ -23,8 +23,8 @@ import java.util.Date;
 import java.util.List;
 
 public class invoice1 {
-    public static File PDF1(int count, long Net_AMT, int Bill_NO, List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProduct_name, String SPIS_FIRST_TIME ,String fileName, DataBaseHandler db){
-        int end_item=500;
+    public static File PDF1(int count, long Net_AMT, int Bill_NO,String CusName,String CusPhone ,List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProduct_name, String SPIS_FIRST_TIME ,String fileName,long time, DataBaseHandler db){
+        int end_item=560;
         int pageWidth=1200;
         DecimalFormat chosenFormat = new DecimalFormat("#,###");
 
@@ -84,10 +84,10 @@ public class invoice1 {
         myPaint.setColor(Color.rgb(0, 26, 35));
         //canvas.drawRect(20,420,pageWidth-20,1260,myPaint);
 
-        canvas.drawRect(20,420,pageWidth-20,470,myPaint);
+        canvas.drawRect(20,470,pageWidth-20,520,myPaint);
         myPaint.setColor(Color.rgb(132, 187, 60));
 
-        canvas.drawRect(20,420,pageWidth/2+70,470,myPaint);
+        canvas.drawRect(20,470,pageWidth/2+70,520,myPaint);
 
 
         //canvas.drawRect(20,420,100,1260,myPaint);
@@ -104,7 +104,7 @@ public class invoice1 {
         myPaint.setTextAlign(Paint.Align.LEFT);
         myPaint.setTextSize(25f);
         myPaint.setColor(Color.BLACK);
-        canvas.drawText("Invoice No : "+Bill_NO,20,400,myPaint);
+        canvas.drawText("Invoice No : "+Bill_NO,20,450,myPaint);
         // canvas.drawText("Customer Id: "+Customer_Id,20,590,myPaint);
         //canvas.drawText("Customer Name: "+Customer_Name,20,650,myPaint);
         //canvas.drawText("Phone No: "+PHone_NO,20,710,myPaint);
@@ -112,8 +112,13 @@ public class invoice1 {
 
 
         SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
-        Date day = new Date();
-
+        Date day;
+        if (time!=0){
+            day = new Date(time);
+        }
+        else {
+            day = new Date();
+        }
 
 
 
@@ -121,7 +126,10 @@ public class invoice1 {
         myPaint.setTextSize(25f);
         myPaint.setColor(Color.BLACK);
 
-        canvas.drawText("Invoice Date : "+formatter1.format(day),pageWidth-350,400,myPaint);
+        canvas.drawText("Invoice Date : "+formatter1.format(day),pageWidth-400,450,myPaint);
+        canvas.drawText("Customer Name : "+CusName,pageWidth-400,350,myPaint);
+        canvas.drawText("Mobile No : "+CusPhone,pageWidth-400,400,myPaint);
+
         //canvas.drawText("Time : "+formatter.format(date),pageWidth-350,710,myPaint);
 
         //box
@@ -138,11 +146,11 @@ public class invoice1 {
         myPaint.setColor(Color.WHITE);
         myPaint.setTextSize(30f);
 
-        canvas.drawText("S.No.",pageWidth-1168,460,myPaint);
-        canvas.drawText("Description",pageWidth-900,460,myPaint);
-        canvas.drawText("Quantity",pageWidth-515,460,myPaint);
-        canvas.drawText("Rate",850,460,myPaint);
-        canvas.drawText("Amount",1020,460,myPaint);
+        canvas.drawText("S.No.",pageWidth-1168,505,myPaint);
+        canvas.drawText("Description",pageWidth-900,505,myPaint);
+        canvas.drawText("Quantity",pageWidth-515,505,myPaint);
+        canvas.drawText("Rate",850,505,myPaint);
+        canvas.drawText("Amount",1020,505,myPaint);
 
 
         int start_item1=50;

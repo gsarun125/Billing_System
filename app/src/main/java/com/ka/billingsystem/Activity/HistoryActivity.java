@@ -1,6 +1,7 @@
 package com.ka.billingsystem.Activity;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.widget.ArrayAdapter;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +27,7 @@ import com.ka.billingsystem.R;
 import com.ka.billingsystem.databinding.ActivityAddProductBinding;
 import com.ka.billingsystem.databinding.ActivityHistoryBinding;
 import com.ka.billingsystem.databinding.ActivitySalesBinding;
+import com.ka.billingsystem.java.invoice1;
 import com.ka.billingsystem.model.OnPdfFileSelectListener;
 import com.ka.billingsystem.model.PdfAdapter;
 
@@ -39,7 +42,7 @@ import java.util.List;
 public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelectListener {
     private ActivityHistoryBinding activityHistoryBinding;
     private List<String> mPbillno = new ArrayList();
-
+    private List<String> tempbillno = new ArrayList();
     private List<String> mPtamount = new ArrayList();
     private List<String> mPDate = new ArrayList();
     private List<String> mPtime = new ArrayList();
@@ -57,6 +60,10 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
     EditText editTextDatePickerFrom;
     EditText editTextDatePickerTo;
     Calendar calendar;
+    SharedPreferences sharedpreferences;
+    String SHARED_PREFS = "shared_prefs";
+    String USER_KEY = "user_key";
+    String SHARED_PREFS_KEY = "signature";
 
     private DataBaseHandler db = new DataBaseHandler(this);
     @Override
@@ -64,6 +71,8 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
         super.onCreate(savedInstanceState);
         activityHistoryBinding=ActivityHistoryBinding.inflate(getLayoutInflater());
         setContentView(activityHistoryBinding.getRoot());
+        sharedpreferences= getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+
         Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
         displayPdf(c1);
         editTextDatePickerFrom = findViewById(R.id.editTextDatePickrFrom);
@@ -256,6 +265,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
 
                     SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
                     Date res = new Date(data3);
+                      tempbillno.add(data1);
 
                     mPbillno.add("Bill No: "+data1);
                     mPtamount.add("Total Amount: "+data2+" Rs.");
@@ -271,7 +281,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
         System.out.println(mPcusname);
         System.out.println(mPcusPhoneno);
         System.out.println(mPtamount);
-        pdfAdapter=new PdfAdapter(this,pdfList,this,mPbillno,mPtamount,mPDate,mPusername,mPtime,mPcusname,mPcusPhoneno);
+        pdfAdapter=new PdfAdapter(this,pdfList,this,mPbillno,tempbillno,mPtamount,mPDate,mPusername,mPtime,mPcusname,mPcusPhoneno);
         recyclerView.setAdapter(pdfAdapter);
 
     }
@@ -295,10 +305,82 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
     }
 
 
+
+
+
+
     @Override
-    public void onpdfSelected(File file) {
-        Intent i=new Intent(HistoryActivity.this,DocmentActivity.class);
-        i.putExtra("path",file.getAbsolutePath());
-        startActivity(i);
+    public void onpdfSelected(File file, String mPbillno, String filename) {
+
+        if (file.exists()){
+
+            Intent i=new Intent(this,DocmentActivity.class);
+            i.putExtra("path",file.getAbsolutePath());
+            startActivity(i);
+        }else {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("File is removed form Internal Storage..Do you want to generate again? ");
+            builder.setTitle("Alert !");
+            builder.setCancelable(true);
+            builder.setNegativeButton("No",(DialogInterface.OnClickListener)(dialog, which) ->{
+                dialog.dismiss();
+            });
+            builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+                String cusname=null;
+                String phoneno=null;
+                Long time=0l;
+                List<String> mQty = new ArrayList();
+                List<String> mProduct_name = new ArrayList();
+                List<Long> mTotal = new ArrayList();
+                List<Long> mCost= new ArrayList();
+                int  count=0;
+                long Net_AMT = 0;
+                System.out.println("not exist");
+                Cursor c1=db.get_value("SELECT * FROM Transation INNER JOIN customer ON  Transation.cus_id= customer.cus_id WHERE Bill_No ='"+mPbillno+"'");
+
+                if (c1.moveToFirst()) {
+                    do {
+                        @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("quantity"));
+                        @SuppressLint("Range") Long data2 = c1.getLong(c1.getColumnIndex("rate"));
+
+                        @SuppressLint("Range") Long data3 = c1.getLong(c1.getColumnIndex("amount"));
+                        @SuppressLint("Range") String data4 = c1.getString(c1.getColumnIndex("Product_Name"));
+                        @SuppressLint("Range") String data5 = c1.getString(c1.getColumnIndex("cus_name"));
+                        @SuppressLint("Range") String data6 = c1.getString(c1.getColumnIndex("cus_Phone"));
+                        @SuppressLint("Range") Long data7 = c1.getLong(c1.getColumnIndex("time"));
+
+                        mQty.add(data1);
+                        mCost.add(data2);
+                        mTotal.add(data3);
+                        mProduct_name.add(data4);
+                        if(cusname == null || phoneno == null ||time==0l){
+                            cusname=data5;
+                            phoneno=data6;
+                            time=data7;
+                        }
+                        count++;
+                    } while (c1.moveToNext());
+                }
+                for (Long total : mTotal) {
+
+                    Net_AMT = Net_AMT + total;
+
+                }
+                String fileName = "Invoice" + mPbillno + ".pdf";
+                String  SPIS_FIRST_TIME=sharedpreferences.getString(SHARED_PREFS_KEY,null);
+                File file1 = invoice1.PDF1(count,Net_AMT, Integer.parseInt(mPbillno),cusname,phoneno,mQty,mCost,mTotal,mProduct_name,SPIS_FIRST_TIME,fileName,time,db);
+                dialog.dismiss();
+                Intent i=new Intent(this,DocmentActivity.class);
+
+                i.putExtra("path",file1.getAbsolutePath());
+                startActivity(i);
+
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+
+        }
+
     }
 }

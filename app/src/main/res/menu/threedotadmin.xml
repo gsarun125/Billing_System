@@ -5,6 +5,11 @@
         android:title="Language"
         android:icon="@drawable/baseline_language_24"
         />
+
+    <item android:id="@+id/EditSignature"
+        android:title="Edit Signature"
+        android:icon="@drawable/baseline_edit_sig"
+        />
     <item android:id="@+id/Export"
         android:title="Export Data"
         android:icon="@drawable/baseline_ios_share_24"

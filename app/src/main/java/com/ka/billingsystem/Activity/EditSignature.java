@@ -3,7 +3,6 @@ package com.ka.billingsystem.Activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,17 +10,17 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 
 import com.ka.billingsystem.R;
+import com.ka.billingsystem.databinding.ActivityEditSignatureBinding;
 import com.ka.billingsystem.databinding.ActivitySignatureBinding;
 
 import java.io.ByteArrayOutputStream;
 
-public class Signature extends AppCompatActivity {
-    ActivitySignatureBinding binding;
+public class EditSignature extends AppCompatActivity {
+    ActivityEditSignatureBinding binding;
     private SharedPreferences sharedPreferences;
     String SHARED_PREFS = "shared_prefs";
     String SPuser;
@@ -35,7 +34,7 @@ public class Signature extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding=ActivitySignatureBinding.inflate(getLayoutInflater());
+        binding=ActivityEditSignatureBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         sharedPreferences= getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         SPuser = sharedPreferences.getString(USER_KEY, null);
@@ -47,7 +46,7 @@ public class Signature extends AppCompatActivity {
         } );
 
         binding.gen.setOnClickListener(v -> {
-             sign=binding.signatureView.getSignatureBitmap();
+            sign=binding.signatureView.getSignatureBitmap();
 
             if (sign!=null){
 
@@ -61,7 +60,7 @@ public class Signature extends AppCompatActivity {
         String encodedString = encodeToBase64(bitmap, Bitmap.CompressFormat.PNG, 100);
         editor.putString(SHARED_PREFS_KEY, encodedString);
         editor.apply();
-        Intent intent=new Intent(this,PdfviewActivity.class);
+        Intent intent=new Intent(this,MainActivity.class);
         startActivity(intent);
         super.finish();
 

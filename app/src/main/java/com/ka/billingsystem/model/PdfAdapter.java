@@ -25,9 +25,10 @@ public class PdfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<String> mPtime;
     private List<String> mPcusname;
     private List<String> mPcuspnoneno;
+    private List<String> tempPbillno;
 
     public PdfAdapter(Context context, List<File> pdfFiles, OnPdfFileSelectListener listener,
-                      List<String> mPbillno, List<String> mPtamount, List<String> mPDate,
+                      List<String> mPbillno,List<String> tempPbillno, List<String> mPtamount, List<String> mPDate,
                       List<String> mPusername, List<String> mPtime, List<String> mPcusname,
                       List<String> mPcuspnoneno) {
         this.context = context;
@@ -39,6 +40,7 @@ public class PdfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.mPusername = mPusername;
         this.mPtime = mPtime;
         this.mPcusname = mPcusname;
+        this.tempPbillno=tempPbillno;
         this.mPcuspnoneno = mPcuspnoneno;
     }
 
@@ -65,7 +67,8 @@ public class PdfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             pdfViewHolder.IVCusName.setText(mPcusname.get(position).toString().toUpperCase());
             pdfViewHolder.IVcuspno.setText(mPcuspnoneno.get(position).toString().toUpperCase());
             holder.itemView.setOnClickListener(view -> {
-                listener.onpdfSelected(pdfFiles.get(position));
+
+                listener.onpdfSelected(pdfFiles.get(position),tempPbillno.get(position).toString(),pdfFiles.get(position).getName());
             });
         } else {
 

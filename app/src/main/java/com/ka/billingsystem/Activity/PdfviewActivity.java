@@ -1,9 +1,21 @@
 package com.ka.billingsystem.Activity;
 
+import static com.ka.billingsystem.Activity.SalesActivity.Bill_NO;
+import static com.ka.billingsystem.Activity.SalesActivity.Customer_Name;
+import static com.ka.billingsystem.Activity.SalesActivity.Net_AMT;
+import static com.ka.billingsystem.Activity.SalesActivity.PHone_NO;
+import static com.ka.billingsystem.Activity.SalesActivity.count;
+import static com.ka.billingsystem.Activity.SalesActivity.mCost;
+import static com.ka.billingsystem.Activity.SalesActivity.mProduct_name;
+import static com.ka.billingsystem.Activity.SalesActivity.mQty;
+import static com.ka.billingsystem.Activity.SalesActivity.mTotal;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -32,7 +44,12 @@ public class PdfviewActivity extends AppCompatActivity {
     ImageButton save;
     ImageButton share;
     Button textButton;
+    String SHARED_PREFS_KEY = "signature";
+    String SHARED_PREFS = "shared_prefs";
+    SharedPreferences sharedpreferences;
+    String SPIS_FIRST_TIME;
 
+    String fileName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,31 +58,19 @@ public class PdfviewActivity extends AppCompatActivity {
         share=(ImageButton)findViewById(R.id.share);
         save=(ImageButton)findViewById(R.id.save);
         textButton = findViewById(R.id.textButton);
-        File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
+        sharedpreferences= getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SPIS_FIRST_TIME=sharedpreferences.getString(SHARED_PREFS_KEY,null);
 
+        fileName = "Invoice" + Bill_NO + ".pdf";
+
+
+        File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
         StrictMode.VmPolicy.Builder builder= new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
         builder.detectFileUriExposure();
 
-        Intent intent = getIntent();
-            int count = intent.getIntExtra("count", 0);
-            long Net_AMT = intent.getLongExtra("Net_AMT", 0);
-            int Bill_NO = intent.getIntExtra("Bill_NO", 0);
-            ArrayList<String> mQty = intent.getStringArrayListExtra("mQty");
-            ArrayList<Long> mCost = (ArrayList<Long>) intent.getSerializableExtra("mCost");
-            ArrayList<Long> mTotal = (ArrayList<Long>) intent.getSerializableExtra("mTotal");
-            ArrayList<String> mProduct_name = intent.getStringArrayListExtra("mProduct_name");
-            String SPIS_FIRST_TIME = intent.getStringExtra("SPIS_FIRST_TIME");
-            String filename=intent.getExtras().getString("Filename");
-
-           // file =invoice1.PDF2(count,Net_AMT,Bill_NO,mQty,mCost,mTotal,mProduct_name,SPIS_FIRST_TIME,filename,db);
-            //pdfView.fromFile(file).load();
-        File file =invoice1.PDF1(count,Net_AMT,Bill_NO,mQty,mCost,mTotal,mProduct_name,SPIS_FIRST_TIME,filename,db);
+        File file =invoice1.PDF1(count,Net_AMT,Bill_NO,Customer_Name,PHone_NO,mQty,mCost,mTotal,mProduct_name,SPIS_FIRST_TIME,fileName,0,db);
         pdfView.fromFile(file).load();
-
-
-
-
 
         textButton.setOnClickListener(new View.OnClickListener() {
             boolean isMethod1 = true;
@@ -74,14 +79,14 @@ public class PdfviewActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (isMethod1) {
                     pdfView.recycle();
-                    File file1 = invoice2.PDF2(count,Net_AMT,Bill_NO,mQty,mCost,mTotal,mProduct_name,SPIS_FIRST_TIME,filename,db);
+                    File file1 = invoice2.PDF2(count,Net_AMT,Bill_NO,Customer_Name,PHone_NO,mQty,mCost,mTotal,mProduct_name,SPIS_FIRST_TIME,fileName,db);
                     pdfView.fromFile(file1).load();
                     textButton.setText("New invoice");
 
                 } else {
 
                     pdfView.recycle();
-                    File file =invoice1.PDF1(count,Net_AMT,Bill_NO,mQty,mCost,mTotal,mProduct_name,SPIS_FIRST_TIME,filename,db);
+                    File file =invoice1.PDF1(count,Net_AMT,Bill_NO,Customer_Name,PHone_NO,mQty,mCost,mTotal,mProduct_name,SPIS_FIRST_TIME,fileName,0,db);
                     pdfView.fromFile(file).load();
 
                     textButton.setText("Classic invoice");
@@ -94,8 +99,8 @@ public class PdfviewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                File from = new File(dir, filename);
-                File to = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(),filename);
+                File from = new File(dir, fileName);
+                File to = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(),fileName);
                 from.renameTo(to);
                 Toast.makeText(PdfviewActivity.this,"file saved",Toast.LENGTH_SHORT).show();
 
@@ -106,9 +111,9 @@ public class PdfviewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 File outputFile;
-                outputFile= new File(dir, filename);
+                outputFile= new File(dir, fileName);
                 while (!outputFile.exists()){
-                     outputFile= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),filename);
+                     outputFile= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),fileName);
                  }
                 if(outputFile.exists()){
                     Uri uri = FileProvider.getUriForFile(PdfviewActivity.this, PdfviewActivity.this.getPackageName() + ".provider", outputFile);
@@ -126,5 +131,13 @@ public class PdfviewActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    @Override
+    public void onBackPressed() {
+        mQty.clear();
+        mTotal.clear();
+        mProduct_name.clear();
+        mCost.clear();
+        finish();
     }
 }

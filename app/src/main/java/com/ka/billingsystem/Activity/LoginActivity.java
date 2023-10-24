@@ -66,11 +66,11 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
 
 
-                    String qurry = "Select * from user where user_name=" + '"' + username + '"' + "and password=" + '"' + pass + '"';
+              String qurry = "Select * from user where user_name=" + '"' + username + '"' + "and password=" + '"' + pass + '"';
                     System.out.println(qurry);
                     boolean checkuserpass;
                     Cursor c1 = db.get_value(qurry);
-                    if (c1.getCount() > 0)
+                    if       (c1.getCount() > 0)
                         checkuserpass = true;
                     else
                         checkuserpass = false;
@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             editor.apply();
                             Toast.makeText(LoginActivity.this, "Login successfull", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), Signature.class);
+                            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                             startActivity(intent);
                             finish();
                         } else {
@@ -95,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             editor.apply();
                             Toast.makeText(LoginActivity.this, "Login successfull", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), Signature.class);
+                            Intent intent = new Intent(getApplicationContext(), MainActivity2.class);
                             startActivity(intent);
                             finish();
                         }
@@ -114,15 +114,9 @@ public class LoginActivity extends AppCompatActivity {
 
         if (SPuser != null && SPpass != null) {
             if (SPuser.equals("admin")) {
-                if (SPIS_FIRST_TIME != null) {
                     Intent i = new Intent(this, MainActivity.class);
                     startActivity(i);
                     finish();
-                } else {
-                    Intent i = new Intent(this, Signature.class);
-                    startActivity(i);
-                    finish();
-                }
             } else {
                     Intent i = new Intent(this, MainActivity2.class);
                     startActivity(i);

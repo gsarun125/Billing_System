@@ -219,4 +219,7 @@ class MainActivity2 : AppCompatActivity() {
         val dialog=builder.create()
         dialog.show()
     }
+    override fun onBackPressed() {
+        logOut()
+    }
 }

@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 public  class invoice2 {
-    public static File PDF2(int count, long Net_AMT, int Bill_NO, List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProduct_name, String SPIS_FIRST_TIME , String fileName, DataBaseHandler db){
+    public static File PDF2(int count, long Net_AMT, int Bill_NO,String CusName,String CusPhone ,List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProduct_name, String SPIS_FIRST_TIME ,String fileName, DataBaseHandler db){
         DecimalFormat chosenFormat = new DecimalFormat("#,###");
         int end_item=500;
         int pageWidth=1200;
@@ -89,7 +89,11 @@ public  class invoice2 {
         myPaint.setColor(Color.BLACK);
 
         canvas.drawText("Invoice Date : "+formatter1.format(day),pageWidth-350,400,myPaint);
-        //canvas.drawText("Time : "+formatter.format(date),pageWidth-350,710,myPaint);
+        canvas.drawText("Customer Name : "+CusName,pageWidth-350,300,myPaint);
+        canvas.drawText("Mobile No : "+CusPhone,pageWidth-350,350,myPaint);
+
+        //canvas.
+        // drawText("Time : "+formatter.format(date),pageWidth-350,710,myPaint);
 
         //box
 

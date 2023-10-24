@@ -68,6 +68,10 @@ class MainActivity :  AppCompatActivity() {
                 if (ch==R.id.lan){
                     ShowChangeLanguage()
                 }
+                else if(ch==R.id.EditSignature){
+                    val intent =Intent(this, EditSignature::class.java)
+                    startActivity(intent)
+                }
                 else if (ch==R.id.Logout){
                     logOut()
                 }
@@ -92,18 +96,7 @@ class MainActivity :  AppCompatActivity() {
             val intent = Intent(this, SalesActivity::class.java)
             startActivity(intent)
         }
-        binding.StockCard.setOnClickListener {
-            val intent = Intent(this, StockActivity::class.java)
-            startActivity(intent)
-        }
-        binding.addCard.setOnClickListener {
-            val intent = Intent(this, AddProductActivity::class.java)
-            startActivity(intent)
-        }
-        binding.UpdateCard.setOnClickListener {
-            val intent = Intent(this, UpdateActivity2::class.java)
-            startActivity(intent)
-        }
+
         binding.historyCard.setOnClickListener {
             val intent = Intent(this, HistoryActivity::class.java)
             startActivity(intent)
@@ -250,6 +243,9 @@ class MainActivity :  AppCompatActivity() {
         }
         val dialog=builder.create()
         dialog.show()
+    }
+    override fun onBackPressed() {
+        logOut()
     }
 
 }

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -43,7 +44,7 @@ public class SignUpActivity extends AppCompatActivity {
                     db.insertData_to_user(Uname,password,time,time);
                     Intent i=new Intent(SignUpActivity.this,LoginActivity.class);
                     startActivity(i);
-
+                    finish();
                 }
             }
         });
@@ -53,6 +54,26 @@ public class SignUpActivity extends AppCompatActivity {
     private boolean CheckAllFields() {
         if (username.length() == 0) {
             username.setError("User Name is required");
+            username.setFocusable(true);
+            username.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(username, InputMethodManager.SHOW_IMPLICIT);
+            return false;
+        }
+        String usercheck=username.getText().toString();
+        String qurry = "Select * from user where user_name='"+ usercheck + "'";
+        System.out.println(qurry);
+        boolean checkuserpass;
+        Cursor c1 = db.get_value(qurry);
+        if  (c1.getCount() > 0)
+            checkuserpass = true;
+        else
+            checkuserpass = false;
+        if (checkuserpass){
+            username.setText("");
+            newpassword.setText("");
+            retypePassword.setText("");
+            username.setError("User Name is already exist");
             username.setFocusable(true);
             username.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -69,6 +90,8 @@ public class SignUpActivity extends AppCompatActivity {
             return false;
         }
         if (newpassword.length() < 8) {
+            newpassword.setText("");
+            retypePassword.setText("");
             newpassword.setError("New password must 8 letters");
             newpassword.setFocusable(true);
             newpassword.requestFocus();
@@ -78,6 +101,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         if (retypePassword.length() == 0) {
+
             retypePassword.setError("Re-type password is required");
             retypePassword.setFocusable(true);
             retypePassword.requestFocus();

@@ -47,7 +47,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         val createTable = "CREATE TABLE " + TABLENAME1 + " (" + COL_PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY + " INTEGER," + COL_COST + " INTEGER)"
         db?.execSQL(createTable)
 
-       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_ID2 + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
+       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
 
         db?.execSQL(createTable2)
 
@@ -60,7 +60,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
         this.UserData(db, "admin", "admin");
         if (db != null) {
-            this.generateRandomData(db)
+          //  this.generateRandomData(db)
         };
     }
 
@@ -128,14 +128,12 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
 
 
-    fun insertData_to_trancation(Cus_Id:Int,Bill_id:Int,product_id:String,Product_Name: String,quantity:String,rate:Long,amount:Float,tamount:Float,time:Long,UserName:String) {
+    fun insertData_to_trancation(Cus_Id:Int,Bill_id:Int,Product_Name: String,quantity:String,rate:Long,amount:Float,tamount:Float,time:Long,UserName:String) {
         val database = this.writableDatabase
         val contentValues = ContentValues()
 
         contentValues.put(COL_CUSID, Cus_Id)
         contentValues.put(COL_BILL_NO, Bill_id)
-        contentValues.put(COL_PRODUCT_ID2, product_id)
-
         contentValues.put(COL_PRODUCT_NAME,Product_Name)
         contentValues.put(COl_QUANTITY2, quantity)
         contentValues.put(COL_RATE,rate)

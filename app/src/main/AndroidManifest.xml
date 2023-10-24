@@ -19,6 +19,9 @@
         android:theme="@style/Theme.BillingSystem"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.EditSignature"
+            android:exported="false" />
+        <activity
             android:name=".Activity.Signature"
             android:exported="false" />
         <activity
@@ -52,8 +55,9 @@
             android:name=".Activity.HisPdfviewActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.HistorysActivity"
-            android:exported="false" />
+            android:name=".Activity.HistoryActivity"
+            android:exported="false"
+            tools:ignore="DuplicateActivity" />
         <activity
             android:name=".Activity.PdfviewActivity"
             android:exported="false" />
