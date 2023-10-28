@@ -169,6 +169,49 @@
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/delete_card"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="10dp"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="10dp">
+
+                <ImageView
+                    android:id="@+id/imgdeleted"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:src="@drawable/baseline_delete_24" />
+
+                <TextView
+                    android:layout_width="158dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/imgdeleted"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="0dp"
+                    android:text="Deleted Invoice"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
     </GridLayout>
 
 </LinearLayout>

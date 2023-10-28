@@ -62,7 +62,9 @@ class MainActivity2 : AppCompatActivity() {
                 }
                 true
             }
-            popupMenu.setForceShowIcon(true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                popupMenu.setForceShowIcon(true)
+            };
             popupMenu.show()
 
         }
@@ -180,8 +182,7 @@ class MainActivity2 : AppCompatActivity() {
         if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.M){
             when{
                 ContextCompat.checkSelfPermission(applicationContext,permission)== PackageManager.PERMISSION_GRANTED->{
-                    Toast.makeText(applicationContext,"$name permission granted", Toast.LENGTH_SHORT).show()
-                }
+                  }
                 shouldShowRequestPermissionRationale(permission)->showDialog(permission,name,requstCode)
                 else-> ActivityCompat.requestPermissions(this, arrayOf(permission),requstCode)
             }
@@ -193,10 +194,6 @@ class MainActivity2 : AppCompatActivity() {
         fun innerCheck(name: String) {
             if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(applicationContext, "$name Permission refused", Toast.LENGTH_SHORT)
-                    .show()
-
-            } else {
-                Toast.makeText(applicationContext, "$name Permission granted", Toast.LENGTH_SHORT)
                     .show()
 
             }

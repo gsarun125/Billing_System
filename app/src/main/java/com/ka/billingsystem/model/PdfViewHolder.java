@@ -1,6 +1,7 @@
 package com.ka.billingsystem.model;
 
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,9 +21,11 @@ public class PdfViewHolder extends RecyclerView.ViewHolder {
     public TextView IVtotal;
     public TextView IVCusName;
     public TextView IVcuspno;
+    ImageView overflowIcon;
 
     public PdfViewHolder(@NonNull View itemView) {
         super(itemView);
+
         tvname=itemView.findViewById(R.id.textPdfname);
         container=itemView.findViewById(R.id.container1);
         IVbillno=itemView.findViewById(R.id.IVBillNo);
@@ -32,5 +35,6 @@ public class PdfViewHolder extends RecyclerView.ViewHolder {
         IVtotal=itemView.findViewById(R.id.IVTotal);
         IVCusName=itemView.findViewById(R.id.IVCusName);
         IVcuspno=itemView.findViewById(R.id.IVcuspno);
+        overflowIcon=itemView.findViewById(R.id.overflowIcon);
     }
 }

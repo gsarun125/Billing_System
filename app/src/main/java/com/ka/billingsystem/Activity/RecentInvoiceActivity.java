@@ -12,18 +12,28 @@ import static com.ka.billingsystem.Activity.SalesActivity.mTotal;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.widget.Toast;
 
 import com.ka.billingsystem.DataBase.DataBaseHandler;
 import com.ka.billingsystem.R;
@@ -32,6 +42,11 @@ import com.ka.billingsystem.model.OnPdfFileSelectListener;
 import com.ka.billingsystem.model.PdfAdapter;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,7 +68,7 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
     private List<String> mPDate = new ArrayList();
     private List<String> mPtime = new ArrayList();
     private List<String> mPusername = new ArrayList();
-
+    private ProgressDialog progressDialog;
     SharedPreferences sharedpreferences;
 
     private PdfAdapter pdfAdapter;
@@ -84,6 +99,7 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
         mPcusname.clear();
         mPcusPhoneno.clear();
         pdfList.clear();
+        tempbillno.clear();
 
         Cursor c1;
         if (SPuser.equals("admin")) {
@@ -212,4 +228,140 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
 
     }
 
+    @Override
+    public void Share(File file) {
+        if(file.exists()){
+            Uri uri = FileProvider.getUriForFile(RecentInvoiceActivity.this, RecentInvoiceActivity.this.getPackageName() + ".provider", file);
+
+            Intent share = new Intent();
+            share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            share.setAction(Intent.ACTION_SEND);
+            share.setAction(Intent.ACTION_SEND);
+            share.setType("application/pdf");
+            share.putExtra(Intent.EXTRA_STREAM, uri);
+            startActivity(Intent.createChooser(share, "Share"));
+        }
+        else {
+            Toast.makeText(RecentInvoiceActivity.this,"file not found",Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
+    public void Delete(String mPbillno) {
+        System.out.println(mPbillno);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do you want to Delete..? ");
+        builder.setTitle("Alert !");
+        builder.setCancelable(true);
+        builder.setNegativeButton("No",(DialogInterface.OnClickListener)(dialog, which) ->{
+            dialog.dismiss();
+        });
+        builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+            db.moveDataFromTable2ToTable5(mPbillno);
+            displayPdf();
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+    }
+
+    @Override
+    public void Download(File from) {
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Downloding file...");
+        progressDialog.setMax(100);
+        progressDialog.show();
+        final Handler handler = new Handler();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String fileName= from.getName();
+                    File to = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), fileName);
+
+                    long fileSize = from.length();
+                    long totalBytesCopied = 0;
+
+                    try (InputStream in = new FileInputStream(from); OutputStream out = new FileOutputStream(to)) {
+                        byte[] buf = new byte[1024];
+                        int len;
+                        while ((len = in.read(buf)) > 0) {
+                            out.write(buf, 0, len);
+                            totalBytesCopied += len;
+                            int progress = (int) ((totalBytesCopied * 100) / fileSize);
+                            progressDialog.setProgress(progress);
+                            Thread.sleep(5);
+                        }
+                    }
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressDialog.dismiss();
+                            showNotification(to);
+                            Toast.makeText(RecentInvoiceActivity.this, "File saved", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    progressDialog.dismiss();
+                    Toast.makeText(RecentInvoiceActivity.this, "Failed to save file", Toast.LENGTH_SHORT).show();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+    private void showNotification(File savedFile) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = FileProvider.getUriForFile(RecentInvoiceActivity.this, getApplicationContext().getPackageName() + ".provider", savedFile);
+        intent.setDataAndType(uri, "application/pdf");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            String channelId = "channel_id";
+            NotificationChannel notificationChannel = new NotificationChannel(channelId, "Channel Name", NotificationManager.IMPORTANCE_DEFAULT);
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(notificationChannel);
+
+                Notification notification = new NotificationCompat.Builder(this, channelId)
+                        .setContentTitle("File Downloaded")
+                        .setContentText("Click to open the downloaded file")
+                        .setSmallIcon(R.drawable.logo)
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true)
+                        .build();
+
+                notificationManager.notify(0, notification);
+            }
+        } else {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.drawable.logo)
+                    .setContentTitle("File Downloaded")
+                    .setContentText("Click to open the downloaded file")
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true);
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                notificationManager.notify(0, builder.build());
+            }
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
 }

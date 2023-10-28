@@ -2,6 +2,7 @@ package com.ka.billingsystem.Activity;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.widget.ArrayAdapter;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -64,7 +66,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
     String SHARED_PREFS = "shared_prefs";
     String USER_KEY = "user_key";
     String SHARED_PREFS_KEY = "signature";
-
+    Cursor c1;
     private DataBaseHandler db = new DataBaseHandler(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +75,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
         setContentView(activityHistoryBinding.getRoot());
         sharedpreferences= getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
 
-        Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
+        c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
         displayPdf(c1);
         editTextDatePickerFrom = findViewById(R.id.editTextDatePickrFrom);
         editTextDatePickerTo = findViewById(R.id.editTextDatePickerTO);
@@ -381,6 +383,48 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
             alertDialog.show();
 
         }
+
+    }
+
+    @Override
+    public void Share(File file) {
+        if(file.exists()){
+            Uri uri = FileProvider.getUriForFile(HistoryActivity.this, HistoryActivity.this.getPackageName() + ".provider", file);
+
+            Intent share = new Intent();
+            share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            share.setAction(Intent.ACTION_SEND);
+            share.setAction(Intent.ACTION_SEND);
+            share.setType("application/pdf");
+            share.putExtra(Intent.EXTRA_STREAM, uri);
+            startActivity(Intent.createChooser(share, "Share"));
+        }
+        else {
+            Toast.makeText(HistoryActivity.this,"file not found",Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
+    public void Delete(String mPbillno) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do you want to Delete..? ");
+        builder.setTitle("Alert !");
+        builder.setCancelable(true);
+        builder.setNegativeButton("No",(DialogInterface.OnClickListener)(dialog, which) ->{
+            dialog.dismiss();
+        });
+        builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+            db.moveDataFromTable2ToTable5(mPbillno);
+            Cursor  c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
+            displayPdf(c1);
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    @Override
+    public void Download(File file) {
 
     }
 }

@@ -1,13 +1,13 @@
 package com.ka.billingsystem.DataBase
 
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.widget.Toast
-import java.lang.Math.random
 import java.util.Calendar
 import java.util.Random
 
@@ -30,7 +30,6 @@ val COL_TIMESTAMP="time"
 val CoL_TOTAL_AMOUNT="tamount"
 
 val TABLENAME3 = "customer"
-val Col_CUSTId="tratiction_id"
 val COL_CUSID="cus_id"
 val COL_CUSNAME= "cus_name"
 val COl_CUSPHONE="cus_Phone"
@@ -41,13 +40,15 @@ val COL_USER="user_name"
 val COL_PASS= "password"
 val COL_TIMESTAMP_CREATE="created_date"
 val COL_TIMESTAMP_MODIFIE="modified_date"
+
+val TABLENAME5 ="Deleted"
 class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASENAME, null,
     1) {
     override fun onCreate(db: SQLiteDatabase?) {
         val createTable = "CREATE TABLE " + TABLENAME1 + " (" + COL_PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY + " INTEGER," + COL_COST + " INTEGER)"
         db?.execSQL(createTable)
 
-       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
+       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO  + " INTEGER ," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
 
         db?.execSQL(createTable2)
 
@@ -57,10 +58,11 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
         val createTable4 = "CREATE TABLE " + TABLENAME4 + " ( "+ COL_ID +  " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_USER + " VARCHAR(1000) UNIQUE," + COL_PASS + " VARCHAR(1000)," + COL_TIMESTAMP_CREATE+ " LONG," + COL_TIMESTAMP_MODIFIE + " LONG)"
         db?.execSQL(createTable4)
-
+        val createTable5 = "CREATE TABLE " + TABLENAME5 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
+        db?.execSQL(createTable5)
         this.UserData(db, "admin", "admin");
         if (db != null) {
-          //  this.generateRandomData(db)
+            this.generateRandomData(db)
         };
     }
 
@@ -276,5 +278,34 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
             db.insert(TABLENAME4, null, userValues)
         }
     }
+    @SuppressLint("Range")
+    fun moveDataFromTable2ToTable5(billNo: String) {
+        val db = this.writableDatabase
+        val moveDataQuery = "INSERT INTO " + TABLENAME5 + " SELECT * FROM " + TABLENAME2 + " WHERE " + COL_BILL_NO + " = " + billNo
+
+        db.execSQL(moveDataQuery)
+
+        val deleteDataQuery ="UPDATE " + TABLENAME2 + " SET " + COL_CUSID + " = NULL, " + COL_PRODUCT_NAME + " = NULL, " + COl_QUANTITY2 + " = NULL, " + COL_RATE + " = NULL, " + COL_AMOUNT + " = NULL, " + CoL_TOTAL_AMOUNT + " = NULL, " + COL_TIMESTAMP + " = NULL, " + COL_SALES_USER + " = NULL, " + COL_FILE_PATH + " = NULL WHERE " + COL_BILL_NO + " = " + billNo
+
+        db.execSQL(deleteDataQuery)
+    }
+    fun undoMoveDataFromTable2ToTable5(billNo: String) {
+        val db = this.writableDatabase
+
+
+       val deleteDataQuery1 = "DELETE FROM " + TABLENAME2 + " WHERE " + COL_BILL_NO + " = " + billNo
+
+        db.execSQL(deleteDataQuery1)
+
+        // Move data back to TABLENAME2
+        val undoMoveDataQuery = "INSERT INTO " + TABLENAME2 + " SELECT * FROM " + TABLENAME5 + " WHERE " + COL_BILL_NO + " = " + billNo
+        db.execSQL(undoMoveDataQuery)
+
+        // Delete data from TABLENAME5
+        val deleteDataQuery = "DELETE FROM " + TABLENAME5 + " WHERE " + COL_BILL_NO + " = " + billNo
+        db.execSQL(deleteDataQuery)
+    }
+
+
 
 }

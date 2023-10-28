@@ -1,9 +1,11 @@
 package com.ka.billingsystem.model;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,6 +52,7 @@ public class PdfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return new PdfViewHolder(LayoutInflater.from(context).inflate(R.layout.element_holder, parent, false));
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (mPbillno != null && mPbillno.size() > 0) {
@@ -70,9 +73,40 @@ public class PdfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                 listener.onpdfSelected(pdfFiles.get(position),tempPbillno.get(position).toString(),pdfFiles.get(position).getName());
             });
+
+            pdfViewHolder.overflowIcon.setOnClickListener(view -> {
+                PopupMenu popupMenu = new PopupMenu(context,pdfViewHolder.overflowIcon);
+                popupMenu.getMenuInflater().inflate(R.menu.menu_overflow, popupMenu.getMenu());
+
+                // Handle menu item clicks
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    int ch = item.getItemId();
+                   if (ch==R.id.action_share)
+                   {
+
+                       listener.Share(pdfFiles.get(position));
+
+                       return true;
+                   } else if (ch==R.id.action_download) {
+                       listener.Download(pdfFiles.get(position));
+
+                   } else if (ch==R.id.action_delete)
+                   {
+                       listener.Delete(tempPbillno.get(position).toString());
+
+                       return  true;
+                   }
+
+                    return false;
+                });
+
+                popupMenu.show();
+            });
+
         } else {
 
-
+            PdfViewHolder pdfViewHolder = (PdfViewHolder) holder;
+            pdfViewHolder.overflowIcon.setVisibility(View.GONE);
             holder.itemView.setVisibility(View.VISIBLE);
             holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             LayoutInflater.from(context).inflate(R.layout.empty_state_layout, ((PdfViewHolder) holder).container, true);

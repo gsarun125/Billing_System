@@ -35,7 +35,7 @@ class MainActivity :  AppCompatActivity() {
     var checkedItem = 0
     var SHARED_PREFS = "shared_prefs"
     private lateinit var sharedpreferences: SharedPreferences
-    @RequiresApi(Build.VERSION_CODES.Q)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -82,12 +82,14 @@ class MainActivity :  AppCompatActivity() {
                 }
                 else if (ch==R.id.Import){
                     val packagesname:String= packageName
-                    val status :String = Import.ImportData(packagesname);
-                    Toast.makeText(applicationContext,status,Toast.LENGTH_SHORT).show()
+                    val status1 :String = Import.ImportData(packagesname);
+                    Toast.makeText(applicationContext,status1,Toast.LENGTH_SHORT).show()
                 }
                 true
             }
-            popupMenu.setForceShowIcon(true);
+            if (SDK_INT >= Build.VERSION_CODES.Q) {
+                popupMenu.setForceShowIcon(true)
+            };
             popupMenu.show()
 
         }
@@ -104,6 +106,10 @@ class MainActivity :  AppCompatActivity() {
 
         binding.recentinvoice.setOnClickListener {
             val intent =Intent(this, RecentInvoiceActivity::class.java)
+            startActivity(intent)
+        }
+        binding.deleteCard.setOnClickListener {
+            val intent =Intent(this, DeletedInvoice::class.java)
             startActivity(intent)
         }
 
@@ -205,7 +211,7 @@ class MainActivity :  AppCompatActivity() {
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             when{
                 ContextCompat.checkSelfPermission(applicationContext,permission)==PackageManager.PERMISSION_GRANTED->{
-                    Toast.makeText(applicationContext,"$name permission granted",Toast.LENGTH_SHORT).show()
+
                 }
                 shouldShowRequestPermissionRationale(permission)->showDialog(permission,name,requstCode)
                 else->ActivityCompat.requestPermissions(this, arrayOf(permission),requstCode)

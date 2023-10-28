@@ -2,6 +2,7 @@ package com.ka.billingsystem.Activity;
 
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -84,6 +85,7 @@ public class SalesActivity extends AppCompatActivity {
     String SPuser;
 
     SharedPreferences sharedpreferences;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,13 +106,8 @@ public class SalesActivity extends AppCompatActivity {
     //    SPIS_FIRST_TIME=sharedpreferences.getString(SHARED_PREFS_KEY,null);
         phoneEdit=(EditText) findViewById(R.id.PhoneNo);
 
-        System.out.println(mCost);
-        System.out.println(mTotal);
-        System.out.println(mProduct_name);
-        mQty.clear();
-        mTotal.clear();
-        mProduct_name.clear();
-        mCost.clear();
+
+
 
            activitySalesBinding.buttonAdd.setOnClickListener(new View.OnClickListener() {
 
@@ -140,10 +137,15 @@ public class SalesActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                if( CheckAllFields()) {
+
                    LinearLayout layout = activitySalesBinding.parentLinearLayout;
                    int count = layout.getChildCount();
 
                    if (count != 0) {
+                       progressDialog = new ProgressDialog(SalesActivity.this);
+                       progressDialog.setMessage("Loading...");
+                       progressDialog.setCancelable(false);
+                       progressDialog.show();
                        saveData();
                    }else{
                        Toast.makeText(SalesActivity.this,"add Printer information",Toast.LENGTH_SHORT).show();
@@ -218,6 +220,7 @@ public class SalesActivity extends AppCompatActivity {
             Cost = (EditText) v.findViewById(R.id.et_Cost);
 
             if (Printer_Type.getText().toString().length() == 0) {
+                progressDialog.dismiss();
                 Printer_Type.setError("Printer Type is required");
                 Printer_Type.setFocusable(true);
                 Printer_Type.requestFocus();
@@ -227,6 +230,7 @@ public class SalesActivity extends AppCompatActivity {
             }
 
             if (Cost.getText().toString().length() == 0) {
+                progressDialog.dismiss();
                 Cost.setError(getString(R.string.net_quantity_is_required));
                 Cost.setFocusable(true);
                 Cost.requestFocus();
@@ -236,6 +240,7 @@ public class SalesActivity extends AppCompatActivity {
             }
 
             if (qty.getText().toString().length() == 0) {
+                progressDialog.dismiss();
                 qty.setError(getString(R.string.net_quantity_is_required));
                 qty.setFocusable(true);
                 qty.requestFocus();
@@ -247,7 +252,7 @@ public class SalesActivity extends AppCompatActivity {
 
         return true;
     }
-    @RequiresApi(api = Build.VERSION_CODES.Q)
+
     void saveData() {
 
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
@@ -303,13 +308,17 @@ public class SalesActivity extends AppCompatActivity {
     String SHARED_PREFS_KEY = "signature";
 
     String SPIS_FIRST_TIME=sharedpreferences.getString(SHARED_PREFS_KEY,null);
+
     if (SPIS_FIRST_TIME!=null){
-        Intent intent = new Intent(this, PdfviewActivity.class);
+        Intent intent = new Intent(SalesActivity.this, PdfviewActivity.class);
         startActivity(intent);
+        System.out.println("second");
     }
     else {
-        Intent intent=new Intent(this,Signature.class);
+
+        Intent intent=new Intent(SalesActivity.this,Signature.class);
         startActivity(intent);
+        System.out.println("first");
     }
 
     }
@@ -317,11 +326,16 @@ public class SalesActivity extends AppCompatActivity {
 
 
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
 
     void removeView(){
 
-        View  inflater = LayoutInflater.from((Context)this).inflate(R.layout.row_add_language, null);
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
         Intrinsics.checkNotNullExpressionValue(layout, "binding.parentLinearLayout");
         layout.removeAllViews();
