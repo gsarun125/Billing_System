@@ -7,29 +7,69 @@
     tools:context=".Activity.MainActivity2"
     android:orientation="vertical"
     android:weightSum="5"
-    ><LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="60dp"
-    android:gravity="end"
-    android:orientation="horizontal"
     >
-
-    <ImageButton
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:gravity="end"
+        android:orientation="horizontal"
+        >
 
-        android:layout_marginEnd="10dp"
-        android:id="@+id/btnlogout"
-        android:src="@drawable/baseline_menu_24"
-        android:backgroundTint="@color/white"
-        />
-</LinearLayout>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
 
+            android:layout_marginEnd="10dp"
+            android:id="@+id/btnlogout"
+            android:src="@drawable/baseline_menu_24"
+            android:backgroundTint="@color/white"
+            />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        >
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_toEndOf="@+id/logo"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/textfont"
+            android:maxLines="1"
+            android:text="KIRTHANA AGENCIES"
+            android:textSize="21dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="40dp"
+            android:layout_toEndOf="@+id/logo"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="@font/textfont"
+            android:maxLines="1"
+            android:text="HOME"
+            android:textSize="21dp" />
+
+    </RelativeLayout>
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="40dp"
-        android:layout_weight="5"
+        android:layout_marginTop="50dp"
+        android:layout_weight="4"
         android:columnCount="2"
         android:padding="10dp"
         android:rowCount="2">
@@ -74,13 +114,57 @@
                     android:layout_alignParentStart="true"
                     android:layout_marginStart="0dp"
                     android:layout_marginTop="0dp"
-                    android:text="Sales"
+                    android:text="@string/sale"
                     android:textColor="@color/black"
                     android:textSize="14sp" />
 
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
 
+
+
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/recentinvoice"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="10dp"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="10dp">
+
+                <ImageView
+                    android:id="@+id/imgreinvoice"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:src="@drawable/invoice" />
+
+                <TextView
+                    android:layout_width="162dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/imgreinvoice"
+                    android:layout_marginTop="0dp"
+                    android:text="@string/recent_invoice"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/history_card"
@@ -126,7 +210,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/recentinvoice"
+            android:id="@+id/delete_card"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_rowWeight="1"
@@ -142,7 +226,7 @@
                 android:padding="10dp">
 
                 <ImageView
-                    android:id="@+id/imgreinvoice"
+                    android:id="@+id/imgdeleted"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:layout_alignParentStart="true"
@@ -152,14 +236,16 @@
                     android:layout_marginTop="0dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginBottom="20dp"
-                    android:src="@drawable/invoice" />
+                    android:src="@drawable/baseline_delete_24" />
 
                 <TextView
-                    android:layout_width="162dp"
+                    android:layout_width="158dp"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/imgreinvoice"
+                    android:layout_below="@+id/imgdeleted"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="0dp"
                     android:layout_marginTop="0dp"
-                    android:text="@string/recent_invoice"
+                    android:text="@string/deleted_invoice"
                     android:textColor="@color/black"
                     android:textSize="14sp" />
 
@@ -167,6 +253,5 @@
         </androidx.cardview.widget.CardView>
 
     </GridLayout>
-
 
 </LinearLayout>

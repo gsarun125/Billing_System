@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                 String username = user_name.getText().toString();
                 String pass = password.getText().toString();
                 if (username.equals("") || pass.equals("")) {
-                    Toast.makeText(LoginActivity.this, "Please enter all the fields", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,R.string.please_enter_all_the_fields, Toast.LENGTH_SHORT).show();
                 } else {
 
 
@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                             editor.putString(PASSWORD_KEY, pass);
 
                             editor.apply();
-                            Toast.makeText(LoginActivity.this, "Login successfull", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this,R.string.login_successfull, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                             startActivity(intent);
                             finish();
@@ -97,13 +97,15 @@ public class LoginActivity extends AppCompatActivity {
                             editor.putString(PASSWORD_KEY, pass);
 
                             editor.apply();
-                            Toast.makeText(LoginActivity.this, "Login successfull", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this,R.string.login_successfull, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), MainActivity2.class);
                             startActivity(intent);
                             finish();
                         }
                     } else {
-                        Toast.makeText(LoginActivity.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
+                        user_name.setText("");
+                        password.setText("");
+                        Toast.makeText(LoginActivity.this,R.string.invalid_credentials, Toast.LENGTH_SHORT).show();
                     }
                 }
 

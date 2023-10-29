@@ -38,6 +38,57 @@
     <string name="customer_name_is_required">Customer Name is required</string>
     <string name="customer_phone_no_is_required">Customer Phone No is required</string>
     <string name="no_printer_type_added">No Printer Type added</string>
+    <string name="sale">Sale</string>
+    <string name="deleted_invoice">Deleted Invoice</string>
+    <string name="draw_you_signature_in_the_box">Draw you signature in the box</string>
+    <string name="clear">clear</string>
+    <string name="save">Save</string>
+    <string name="bill_no">Bill no</string>
+    <string name="to_date">To Date</string>
+    <string name="from_date">From Date</string>
+    <string name="user_name">User Name</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="click_to_sign_up">Click To Sign UP</string>
+    <string name="username">Username</string>
+    <string name="re_type_password">Re-type password</string>
+    <string name="new_password">New password</string>
+    <string name="sign_up">Sign up</string>
+    <string name="i_agree_use_my_signature">I agree use my signature</string>
+    <string name="no_items_to_display">No items to display.</string>
+    <string name="enter_printer_name">Enter Printer Name</string>
+    <string name="file_is_removed_form_internal_storage_do_you_want_to_generate_again">"File is removed form Internal Storage..Do you want to generate again? "</string>
+    <string name="alert">Alert !</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="do_you_want_to_delete">"Do you want to Delete..? "</string>
+    <string name="file_not_found">file not found</string>
+    <string name="do_you_want_to_undo">"Do you want to Undo..? "</string>
+    <string name="ok">OK</string>
+    <string name="please_agree_to_continue">Please agree to continue</string>
+    <string name="cancel">Cancel</string>
+    <string name="invalid_date">Invalid Date</string>
+    <string name="please_enter_all_the_fields">Please enter all the fields</string>
+    <string name="login_successfull">Login successfull</string>
+    <string name="invalid_credentials">Invalid Credentials</string>
+    <string name="press_ok_to_logout">Press OK to Logout!</string>
+    <string name="you_press_cancel_button">You pressed Cancel button</string>
+    <string name="choose_language">Choose Language...</string>
+    <string name="mobile_number_must_be_10_digits">Mobile number must be 10 digits</string>
+    <string name="printer_type_is_required1">Printer type is required</string>
+    <string name="add_printer_information">add Printer information</string>
+    <string name="user_name_is_required">User Name is required</string>
+    <string name="user_name_is_already_exist">User Name is already exist</string>
+    <string name="new_password_is_required">New password is required</string>
+    <string name="new_password_must_8_letters">New password must 8 letters</string>
+    <string name="re_type_password_is_required">Re-type password is required</string>
+    <string name="new_password_and_re_type_password_doesn_t_match">New password and Re-type password doesn\'t match</string>
+    <string name="enter_cost">Enter Cost</string>
+    <string name="language" translatable="false">Language</string>
+    <string name="logout" translatable="false">Logout</string>
+    <string name="edit_signature" translatable="false">Edit Signature</string>
+    <string name="export_invoice" translatable="false">Export Invoice</string>
+    <string name="import_invoice" translatable="false">Import Invoice</string>
 
 
 </resources>

@@ -1,62 +1,39 @@
 package com.ka.billingsystem.Activity;
 
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
-import android.graphics.Typeface;
-import android.graphics.pdf.PdfDocument;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Base64;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ka.billingsystem.DataBase.DataBaseHandler;
 import com.ka.billingsystem.R;
 import com.ka.billingsystem.databinding.ActivitySalesBinding;
-import com.ka.billingsystem.java.invoice1;
-import com.ka.billingsystem.java.numbertoword;
 
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import kotlin.jvm.internal.Intrinsics;
 
-public class SalesActivity extends AppCompatActivity {
+public class SalesActivity extends AppCompatActivity  {
     private DataBaseHandler db = new DataBaseHandler(this);
-    private ActivitySalesBinding activitySalesBinding;
+    private static ActivitySalesBinding activitySalesBinding;
 
     int add_count=0;
     EditText qty;
@@ -71,8 +48,8 @@ public class SalesActivity extends AppCompatActivity {
 
     public static List<String> mProduct_name = new ArrayList();
     public static int Bill_NO;
-    EditText cusEdit;
-    EditText phoneEdit;
+    public static EditText cusEdit;
+    public static EditText phoneEdit;
     public static List<Long> mTotal = new ArrayList();
 
 
@@ -85,15 +62,13 @@ public class SalesActivity extends AppCompatActivity {
     String SPuser;
 
     SharedPreferences sharedpreferences;
-    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         activitySalesBinding = ActivitySalesBinding.inflate(getLayoutInflater());
-
-        //getSupportActionBar().setTitle("Sales");
+       //getSupportActionBar().setTitle("Sales");
         setContentView(activitySalesBinding.getRoot());
 
 
@@ -142,13 +117,10 @@ public class SalesActivity extends AppCompatActivity {
                    int count = layout.getChildCount();
 
                    if (count != 0) {
-                       progressDialog = new ProgressDialog(SalesActivity.this);
-                       progressDialog.setMessage("Loading...");
-                       progressDialog.setCancelable(false);
-                       progressDialog.show();
+
                        saveData();
                    }else{
-                       Toast.makeText(SalesActivity.this,"add Printer information",Toast.LENGTH_SHORT).show();
+                       Toast.makeText(SalesActivity.this,getString(R.string.add_printer_information),Toast.LENGTH_SHORT).show();
                    }
                }
             }
@@ -171,6 +143,45 @@ public class SalesActivity extends AppCompatActivity {
         qty = (EditText) inflater.findViewById(R.id.et_Qty);
         Printer_Type=(EditText) inflater.findViewById(R.id.et_Typep);
         Cost=(EditText)inflater.findViewById(R.id.et_Cost) ;
+        Cost.addTextChangedListener(new TextWatcher() {
+            private String current = "";
+            private DecimalFormat indianCurrencyFormat = new DecimalFormat("#,###");
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!s.toString().equals(current)) {
+                    Cost.removeTextChangedListener(this);
+
+                    String replaceable = String.format("[%s,.\\s]", indianCurrencyFormat.getCurrency().getSymbol());
+                    String cleanString = s.toString().replaceAll(replaceable, "");
+
+                    double parsed = 0;
+                    try {
+                        parsed = Double.parseDouble(cleanString);
+                        String formatted = indianCurrencyFormat.format(parsed);
+
+                        current = formatted;
+                        Cost.setText(formatted);
+
+                        Cost.setSelection(formatted.length());
+
+                    } catch (NumberFormatException e) {
+                        Cost.setText("");
+                    }
+
+                    Cost.addTextChangedListener(this);
+                }
+            }
+        });
+
 
     }
     public  boolean check_all_value(int i){
@@ -181,7 +192,7 @@ public class SalesActivity extends AppCompatActivity {
             Cost=(EditText) v.findViewById(R.id.et_Cost) ;
 
         if (Printer_Type.getText().toString().length() == 0) {
-            Printer_Type.setError("Printer Type is required");
+            Printer_Type.setError(getString(R.string.printer_type_is_required1));
             Printer_Type.setFocusable(true);
             Printer_Type.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -190,7 +201,7 @@ public class SalesActivity extends AppCompatActivity {
         }
 
         if (Cost.getText().toString().length() == 0) {
-            Cost.setError(getString(R.string.net_quantity_is_required));
+            Cost.setError(getString(R.string.cost_is_required));
             Cost.setFocusable(true);
             Cost.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -220,8 +231,8 @@ public class SalesActivity extends AppCompatActivity {
             Cost = (EditText) v.findViewById(R.id.et_Cost);
 
             if (Printer_Type.getText().toString().length() == 0) {
-                progressDialog.dismiss();
-                Printer_Type.setError("Printer Type is required");
+
+                Printer_Type.setError(getString(R.string.printer_type_is_required1));
                 Printer_Type.setFocusable(true);
                 Printer_Type.requestFocus();
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -230,7 +241,7 @@ public class SalesActivity extends AppCompatActivity {
             }
 
             if (Cost.getText().toString().length() == 0) {
-                progressDialog.dismiss();
+
                 Cost.setError(getString(R.string.net_quantity_is_required));
                 Cost.setFocusable(true);
                 Cost.requestFocus();
@@ -240,7 +251,7 @@ public class SalesActivity extends AppCompatActivity {
             }
 
             if (qty.getText().toString().length() == 0) {
-                progressDialog.dismiss();
+
                 qty.setError(getString(R.string.net_quantity_is_required));
                 qty.setFocusable(true);
                 qty.requestFocus();
@@ -268,7 +279,13 @@ public class SalesActivity extends AppCompatActivity {
 
         String QTY = qty.getText().toString();
         String PrinterType = Printer_Type.getText().toString();
-        Long cost = Long.valueOf(Cost.getText().toString());
+            Long cost;
+            String costString = Cost.getText().toString().replaceAll(",", "");
+            if (!costString.isEmpty()) {
+                cost = Long.valueOf(costString);
+            } else {
+                cost = 0L;
+            }
 
         mProduct_name.add(PrinterType);
         mCost.add(Long.valueOf(cost));
@@ -302,9 +319,6 @@ public class SalesActivity extends AppCompatActivity {
     }
     db.insertData_to_Customer(Customer_Id, Customer_Name, PHone_NO);
 
-    removeView();
-    cusEdit.setText("");
-    phoneEdit.setText("");
     String SHARED_PREFS_KEY = "signature";
 
     String SPIS_FIRST_TIME=sharedpreferences.getString(SHARED_PREFS_KEY,null);
@@ -312,13 +326,11 @@ public class SalesActivity extends AppCompatActivity {
     if (SPIS_FIRST_TIME!=null){
         Intent intent = new Intent(SalesActivity.this, PdfviewActivity.class);
         startActivity(intent);
-        System.out.println("second");
     }
     else {
 
         Intent intent=new Intent(SalesActivity.this,Signature.class);
         startActivity(intent);
-        System.out.println("first");
     }
 
     }
@@ -326,15 +338,9 @@ public class SalesActivity extends AppCompatActivity {
 
 
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-    }
 
-    void removeView(){
+
+    public static void removeView(){
 
         LinearLayout layout = activitySalesBinding.parentLinearLayout;
         Intrinsics.checkNotNullExpressionValue(layout, "binding.parentLinearLayout");
@@ -360,8 +366,18 @@ public class SalesActivity extends AppCompatActivity {
             imm.showSoftInput(phoneEdit, InputMethodManager.SHOW_IMPLICIT);
             return false;
         }
+        if (phoneEdit.length() != 10) {
+            phoneEdit.setError(getString(R.string.mobile_number_must_be_10_digits));
+            phoneEdit.setFocusable(true);
+            phoneEdit.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(phoneEdit, InputMethodManager.SHOW_IMPLICIT);
+            return false;
+        }
         return true;
     }
+
+
 
 
 }

@@ -5,8 +5,46 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.DocmentActivity">
-<com.github.barteksc.pdfviewer.PDFView
+
+    <ImageButton
+        android:id="@+id/delete"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="80dp"
+
+        android:background="@drawable/ripple_effect_delete"
+        />
+    <ImageButton
+        android:id="@+id/Undo1"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="80dp"
+
+        android:background="@drawable/ripple_effect_undo"
+        />
+
+    <ImageButton
+        android:id="@+id/share1"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="-80dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="30dp"
+
+        android:background="@drawable/ripple_effect_share"
+        />
+
+
+    <com.github.barteksc.pdfviewer.PDFView
     android:id="@+id/pdfView3"
+    android:layout_marginTop="60dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"/>
 </RelativeLayout>

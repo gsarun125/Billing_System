@@ -46,7 +46,7 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="10dp"
             android:ems="10"
-            android:hint="Username"
+            android:hint="@string/username"
             android:inputType="textPersonName"
             android:padding="9dp"
             android:textColor="@color/black"/>
@@ -58,7 +58,7 @@
             android:layout_marginBottom="10dp"
             android:id="@+id/newpassword"
             android:ems="10"
-            android:hint="New password"
+            android:hint="@string/new_password"
             android:inputType="textPassword"
             android:padding="9dp"
             android:textColor="@color/black"/>
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/retypepassword"
             android:ems="10"
-            android:hint="Re-type password"
+            android:hint="@string/re_type_password"
 
             android:inputType="textPassword"
             android:padding="9dp"
@@ -82,7 +82,7 @@
             android:id="@+id/btnSignUp"
             android:layout_marginTop="10dp"
             android:padding="15dp"
-            android:text="Sign up"
+            android:text="@string/sign_up"
             android:textAllCaps="false"
             app:backgroundTint="@color/design_default_color_secondary_variant"
             app:cornerRadius="8dp"/>

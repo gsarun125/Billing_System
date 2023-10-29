@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -18,15 +20,20 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class invoice1 {
-    public static File PDF1(int count, long Net_AMT, int Bill_NO,String CusName,String CusPhone ,List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProduct_name, String SPIS_FIRST_TIME ,String fileName,long time, DataBaseHandler db){
+    public static File PDF1(int count, long Net_AMT, int Bill_NO,String CusName,String CusPhone ,List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProduct_name, String SPIS_FIRST_TIME,String SPIS_FIRST_LOGO ,File file,long time){
         int end_item=560;
         int pageWidth=1200;
-        DecimalFormat chosenFormat = new DecimalFormat("#,###");
+
+        NumberFormat indianCurrencyFormat = NumberFormat.getInstance(new Locale("en", "IN"));
+        indianCurrencyFormat.setMinimumFractionDigits(2); // If you want to show decimal places
+
 
         PdfDocument document=new PdfDocument();
         Paint myPaint=new Paint();
@@ -174,8 +181,8 @@ public class invoice1 {
             //  canvas.drawText(mProduct_name.get(i), start_item3, end_item, myPaint);
 
             canvas.drawText(mQty.get(i), start_item4, end_item, myPaint);
-            canvas.drawText(chosenFormat.format(mCost.get(i)), start_item5, end_item, myPaint);
-            canvas.drawText(chosenFormat.format(mTotal.get(i)), start_item6, end_item, myPaint);
+            canvas.drawText(indianCurrencyFormat.format(mCost.get(i)), start_item5, end_item, myPaint);
+            canvas.drawText(indianCurrencyFormat.format(mTotal.get(i)), start_item6, end_item, myPaint);
             end_item=print_next_line(canvas,myPaint,start_item3,end_item,500,mProduct_name.get(i),end_item);
 
             end_item = end_item + 70;
@@ -190,13 +197,13 @@ public class invoice1 {
 
         canvas.drawText("Sub-Total",830,1300,myPaint);
 
-        canvas.drawText(chosenFormat.format(Net_AMT),1010,1300,myPaint);
+        canvas.drawText(indianCurrencyFormat.format(Net_AMT),1010,1300,myPaint);
 
         canvas.drawText("18% IGST",830,1390,myPaint);
-        canvas.drawText(chosenFormat.format(IGST),1010,1390,myPaint);
+        canvas.drawText(indianCurrencyFormat.format(IGST),1010,1390,myPaint);
 
         canvas.drawText("Total Amount",830,1440,myPaint);
-        canvas.drawText(chosenFormat.format(TotalAmount),1010,1440,myPaint);
+        canvas.drawText(indianCurrencyFormat.format(TotalAmount),1010,1440,myPaint);
 
         myPaint.setColor(Color.BLACK);
 
@@ -247,6 +254,43 @@ public class invoice1 {
             canvas.drawBitmap(bitmap, 950, 1550, myPaint);
         }
 
+
+
+        ColorFilter filter1 = new LightingColorFilter(Color.WHITE, 1);
+        myPaint.setColorFilter(filter1);
+
+
+// Decode the base64 string to a Bitmap
+        Bitmap bitmap1 = decodeBase64ToBitmap(SPIS_FIRST_LOGO);
+
+        int newWidth = 200; // Set your desired width
+        int newHeight = 200; // Set your desired height
+
+// Resize the bitmap if necessary
+        Bitmap resizedBitmap = resizeBitmap(bitmap1, newWidth, newHeight);
+
+// Draw the resized bitmap on the canvas at the specified coordinates
+        canvas.drawBitmap(resizedBitmap, -500, -3500, myPaint);
+
+
+
+        // Set the paint object to draw the bitmap as a watermark
+
+        myPaint.setAlpha(20); // Adjust the transparency level (0-255), 0 being fully transparent and 255 fully opaque
+
+// Set the color filter for the bitmap to make it appear as a watermark
+        ColorFilter filter = new LightingColorFilter(Color.LTGRAY, 1);
+        myPaint.setColorFilter(filter);
+
+
+
+        int newWidth1 = 2400; // Set your desired width
+        int newHeight1 = 2400; // Set your desired height
+        Bitmap resizedBitmap1 = resizeBitmap(bitmap1, newWidth1, newHeight1);
+
+        canvas.drawBitmap(resizedBitmap1,-1100,-1750, myPaint);
+
+
         document.finishPage(page);
 
 
@@ -256,17 +300,9 @@ public class invoice1 {
 
 
 
-        File file;
-        try {
-            File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
-            if (!dir.exists()) {
-                dir.mkdir();
-            }
-            file= new File(dir,fileName);
 
-            //   System.out.println("Path"+file.getAbsolutePath());
-            db.filePath(Bill_NO,file.getAbsolutePath());
-            // file= File.createTempFile(fileName, null, this.getCacheDir());
+        try {
+
             FileOutputStream fos=new FileOutputStream(file);
             document.writeTo(fos);
             document.close();
@@ -310,6 +346,9 @@ public class invoice1 {
     private static Bitmap decodeBase64ToBitmap(String encodedString) {
         byte[] decodedString = Base64.decode(encodedString, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+    }
+    public static Bitmap resizeBitmap(Bitmap bitmap, int newWidth, int newHeight) {
+        return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false);
     }
 
 }

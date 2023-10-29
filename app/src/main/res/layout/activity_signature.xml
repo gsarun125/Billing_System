@@ -18,7 +18,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
-        android:text="Draw you signature in the box"
+        android:text="@string/draw_you_signature_in_the_box"
         android:textSize="20sp" />
 
     <com.kyanogen.signatureview.SignatureView
@@ -53,14 +53,14 @@
             android:id="@+id/clear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="clear" />
+            android:text="@string/clear" />
 
         <Button
             android:id="@+id/gen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="60dp"
-            android:text="generate" />
+            android:text="@string/generate" />
 
     </LinearLayout>
 

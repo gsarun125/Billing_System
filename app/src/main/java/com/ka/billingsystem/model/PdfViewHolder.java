@@ -35,6 +35,6 @@ public class PdfViewHolder extends RecyclerView.ViewHolder {
         IVtotal=itemView.findViewById(R.id.IVTotal);
         IVCusName=itemView.findViewById(R.id.IVCusName);
         IVcuspno=itemView.findViewById(R.id.IVcuspno);
-        overflowIcon=itemView.findViewById(R.id.overflowIcon);
+
     }
 }

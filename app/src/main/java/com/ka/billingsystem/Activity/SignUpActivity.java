@@ -53,7 +53,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
     private boolean CheckAllFields() {
         if (username.length() == 0) {
-            username.setError("User Name is required");
+            username.setError(getString(R.string.user_name_is_required));
             username.setFocusable(true);
             username.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -73,7 +73,7 @@ public class SignUpActivity extends AppCompatActivity {
             username.setText("");
             newpassword.setText("");
             retypePassword.setText("");
-            username.setError("User Name is already exist");
+            username.setError(getString(R.string.user_name_is_already_exist));
             username.setFocusable(true);
             username.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -82,7 +82,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         if (newpassword.length() == 0) {
-            newpassword.setError("New password is required");
+            newpassword.setError(getString(R.string.new_password_is_required));
             newpassword.setFocusable(true);
             newpassword.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -92,7 +92,7 @@ public class SignUpActivity extends AppCompatActivity {
         if (newpassword.length() < 8) {
             newpassword.setText("");
             retypePassword.setText("");
-            newpassword.setError("New password must 8 letters");
+            newpassword.setError(getString(R.string.new_password_must_8_letters));
             newpassword.setFocusable(true);
             newpassword.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -102,7 +102,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         if (retypePassword.length() == 0) {
 
-            retypePassword.setError("Re-type password is required");
+            retypePassword.setError(getString(R.string.re_type_password_is_required));
             retypePassword.setFocusable(true);
             retypePassword.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -112,14 +112,14 @@ public class SignUpActivity extends AppCompatActivity {
         if (!newpassword.getText().toString().equals(retypePassword.getText().toString())){
             retypePassword.setText("");
             newpassword.setText("");
-            newpassword.setError("New password and Re-type password doesn't match");
+            newpassword.setError(getString(R.string.new_password_and_re_type_password_doesn_t_match));
             newpassword.setFocusable(true);
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(newpassword, InputMethodManager.SHOW_IMPLICIT);
 
             return false;
         }
-        // after all validation return true.
+
         return true;
     }
 

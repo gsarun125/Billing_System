@@ -5,28 +5,31 @@ import static com.ka.billingsystem.Activity.SalesActivity.Customer_Name;
 import static com.ka.billingsystem.Activity.SalesActivity.Net_AMT;
 import static com.ka.billingsystem.Activity.SalesActivity.PHone_NO;
 import static com.ka.billingsystem.Activity.SalesActivity.count;
+import static com.ka.billingsystem.Activity.SalesActivity.cusEdit;
 import static com.ka.billingsystem.Activity.SalesActivity.mCost;
 import static com.ka.billingsystem.Activity.SalesActivity.mProduct_name;
 import static com.ka.billingsystem.Activity.SalesActivity.mQty;
 import static com.ka.billingsystem.Activity.SalesActivity.mTotal;
+import static com.ka.billingsystem.Activity.SalesActivity.phoneEdit;
+import static com.ka.billingsystem.Activity.SalesActivity.removeView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.FileProvider;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
+
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.ka.billingsystem.DataBase.DataBaseHandler;
@@ -34,26 +37,22 @@ import com.ka.billingsystem.R;
 import com.ka.billingsystem.java.invoice1;
 import com.ka.billingsystem.java.invoice2;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.List;
 
 public class PdfviewActivity extends AppCompatActivity {
 
 
-    PDFView pdfView;
+    static PDFView pdfView;
     private DataBaseHandler db = new DataBaseHandler(this);
     ImageButton share;
     ImageButton textButton;
     String SHARED_PREFS_KEY = "signature";
     String SHARED_PREFS = "shared_prefs";
+    String SHARED_PREFS_Logo = "logo";
     SharedPreferences sharedpreferences;
     String SPIS_FIRST_TIME;
-
+    String SPIS_FIRST_logo;
     String fileName;
-    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,14 +63,31 @@ public class PdfviewActivity extends AppCompatActivity {
         textButton = findViewById(R.id.textButton);
         sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         SPIS_FIRST_TIME = sharedpreferences.getString(SHARED_PREFS_KEY, null);
-
+        SPIS_FIRST_logo=sharedpreferences.getString(SHARED_PREFS_Logo,null);
         fileName = "Invoice" + Bill_NO + ".pdf";
+        File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+
+        File file= new File(dir,fileName);
+        db.filePath(Bill_NO,file.getAbsolutePath());
 
 
-        File dir = new File(Environment.getExternalStorageDirectory(), "DATA");
+        new PdfGenerationTask(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME,SPIS_FIRST_logo, file).execute();
 
-        File file = invoice1.PDF1(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME, fileName, 0, db);
-        pdfView.fromFile(file).load();
+//        File file = invoice1.PDF1(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME, fileName, 0, db);
+       // pdfView.fromFile(file).load();
+
+        LinearLayout linearLayout = findViewById(R.id.backbutton);
+
+        linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                   onBackPressed();
+            }
+        });
+
 
         textButton.setOnClickListener(new View.OnClickListener() {
             boolean isMethod1 = true;
@@ -80,12 +96,12 @@ public class PdfviewActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (isMethod1) {
                     pdfView.recycle();
-                    File file1 = invoice2.PDF2(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME, fileName, db);
-                    pdfView.fromFile(file1).load();
+                    new PdfGenerationTask2(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME,SPIS_FIRST_logo, file).execute();
+                   // File file1 = invoice2.PDF2(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME, fileName, db);
+                  //  pdfView.fromFile(file1).load();
                 } else {
                     pdfView.recycle();
-                    File file = invoice1.PDF1(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME, fileName, 0, db);
-                    pdfView.fromFile(file).load();
+                    new PdfGenerationTask(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME,SPIS_FIRST_logo, file).execute();
                 }
                 isMethod1 = !isMethod1;
             }
@@ -165,7 +181,7 @@ public class PdfviewActivity extends AppCompatActivity {
                     share.putExtra(Intent.EXTRA_STREAM, uri);
                     startActivity(Intent.createChooser(share, "Share"));
                 } else {
-                    Toast.makeText(PdfviewActivity.this, "file not found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PdfviewActivity.this,R.string.file_not_found, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -173,6 +189,10 @@ public class PdfviewActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        removeView();
+        cusEdit.setText("");
+        phoneEdit.setText("");
         mQty.clear();
         mTotal.clear();
         mProduct_name.clear();
@@ -181,13 +201,6 @@ public class PdfviewActivity extends AppCompatActivity {
         finish();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-    }
 
 
     /*private void showNotification(File savedFile) {
@@ -232,5 +245,132 @@ public class PdfviewActivity extends AppCompatActivity {
     }
 
      */
+    private class PdfGenerationTask extends AsyncTask<Void, Void, File> {
 
+        private int count;
+        private long netAmt;
+        private int billNo;
+        private String customerName;
+        private String phoneNo;
+        private List<String> mQty;
+        private List<Long> mCost;
+        private List<Long> mTotal;
+        private List<String> mProductName;
+        private String spIsFirstTime;
+        private String spIsFirstLogo;
+        private File file;
+
+
+        public PdfGenerationTask(int count, long netAmt, int billNo, String customerName, String phoneNo,
+                                 List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProductName,
+                                 String spIsFirstTime, String spIsFirstLogo, File file) {
+            this.count = count;
+            this.netAmt = netAmt;
+            this.billNo = billNo;
+            this.customerName = customerName;
+            this.phoneNo = phoneNo;
+            this.mQty = mQty;
+            this.mCost = mCost;
+            this.mTotal = mTotal;
+            this.mProductName = mProductName;
+            this.spIsFirstTime = spIsFirstTime;
+            this.file = file;
+
+            this.spIsFirstLogo=spIsFirstLogo;
+        }
+        private AlertDialog progressDialog;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressBar progressBar = new ProgressBar(PdfviewActivity.this, null, android.R.attr.progressBarStyleLarge);
+            progressBar.setIndeterminate(true);
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.gravity = Gravity.CENTER;
+            progressBar.setLayoutParams(params);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(PdfviewActivity.this);
+            builder.setView(progressBar);
+            builder.setCancelable(false);
+            progressDialog = builder.create();
+            progressDialog.show();
+
+        }
+        @Override
+        protected File doInBackground(Void... voids) {
+            return invoice1.PDF1(count, netAmt, billNo, customerName, phoneNo, mQty, mCost, mTotal, mProductName, spIsFirstTime,spIsFirstLogo, file, 0);
+        }
+
+        @Override
+        protected void onPostExecute(File result) {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            pdfView.fromFile(result).load();
+        }
+    }
+    private class PdfGenerationTask2 extends AsyncTask<Void, Void, File> {
+
+        private int count;
+        private long netAmt;
+        private int billNo;
+        private String customerName;
+        private String phoneNo;
+        private List<String> mQty;
+        private List<Long> mCost;
+        private List<Long> mTotal;
+        private List<String> mProductName;
+        private String spIsFirstTime;
+        private File file;
+        private String spIsFirstLogo;
+
+        private AlertDialog progressDialog;
+        public PdfGenerationTask2(int count, long netAmt, int billNo, String customerName, String phoneNo,
+                                 List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProductName,
+                                 String spIsFirstTime, String spIsFirstLogo, File file) {
+            this.count = count;
+            this.netAmt = netAmt;
+            this.billNo = billNo;
+            this.customerName = customerName;
+            this.phoneNo = phoneNo;
+            this.mQty = mQty;
+            this.mCost = mCost;
+            this.mTotal = mTotal;
+            this.mProductName = mProductName;
+            this.spIsFirstTime = spIsFirstTime;
+            this.file = file;
+            this.spIsFirstLogo=spIsFirstLogo;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressBar progressBar = new ProgressBar(PdfviewActivity.this, null, android.R.attr.progressBarStyleLarge);
+            progressBar.setIndeterminate(true);
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.gravity = Gravity.CENTER;
+            progressBar.setLayoutParams(params);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(PdfviewActivity.this);
+            builder.setView(progressBar);
+            builder.setCancelable(false);
+            progressDialog = builder.create();
+            progressDialog.show();
+        }
+
+        @Override
+        protected File doInBackground(Void... voids) {
+            return invoice2.PDF2(count, netAmt, billNo, customerName, phoneNo, mQty, mCost, mTotal, mProductName, spIsFirstTime,spIsFirstLogo,file);
+        }
+
+        @Override
+        protected void onPostExecute(File result) {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            pdfView.fromFile(result).load();
+        }
+    }
 }
+
+

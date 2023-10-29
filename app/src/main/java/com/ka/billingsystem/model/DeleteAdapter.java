@@ -71,34 +71,15 @@ public class DeleteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 listener.onpdfSelected(pdfFiles.get(position),tempPbillno.get(position).toString(),pdfFiles.get(position).getName());
             });
 
-            pdfViewHolder.overflowIcon.setOnClickListener(view -> {
-                PopupMenu popupMenu = new PopupMenu(context,pdfViewHolder.overflowIcon);
-                popupMenu.getMenuInflater().inflate(R.menu.menu_overflow1, popupMenu.getMenu());
 
-                // Handle menu item clicks
-                popupMenu.setOnMenuItemClickListener(item -> {
-                    int ch = item.getItemId();
-                    if (ch==R.id.action_share1)
-                    {
-                        listener.Share(pdfFiles.get(position));
-
-                        return true;
-                    }
-                    else if (ch==R.id.Undo){
-                        listener.Undo(tempPbillno.get(position).toString());
-                    }
-                    return false;
-                });
-
-                popupMenu.show();
-            });
 
         } else {
 
             PdfViewHolder pdfViewHolder = (PdfViewHolder) holder;
-            pdfViewHolder.overflowIcon.setVisibility(View.GONE);
             holder.itemView.setVisibility(View.VISIBLE);
-            holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
+            layoutParams.setMargins(0, 300, 0, 0);
+            holder.itemView.setLayoutParams(layoutParams);
             LayoutInflater.from(context).inflate(R.layout.empty_state_layout, ((PdfViewHolder) holder).container, true);
         }
     }

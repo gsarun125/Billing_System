@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
@@ -30,6 +32,7 @@ public class EditSignature extends AppCompatActivity {
     String PASSWORD_KEY = "password_key";
 
     private static final String SHARED_PREFS_KEY = "signature";
+
     Bitmap sign;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +61,7 @@ public class EditSignature extends AppCompatActivity {
     private void saveToSharedPreferences(Bitmap bitmap) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String encodedString = encodeToBase64(bitmap, Bitmap.CompressFormat.PNG, 100);
+
         editor.putString(SHARED_PREFS_KEY, encodedString);
         editor.apply();
         Intent intent=new Intent(this,MainActivity.class);
@@ -82,17 +86,17 @@ public class EditSignature extends AppCompatActivity {
         CheckBox agreeCheckbox = dialogView.findViewById(R.id.agree_checkbox);
 
         imageView.setImageBitmap(sign);
-        builder.setPositiveButton("OK", (dialog, which) -> {
+        builder.setPositiveButton(R.string.ok, (dialog, which) -> {
             if (agreeCheckbox.isChecked()) {
                 saveToSharedPreferences(sign);
             } else {
-                agreeCheckbox.setError("Please agree to continue");
+                agreeCheckbox.setError(getString(R.string.please_agree_to_continue));
             }
 
 
         });
 
-        builder.setNegativeButton("Cancel", (dialog, which) -> {
+        builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
             dialog.dismiss();
         });
 

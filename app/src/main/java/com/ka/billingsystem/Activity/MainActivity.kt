@@ -13,14 +13,13 @@ import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Environment
-import android.print.pdf.PrintedPdfDocument
 import android.provider.Settings
 import android.widget.PopupMenu
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.ka.billingsystem.LogoutService
 import com.ka.billingsystem.R
 import com.ka.billingsystem.databinding.ActivityMainBinding
 import com.ka.billingsystem.java.Export
@@ -57,10 +56,10 @@ class MainActivity :  AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        startService(Intent(this, LogoutService::class.java))
 
 
         binding.btnlogout.setOnClickListener {
-            println("clicked")
             val popupMenu = PopupMenu(this@MainActivity, it)
             popupMenu.menuInflater.inflate(R.menu.threedotadmin, popupMenu.menu)
             popupMenu.setOnMenuItemClickListener { menuItem ->
@@ -133,12 +132,12 @@ class MainActivity :  AppCompatActivity() {
 
     private fun logOut(){
         val builder = androidx.appcompat.app.AlertDialog.Builder(this)
-        builder.setMessage("Press OK to Logout!")
-        builder.setTitle("Alert...!")
+        builder.setMessage(getString(R.string.press_ok_to_logout))
+        builder.setTitle(R.string.alert)
         builder.setCancelable(true)
         builder.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()
-            Toast.makeText(this,"You press Cancel button",Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.you_press_cancel_button),Toast.LENGTH_SHORT).show()
 
         }
         builder.setPositiveButton("Ok",
@@ -162,7 +161,7 @@ class MainActivity :  AppCompatActivity() {
     private fun ShowChangeLanguage() {
         val lan = arrayOf("English","தமிழ்")
         val alertDialogBuilder = AlertDialog.Builder(this)
-        alertDialogBuilder.setTitle("Choose Language...")
+        alertDialogBuilder.setTitle(getString(R.string.choose_language))
         println(checkedItem)
         alertDialogBuilder.setSingleChoiceItems(lan, checkedItem, DialogInterface.OnClickListener { dialogInterface, i ->
 

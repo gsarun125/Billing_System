@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.ka.billingsystem.LogoutService
 import com.ka.billingsystem.R
 import com.ka.billingsystem.databinding.ActivityMain2Binding
 import java.util.Locale
@@ -47,9 +48,10 @@ class MainActivity2 : AppCompatActivity() {
 
         binding = ActivityMain2Binding.inflate(layoutInflater)
         setContentView(binding.root)
+        startService(Intent(this, LogoutService::class.java))
 
         binding.btnlogout.setOnClickListener {
-            println("clicked")
+
             val popupMenu = PopupMenu(this@MainActivity2, it)
             popupMenu.menuInflater.inflate(R.menu.threedot, popupMenu.menu)
             popupMenu.setOnMenuItemClickListener { menuItem ->
@@ -84,6 +86,10 @@ class MainActivity2 : AppCompatActivity() {
             val intent =Intent(this, RecentInvoiceActivity::class.java)
             startActivity(intent)
         }
+        binding.deleteCard.setOnClickListener {
+            val intent =Intent(this, DeletedInvoice::class.java)
+            startActivity(intent)
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
@@ -104,12 +110,12 @@ class MainActivity2 : AppCompatActivity() {
     }
     private  fun logOut(){
         val builder = androidx.appcompat.app.AlertDialog.Builder(this)
-        builder.setMessage("Press OK to Logout!")
-        builder.setTitle("Alert...!")
+        builder.setMessage(R.string.press_ok_to_logout)
+        builder.setTitle(R.string.alert)
         builder.setCancelable(true)
         builder.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()
-            Toast.makeText(this,"You press Cancel button",Toast.LENGTH_SHORT).show()
+            Toast.makeText(this,R.string.you_press_cancel_button,Toast.LENGTH_SHORT).show()
 
         }
         builder.setPositiveButton("Ok",
@@ -133,7 +139,7 @@ class MainActivity2 : AppCompatActivity() {
     private fun ShowChangeLanguage() {
         val lan = arrayOf("English","தமிழ்")
         val alertDialogBuilder = AlertDialog.Builder(this)
-        alertDialogBuilder.setTitle("Choose Language...")
+        alertDialogBuilder.setTitle(R.string.choose_language)
         alertDialogBuilder.setSingleChoiceItems(lan, checkedItem, DialogInterface.OnClickListener { dialogInterface, i ->
             checkedItem = i
 

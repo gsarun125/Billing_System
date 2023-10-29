@@ -62,7 +62,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         db?.execSQL(createTable5)
         this.UserData(db, "admin", "admin");
         if (db != null) {
-            this.generateRandomData(db)
+         //  this.generateRandomData(db)
         };
     }
 
@@ -146,12 +146,8 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         contentValues.put(COL_SALES_USER,UserName)
 
 
-        val result = database.insert(TABLENAME2, null, contentValues)
-        if (result == (0).toLong()) {
-            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
-        }
+        database.insert(TABLENAME2, null, contentValues)
+
     }
 
     fun insertData_to_Customer(Cus_Id:Int,Cus_name:String,Phoneno:String) {
@@ -163,12 +159,8 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         contentValues.put(COl_CUSPHONE,Phoneno )
 
 
-        val result = database.insert(TABLENAME3, null, contentValues)
-        if (result == (0).toLong()) {
-            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
-        }
+        database.insert(TABLENAME3, null, contentValues)
+
     }
     open fun checkusernamepassword(query: String): Boolean {
         val MyDB = this.writableDatabase
@@ -188,13 +180,8 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         contentValues.put(COL_TIMESTAMP_CREATE,cDate)
         contentValues.put(COL_TIMESTAMP_MODIFIE,mDate)
 
+        database.insert(TABLENAME4, null, contentValues)
 
-        val result = database.insert(TABLENAME4, null, contentValues)
-        if (result == (0).toLong()) {
-            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
-        }
     }
 
     fun UserData( db:SQLiteDatabase?,user: String?, pass: String?) {
@@ -222,14 +209,12 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
             productValues.put(COL_COST, Random().nextInt(100))
             db.insert(TABLENAME1, null, productValues)
         }
-        val generatedDates = mutableSetOf<Long>()
 
-        // Generate random data for Transaction table
+        val generatedDates = HashSet<Long>()
         for (i in 1..1000) {
             val transactionValues = ContentValues()
-            transactionValues.put(COL_CUSID,i)
+            transactionValues.put(COL_CUSID, i)
             transactionValues.put(COL_BILL_NO, i)
-            transactionValues.put(COL_PRODUCT_ID2, Random().nextInt(100))
             transactionValues.put(COL_PRODUCT_NAME, "Product $i")
             transactionValues.put(COl_QUANTITY2, Random().nextInt(100))
             transactionValues.put(COL_RATE, Random().nextInt(100))
@@ -243,6 +228,10 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
             calendar.set(year, month, day)
 
             var randomTimestamp = calendar.timeInMillis
+            if (randomTimestamp > System.currentTimeMillis()) {
+                randomTimestamp = System.currentTimeMillis()
+            }
+
             var attempts = 0
             while (generatedDates.contains(randomTimestamp) && attempts < 10) {
                 calendar.add(Calendar.DAY_OF_MONTH, 1)
@@ -252,12 +241,12 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
             generatedDates.add(randomTimestamp)
 
             transactionValues.put(COL_TIMESTAMP, randomTimestamp)
-
-
             transactionValues.put(COL_SALES_USER, "SalesUser $i")
-            transactionValues.put(COL_FILE_PATH, "ghgh")
+            transactionValues.put(COL_FILE_PATH, "/storage/emulated/0/DATA/Invoice$i.pdf")
             db.insert(TABLENAME2, null, transactionValues)
         }
+
+
 
         // Generate random data for Customer table
         for (i in 1..1000) {

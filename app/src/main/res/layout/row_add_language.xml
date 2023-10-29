@@ -19,9 +19,9 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:background="@null"
-            android:hint="Enter Printer Name"
+            android:hint="@string/enter_printer_name"
             android:textColor="#000"
-            android:textSize="16sp" />
+            android:textSize="20dp" />
 
         <View
             android:layout_width="match_parent"
@@ -36,6 +36,8 @@
             android:background="@null"
             android:hint="Enter Quantity"
             android:text="1"
+            android:maxLength="2"
+            android:textSize="20dp"
             android:inputType="number"
             android:textColor="#000" />
 
@@ -49,8 +51,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
+            android:maxLength="9"
             android:background="@null"
-            android:hint="Enter Cost"
+            android:hint="@string/enter_cost"
+            android:textSize="20dp"
             android:inputType="number"
             android:textColor="#000" />
     </LinearLayout>

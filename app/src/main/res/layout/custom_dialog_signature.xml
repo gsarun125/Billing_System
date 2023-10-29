@@ -13,7 +13,7 @@
         android:id="@+id/agree_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="I agree use my signature"
+        android:text="@string/i_agree_use_my_signature"
         android:layout_below="@id/dialog_image_view"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>

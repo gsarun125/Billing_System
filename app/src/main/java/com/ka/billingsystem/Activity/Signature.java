@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
@@ -31,6 +33,7 @@ public class Signature extends AppCompatActivity {
     String PASSWORD_KEY = "password_key";
 
     private static final String SHARED_PREFS_KEY = "signature";
+    private static final String SHARED_PREFS_Logo = "logo";
     Bitmap sign;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,13 @@ public class Signature extends AppCompatActivity {
         SPuser = sharedPreferences.getString(USER_KEY, null);
         SPpass = sharedPreferences.getString(PASSWORD_KEY, null);
         SPIS_FIRST_TIME = sharedPreferences.getString(SHARED_PREFS_KEY, null);
+
+        Drawable d = getResources().getDrawable(R.drawable.logo);
+        Bitmap mBitmap = ((BitmapDrawable) d).getBitmap();
+        String logo = encodeToBase64(mBitmap, Bitmap.CompressFormat.PNG, 100);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SHARED_PREFS_Logo, logo);
+        editor.apply();
 
         binding.clear.setOnClickListener(v ->{
             binding.signatureView.clearCanvas();
@@ -87,7 +97,7 @@ public class Signature extends AppCompatActivity {
             if (agreeCheckbox.isChecked()) {
                 saveToSharedPreferences(sign);
             } else {
-                agreeCheckbox.setError("Please agree to continue");
+                agreeCheckbox.setError(getString(R.string.please_agree_to_continue));
             }
 
 
