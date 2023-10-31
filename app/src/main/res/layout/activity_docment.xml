@@ -5,7 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.DocmentActivity">
-
+<RelativeLayout
+    android:id="@+id/RelativeLayout2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="60dp"
+>
     <ImageButton
         android:id="@+id/delete"
         android:layout_width="30dp"
@@ -43,8 +48,47 @@
 
 
     <com.github.barteksc.pdfviewer.PDFView
-    android:id="@+id/pdfView3"
-    android:layout_marginTop="60dp"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+        android:id="@+id/pdfView3"
+        android:layout_marginTop="60dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</RelativeLayout>
+
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/RelativeLayout2"
+        android:layout_marginTop="-50dp">
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/backbutton_document"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:background="@drawable/riple_effect_linear"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/ripple_effect_backarrow"
+                    android:contentDescription="Back Arrow" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+                <!-- Add other contents here -->
+            </LinearLayout>
+
+        </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>

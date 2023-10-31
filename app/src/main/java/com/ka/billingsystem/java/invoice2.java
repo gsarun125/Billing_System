@@ -59,7 +59,7 @@ public  class invoice2 {
         String Address="#6,Alikhan Street, Alandur, Chennai-600 016,";
         String Adddress1="Tamil Nadu,India.";
         String Tel="+91 44 2231 4628";
-        String Email="kirthana.agencics@outlook.com";
+        String Email="kirthana.agencies@outlook.com";
         String GSTIN="33AEFPJ5208Q1ZB";
 
         titlePaint.setTextAlign(Paint.Align.LEFT);

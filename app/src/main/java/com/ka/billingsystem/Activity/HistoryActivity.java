@@ -72,6 +72,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
     String USER_KEY = "user_key";
     String SHARED_PREFS_KEY = "signature";
     String SHARED_PREFS_Logo = "logo";
+    String SPuser;
     Cursor c1;
     private DataBaseHandler db = new DataBaseHandler(this);
     @Override
@@ -80,8 +81,9 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
         activityHistoryBinding=ActivityHistoryBinding.inflate(getLayoutInflater());
         setContentView(activityHistoryBinding.getRoot());
         sharedpreferences= getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-
-        c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
+        SPuser = sharedpreferences.getString(USER_KEY,null);
+        System.out.println(SPuser);
+        c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
         displayPdf(c1);
         editTextDatePickerFrom = findViewById(R.id.editTextDatePickrFrom);
         editTextDatePickerTo = findViewById(R.id.editTextDatePickerTO);
@@ -195,23 +197,23 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
 
     private void  filter(){
         if (activityHistoryBinding.Hbillno.getText().toString().length() !=0 & activityHistoryBinding.Hcusname.getText().toString().length() !=0){
-            Cursor c1 = db.get_value("SELECT DISTINCT * FROM ( SELECT *  FROM Transation WHERE cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"'  GROUP BY cus_id  UNION ALL SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' AND sorted.cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT DISTINCT * FROM ( SELECT *  FROM Transation WHERE sales_user='" + SPuser + "' AND cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"'  GROUP BY cus_id  UNION ALL SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' AND sorted.cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         } else if (activityHistoryBinding.Hcusname.getText().toString().length() !=0&&activityHistoryBinding.HPhoneno.getText().toString().length() !=0) {
-            Cursor c1 = db.get_value("SELECT * FROM ( SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer  ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' AND customer.cus_Phone = '"+activityHistoryBinding.HPhoneno.getText().toString()+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT * FROM ( SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id ) AS sorted JOIN customer  ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' AND customer.cus_Phone = '"+activityHistoryBinding.HPhoneno.getText().toString()+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         } else if (activityHistoryBinding.Hbillno.getText().toString().length() !=0 ){
-            Cursor c1 = db.get_value("SELECT *  FROM (SELECT * FROM Transation WHERE cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"' GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT *  FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' AND cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"' GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
             displayPdf(c1);
         }
         else if (activityHistoryBinding.Hcusname.getText().toString().length() !=0 ){
-            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         } else if (activityHistoryBinding.HPhoneno.getText().toString().length()!=0) {
-            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_Phone = '"+activityHistoryBinding.HPhoneno.getText().toString()+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_Phone = '"+activityHistoryBinding.HPhoneno.getText().toString()+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         }else {
-            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
+           Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
             displayPdf(c1);
 
         }
@@ -222,21 +224,21 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
             Cursor c1 = db.get_value("SELECT DISTINCT * FROM ( SELECT *  FROM Transation WHERE cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"'  GROUP BY cus_id  UNION ALL SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' AND sorted.cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"' AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         } else if (activityHistoryBinding.Hcusname.getText().toString().length() !=0&&activityHistoryBinding.HPhoneno.getText().toString().length() !=0) {
-            Cursor c1 = db.get_value("SELECT * FROM ( SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer  ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' AND customer.cus_Phone = '"+activityHistoryBinding.HPhoneno.getText().toString()+"' AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT * FROM ( SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id ) AS sorted JOIN customer  ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' AND customer.cus_Phone = '"+activityHistoryBinding.HPhoneno.getText().toString()+"' AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         } else if (activityHistoryBinding.Hbillno.getText().toString().length() !=0 ){
-            Cursor c1 = db.get_value("SELECT *  FROM (SELECT * FROM Transation WHERE cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"' GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT *  FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' AND cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"' GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         }
         else if (activityHistoryBinding.Hcusname.getText().toString().length() !=0 ){
-            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"'AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"'AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         } else if (activityHistoryBinding.HPhoneno.getText().toString().length()!=0) {
-            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_Phone = '"+activityHistoryBinding.HPhoneno.getText().toString()+"'AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_Phone = '"+activityHistoryBinding.HPhoneno.getText().toString()+"'AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         }
         else {
-            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         }
     }

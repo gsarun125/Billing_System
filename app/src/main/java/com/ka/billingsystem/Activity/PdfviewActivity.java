@@ -79,9 +79,9 @@ public class PdfviewActivity extends AppCompatActivity {
 //        File file = invoice1.PDF1(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME, fileName, 0, db);
        // pdfView.fromFile(file).load();
 
-        LinearLayout linearLayout = findViewById(R.id.backbutton);
+        LinearLayout backbutton = findViewById(R.id.backbutton);
 
-        linearLayout.setOnClickListener(new View.OnClickListener() {
+        backbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                    onBackPressed();

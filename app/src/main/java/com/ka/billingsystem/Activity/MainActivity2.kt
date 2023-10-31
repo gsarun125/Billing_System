@@ -152,11 +152,15 @@ class MainActivity2 : AppCompatActivity() {
             if(i==0){
                 setLocale("Eng")
 
-                recreate()
+                val intent = Intent(this, MainActivity2::class.java)
+                finish()
+                startActivity(intent)
             }
             else if(i==1){
                 setLocale("ta")
-                recreate()
+                val intent = Intent(this, MainActivity2::class.java)
+                finish()
+                startActivity(intent)
             }
             dialogInterface.dismiss()
         })

@@ -62,7 +62,8 @@
             android:text="HOME"
             android:textSize="21dp" />
 
-    </RelativeLayout><GridLayout
+    </RelativeLayout>
+    <GridLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="50dp"
@@ -70,55 +71,6 @@
         android:columnCount="2"
         android:padding="10dp"
         android:rowCount="2">
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/invoice_card"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:layout_margin="10dp"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="4dp">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:padding="10dp">
-
-                <ImageView
-                    android:id="@+id/imginvoice"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-
-
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="20dp"
-                    android:src="@drawable/sale" />
-
-                <TextView
-                    android:id="@+id/invoice"
-                    android:layout_width="156dp"
-                    android:layout_height="wrap_content"
-
-                    android:layout_below="@+id/imginvoice"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="0dp"
-                    android:text="@string/sale"
-                    android:textColor="@color/black"
-                    android:textSize="14sp" />
-
-            </RelativeLayout>
-        </androidx.cardview.widget.CardView>
-
-
 
 
 

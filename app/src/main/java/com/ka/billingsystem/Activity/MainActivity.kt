@@ -14,6 +14,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -34,12 +35,11 @@ class MainActivity :  AppCompatActivity() {
     var checkedItem = 0
     var SHARED_PREFS = "shared_prefs"
     private lateinit var sharedpreferences: SharedPreferences
-
+    var ADMIN_LOGIN = "admin_login"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
-
 
 
         if(sharedpreferences.contains("checkeItem")) {
@@ -91,11 +91,6 @@ class MainActivity :  AppCompatActivity() {
             };
             popupMenu.show()
 
-        }
-
-        binding.invoiceCard.setOnClickListener {
-            val intent = Intent(this, SalesActivity::class.java)
-            startActivity(intent)
         }
 
         binding.historyCard.setOnClickListener {
@@ -174,11 +169,17 @@ class MainActivity :  AppCompatActivity() {
             if(i==0){
                 setLocale("Eng")
 
-                recreate()
+                val intent = Intent(this, MainActivity::class.java)
+                finish()
+                startActivity(intent)
+               // recreate()
             }
             else if(i==1){
                 setLocale("ta")
-              recreate()
+                val intent = Intent(this, MainActivity::class.java)
+                finish()
+                startActivity(intent)
+            //recreate()
             }
             dialogInterface.dismiss()
         })
@@ -248,9 +249,6 @@ class MainActivity :  AppCompatActivity() {
         }
         val dialog=builder.create()
         dialog.show()
-    }
-    override fun onBackPressed() {
-        logOut()
     }
 
 }

@@ -72,6 +72,8 @@ public class SalesActivity extends AppCompatActivity  {
         setContentView(activitySalesBinding.getRoot());
 
 
+        activitySalesBinding.button.setVisibility(View.GONE);
+        activitySalesBinding.buttonAdd.setVisibility(View.GONE);
 
         cusEdit=(EditText) findViewById(R.id.cusName);
 
@@ -81,8 +83,38 @@ public class SalesActivity extends AppCompatActivity  {
     //    SPIS_FIRST_TIME=sharedpreferences.getString(SHARED_PREFS_KEY,null);
         phoneEdit=(EditText) findViewById(R.id.PhoneNo);
 
+        phoneEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+            }
 
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                checkIfBothFieldsHaveText();
+            }
+        });
+        cusEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                checkIfBothFieldsHaveText();
+            }
+        });
 
            activitySalesBinding.buttonAdd.setOnClickListener(new View.OnClickListener() {
 
@@ -126,7 +158,36 @@ public class SalesActivity extends AppCompatActivity  {
             }
         });
     }
+    private void checkIfBothFieldsHaveText() {
+        String phone = phoneEdit.getText().toString().trim();
+        String cusName = cusEdit.getText().toString().trim();
+        if (!cusName.isEmpty()){
+            cusEdit.setBackgroundResource(R.drawable.edit_text_green_bg);
+        }
+        else {
+            cusEdit.setBackgroundResource(R.drawable.edit_text_bg);
+        }
+        if (phone.length()==10){
+            activitySalesBinding.phonenoLayout.setBackgroundResource(R.drawable.edit_text_green_bg);
+        }else {
+            activitySalesBinding.phonenoLayout.setBackgroundResource(R.drawable.edit_text_bg);
+        }
+        if (!phone.isEmpty() && !cusName.isEmpty()) {
+            if (phone.length()==10){
 
+                activitySalesBinding.button.setVisibility(View.VISIBLE);
+                activitySalesBinding.buttonAdd.setVisibility(View.VISIBLE);
+                System.out.println();
+                if (add_count==0){
+                    addNewView();
+                    add_count++;
+                }
+            }
+        }
+        else {
+            activitySalesBinding.button.setVisibility(View.GONE);
+        }
+    }
     public void onDelete(View v) {
         add_count--;
         activitySalesBinding.parentLinearLayout.removeView((View) v.getParent());
@@ -149,14 +210,17 @@ public class SalesActivity extends AppCompatActivity  {
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                System.out.println("e");
                 if (!s.toString().equals(current)) {
                     Cost.removeTextChangedListener(this);
 

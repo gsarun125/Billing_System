@@ -11,12 +11,15 @@ import androidx.core.content.FileProvider;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.github.barteksc.pdfviewer.PDFView;
@@ -34,11 +37,18 @@ public class DocmentActivity extends AppCompatActivity {
     ImageButton Undo;
     String billno;
     String option;
+    String ADMIN_LOGIN = "admin_login";
+    String SHARED_PREFS = "shared_prefs";
+    SharedPreferences sharedpreferences;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_docment);
+
+        sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        String Admin_login = sharedpreferences.getString(ADMIN_LOGIN, null);
+
         PDFView pdfView=(PDFView) findViewById(R.id.pdfView3);
         share = (ImageButton) findViewById(R.id.share1);
         delete=(ImageButton)findViewById(R.id.delete);
@@ -56,11 +66,23 @@ public class DocmentActivity extends AppCompatActivity {
             delete.setVisibility(View.GONE);
         }
 
-
-
-
+        if (Admin_login.equals("true"))
+        {
+            Undo.setVisibility(View.GONE);
+            delete.setVisibility(View.GONE);
+        }
         Uri path=Uri.fromFile(file);
         pdfView.fromUri(path).load();
+
+        LinearLayout backbutton = findViewById(R.id.backbutton_document);
+        backbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                onBackPressed();
+            }
+        });
+
         Undo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

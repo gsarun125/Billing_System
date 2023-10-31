@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -54,11 +55,25 @@ public class DeletedInvoice extends AppCompatActivity implements onpdfDelete {
     String SHARED_PREFS_KEY = "signature";
     String SHARED_PREFS_Logo = "logo";
     SharedPreferences sharedpreferences;
+    String SPuser;
+    String USER_KEY = "user_key";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deleted_invoice);
         sharedpreferences= getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SPuser = sharedpreferences.getString(USER_KEY,null);
+
+        LinearLayout backbutton = findViewById(R.id.backbutton_Deleted);
+        backbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                onBackPressed();
+            }
+        });
+
+
         displayPdf();
     }
     private void displayPdf(){
@@ -78,7 +93,7 @@ public class DeletedInvoice extends AppCompatActivity implements onpdfDelete {
         tempbillno.clear();
 
         Cursor c1;
-        c1 = db.get_value("SELECT * FROM (SELECT * FROM Deleted GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
+        c1 = db.get_value("SELECT * FROM (SELECT * FROM Deleted WHERE sales_user='" + SPuser + "' GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
 
         if (c1.moveToFirst()) {
             do {

@@ -29,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     String SHARED_PREFS = "shared_prefs";
     String USER_KEY = "user_key";
     String PASSWORD_KEY = "password_key";
+    String ADMIN_LOGIN = "admin_login";
     String SPuser;
     String SPpass;
     String SPIS_FIRST_TIME;
@@ -83,19 +84,18 @@ public class LoginActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = sharedpreferences.edit();
 
                             editor.putString(USER_KEY, username);
-                            editor.putString(PASSWORD_KEY, pass);
 
+                            editor.putString(ADMIN_LOGIN,"true");
                             editor.apply();
                             Toast.makeText(LoginActivity.this,R.string.login_successfull, Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                            Intent intent = new Intent(getApplicationContext(),UserSelectionActivity.class);
                             startActivity(intent);
                             finish();
                         } else {
                             SharedPreferences.Editor editor = sharedpreferences.edit();
 
                             editor.putString(USER_KEY, username);
-                            editor.putString(PASSWORD_KEY, pass);
-
+                            editor.putString(ADMIN_LOGIN,"false");
                             editor.apply();
                             Toast.makeText(LoginActivity.this,R.string.login_successfull, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), MainActivity2.class);
@@ -112,22 +112,5 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (SPuser != null && SPpass != null) {
-            if (SPuser.equals("admin")) {
-                    Intent i = new Intent(this, MainActivity.class);
-                    startActivity(i);
-                    finish();
-            } else {
-                    Intent i = new Intent(this, MainActivity2.class);
-                    startActivity(i);
-                    finish();
-            }
-
-        }
-    }
+    
 }
