@@ -26,7 +26,7 @@ import java.util.Locale
 class MainActivity2 : AppCompatActivity() {
 
     val storage_RQ=101
-    //arungskjkjjhhj
+    //arungskjkjjhhjmnnmnm
     lateinit var binding: ActivityMain2Binding
     var checkedItem = 0
 
