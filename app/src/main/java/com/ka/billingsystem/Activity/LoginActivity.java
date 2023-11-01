@@ -2,20 +2,26 @@ package com.ka.billingsystem.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ka.billingsystem.R;
 import com.ka.billingsystem.DataBase.DataBaseHandler;
+
+import java.util.Locale;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -23,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private DataBaseHandler db = new DataBaseHandler(this);
     EditText user_name;
     EditText password;
+    LinearLayout Language;
     Button login;
     TextView ClickSignUP;
 
@@ -33,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     String SPuser;
     String SPpass;
     String SPIS_FIRST_TIME;
+    int checkedItem = 0;
     SharedPreferences sharedpreferences;
     private static final String SHARED_PREFS_KEY = "signature";
 
@@ -46,8 +54,16 @@ public class LoginActivity extends AppCompatActivity {
         password = (EditText) findViewById(R.id.txtPassword);
         login = (Button) findViewById(R.id.btnLogin);
         ClickSignUP = (TextView) findViewById(R.id.txtClickSignUP);
-
+        Language=findViewById(R.id.language);
         sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        if (sharedpreferences.contains("checkeItem")) {
+            String SPcheckedItem = sharedpreferences.getString("checkeItem", null);
+            if (SPcheckedItem != null) {
+                checkedItem = Integer.parseInt(SPcheckedItem);
+                System.out.println(checkedItem);
+            }
+            lodeLocale();
+        }
 
         SPuser = sharedpreferences.getString(USER_KEY, null);
         SPpass = sharedpreferences.getString(PASSWORD_KEY, null);
@@ -60,6 +76,12 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        Language.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ShowChangeLanguage();
+            }
+        });
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
 
 
-              String qurry = "Select * from user where user_name=" + '"' + username + '"' + "and password=" + '"' + pass + '"';
+              String qurry = "Select * from user where user_id=" + '"' + username + '"' + "and password=" + '"' + pass + '"';
                     System.out.println(qurry);
                     boolean checkuserpass;
                     Cursor c1 = db.get_value(qurry);
@@ -112,5 +134,52 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-    
+    private void ShowChangeLanguage() {
+        String[] lan = {"English", "தமிழ்"};
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Choose Language...");
+
+        alertDialogBuilder.setSingleChoiceItems(lan, checkedItem, (dialogInterface, i) -> {
+            checkedItem = i;
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.putString("checkeItem", String.valueOf(checkedItem));
+            editor.apply();
+            if (i == 0) {
+                setLocale("Eng");
+                Intent intent = new Intent(this, LoginActivity.class);
+                finish();
+                startActivity(intent);
+            } else if (i == 1) {
+                setLocale("ta");
+
+                Intent intent = new Intent(this, LoginActivity.class);
+                finish();
+                startActivity(intent);
+            }
+            dialogInterface.dismiss();
+        });
+        alertDialogBuilder.setNegativeButton("Cancel", (dialog, which) -> {
+        });
+        AlertDialog customAlertDialog = alertDialogBuilder.create();
+        customAlertDialog.show();
+    }
+    public void lodeLocale() {
+        SharedPreferences prefs = getSharedPreferences("settings", Activity.MODE_PRIVATE);
+        String language = prefs.getString("My_lang", "");
+        if (language != null) {
+            setLocale(language);
+        }
+    }
+    private void setLocale(String lan) {
+        Locale local = new Locale(lan);
+        Locale.setDefault(local);
+        Configuration config = new Configuration();
+        config.locale = local;
+        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+        SharedPreferences.Editor editor = getSharedPreferences("settings", MODE_PRIVATE).edit();
+        editor.putString("My_lang", lan);
+        editor.apply();
+    }
+
+
 }

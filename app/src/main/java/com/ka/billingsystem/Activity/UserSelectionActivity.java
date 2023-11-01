@@ -65,20 +65,22 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
         mUserid.clear();
         mUsername.clear();
         Cursor c1;
-        c1 = db.get_value("SELECT * FROM user WHERE user_name <> 'admin'");
+        c1 = db.get_value("SELECT * FROM user WHERE user_id <> 'admin'");
         if (c1.moveToFirst()) {
             do {
-                @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("user_name"));
+                @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("user_name"));
+                @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("user_id"));
                 @SuppressLint("Range") Long data3 = c1.getLong(c1.getColumnIndex("created_date"));
                 SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
                 Date res = new Date(data3);
-                mUsername.add("arun");
+                mUsername.add(data1);
                 mUserid.add(data2);
                 mGen_Date.add(formatter1.format(res));
             }while (c1.moveToNext());
-            userseclectionAdapter=new UserseclectionAdapter(this,this,mUsername,mUserid,mGen_Date);
-            recyclerView.setAdapter(userseclectionAdapter);
-        }
+         }
+        userseclectionAdapter=new UserseclectionAdapter(this,this,mUsername,mUserid,mGen_Date);
+        recyclerView.setAdapter(userseclectionAdapter);
+
     }
 
     public void lodeLocale() {

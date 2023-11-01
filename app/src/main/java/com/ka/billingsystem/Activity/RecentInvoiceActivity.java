@@ -100,70 +100,7 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
 
         displayPdf();
     }
-    private void animat(){
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            private boolean isRunningAnimation = false;
-            private int scrollThreshold = 40;
 
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                // Update the scroll position
-                scrollPosition += dy;
-
-                // Check if the absolute value of the scroll amount exceeds the threshold
-                if (Math.abs(dy) > scrollThreshold) {
-                    // If the user scrolls down, hide the relative layout
-                    if (dy > 0 && relativeLayout.getVisibility() == View.VISIBLE && !isRunningAnimation) {
-                        Animation slideDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_down);
-                        slideDown.setAnimationListener(new Animation.AnimationListener() {
-                            @Override
-                            public void onAnimationStart(Animation animation) {
-                                isRunningAnimation = true;
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animation animation) {
-                                isRunningAnimation = false;
-                                relativeLayout.setVisibility(View.GONE);
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animation animation) {
-
-                            }
-                        });
-                        relativeLayout.startAnimation(slideDown);
-                    }
-                    // If the user scrolls up, show the relative layout
-                    else if (dy < 0 && relativeLayout.getVisibility() == View.GONE && !isRunningAnimation) {
-                        Animation slideUp = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_up);
-                        slideUp.setAnimationListener(new Animation.AnimationListener() {
-                            @Override
-                            public void onAnimationStart(Animation animation) {
-                                isRunningAnimation = true;
-                                relativeLayout.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animation animation) {
-                                isRunningAnimation = false;
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animation animation) {
-
-                            }
-                        });
-                        relativeLayout.startAnimation(slideUp);
-                    }
-                }
-            }
-        });
-
-
-    }
 
     private void displayPdf(){
 

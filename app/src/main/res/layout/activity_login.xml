@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:background="#4A00BCD4"
+
     android:layout_height="match_parent"
     tools:context=".Activity.LoginActivity">
 
@@ -34,7 +35,7 @@
         />
 
     <LinearLayout
-
+        android:id="@+id/entri"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/logo"
@@ -42,6 +43,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="40dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="30dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="30dp"
@@ -110,6 +112,30 @@
             android:textStyle="bold" />
 
 
+    </LinearLayout>
+
+    <LinearLayout
+
+        android:id="@+id/language"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/entri"
+        android:layout_marginLeft="180dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-120dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/riple_effect_lan" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Language" />
     </LinearLayout>
 
 </RelativeLayout>

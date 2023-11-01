@@ -4,6 +4,7 @@ import static com.ka.billingsystem.Activity.SalesActivity.Bill_NO;
 import static com.ka.billingsystem.Activity.SalesActivity.Customer_Name;
 import static com.ka.billingsystem.Activity.SalesActivity.Net_AMT;
 import static com.ka.billingsystem.Activity.SalesActivity.PHone_NO;
+import static com.ka.billingsystem.Activity.SalesActivity.activitySalesBinding;
 import static com.ka.billingsystem.Activity.SalesActivity.count;
 import static com.ka.billingsystem.Activity.SalesActivity.cusEdit;
 import static com.ka.billingsystem.Activity.SalesActivity.mCost;
@@ -20,10 +21,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Camera;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,10 +45,11 @@ import java.util.List;
 
 public class PdfviewActivity extends AppCompatActivity {
 
-
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
     static PDFView pdfView;
     private DataBaseHandler db = new DataBaseHandler(this);
     ImageButton share;
+    ImageButton camera;
     ImageButton textButton;
     String SHARED_PREFS_KEY = "signature";
     String SHARED_PREFS = "shared_prefs";
@@ -54,6 +59,7 @@ public class PdfviewActivity extends AppCompatActivity {
     String SPIS_FIRST_logo;
     String fileName;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,9 +67,11 @@ public class PdfviewActivity extends AppCompatActivity {
         pdfView = (PDFView) findViewById(R.id.pdfView);
         share = (ImageButton) findViewById(R.id.share);
         textButton = findViewById(R.id.textButton);
+        camera=findViewById(R.id.camera);
         sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         SPIS_FIRST_TIME = sharedpreferences.getString(SHARED_PREFS_KEY, null);
         SPIS_FIRST_logo=sharedpreferences.getString(SHARED_PREFS_Logo,null);
+
         fileName = "Invoice" + Bill_NO + ".pdf";
         File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
         if (!dir.exists()) {
@@ -85,6 +93,14 @@ public class PdfviewActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                    onBackPressed();
+            }
+        });
+
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dispatchTakePictureIntent();
+                System.out.println("jhfjgf");
             }
         });
 
@@ -187,12 +203,27 @@ public class PdfviewActivity extends AppCompatActivity {
         });
     }
 
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            // Do something with the image captured
+        }
+    }
     @Override
     public void onBackPressed() {
 
         removeView();
-        cusEdit.setText("");
+        activitySalesBinding.buttonAdd.setVisibility(View.GONE);
         phoneEdit.setText("");
+        cusEdit.setText("");
         mQty.clear();
         mTotal.clear();
         mProduct_name.clear();

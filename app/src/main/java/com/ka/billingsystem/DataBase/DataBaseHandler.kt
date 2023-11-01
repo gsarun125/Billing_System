@@ -36,7 +36,8 @@ val COl_CUSPHONE="cus_Phone"
 
 val TABLENAME4 ="user"
 val COL_ID="id"
-val COL_USER="user_name"
+val COL_USER_NAME="user_name"
+val COL_USER_id="user_id"
 val COL_PASS= "password"
 val COL_TIMESTAMP_CREATE="created_date"
 val COL_TIMESTAMP_MODIFIE="modified_date"
@@ -56,13 +57,13 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
         db?.execSQL(createTable3)
 
-        val createTable4 = "CREATE TABLE " + TABLENAME4 + " ( "+ COL_ID +  " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_USER + " VARCHAR(1000) UNIQUE," + COL_PASS + " VARCHAR(1000)," + COL_TIMESTAMP_CREATE+ " LONG," + COL_TIMESTAMP_MODIFIE + " LONG)"
+        val createTable4 = "CREATE TABLE " + TABLENAME4 + " ( "+ COL_ID +  " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_USER_id + " VARCHAR(1000) UNIQUE," + COL_USER_NAME + " VARCHAR(1000) ," + COL_PASS + " VARCHAR(1000)," + COL_TIMESTAMP_CREATE+ " LONG," + COL_TIMESTAMP_MODIFIE + " LONG)"
         db?.execSQL(createTable4)
         val createTable5 = "CREATE TABLE " + TABLENAME5 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
         db?.execSQL(createTable5)
-        this.UserData(db, "admin", "admin");
+        this.UserData(db, "Admin","admin", "admin");
         if (db != null) {
-         //  this.generateRandomData(db)
+          // this.generateRandomData(db)
         };
     }
 
@@ -171,11 +172,12 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
             return false
     }
 
-    fun insertData_to_user(username:String,pass: String,cDate:Long,mDate:Long) {
+    fun insertData_to_user(username: String,userid:String,pass: String,cDate:Long,mDate:Long) {
         val database = this.writableDatabase
         val contentValues = ContentValues()
 
-        contentValues.put(COL_USER, username)
+        contentValues.put(COL_USER_NAME,username)
+        contentValues.put(COL_USER_id, userid)
         contentValues.put(COL_PASS, pass)
         contentValues.put(COL_TIMESTAMP_CREATE,cDate)
         contentValues.put(COL_TIMESTAMP_MODIFIE,mDate)
@@ -184,9 +186,10 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
     }
 
-    fun UserData( db:SQLiteDatabase?,user: String?, pass: String?) {
+    fun UserData( db:SQLiteDatabase?,username: String?,userid: String?, pass: String?) {
         val values = ContentValues()
-        values.put(COL_USER, user)
+        values.put(COL_USER_NAME,username)
+        values.put(COL_USER_id, userid)
         values.put(COL_PASS, pass)
         db?.insert(TABLENAME4, null, values)
     }
@@ -260,7 +263,8 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         // Generate random data for User table
         for (i in 1..10) {
             val userValues = ContentValues()
-            userValues.put(COL_USER, "User$i")
+            userValues.put(COL_USER_NAME, "User Name$i")
+            userValues.put(COL_USER_id, "User$i")
             userValues.put(COL_PASS, "password$i")
             userValues.put(COL_TIMESTAMP_CREATE, System.currentTimeMillis())
             userValues.put(COL_TIMESTAMP_MODIFIE, System.currentTimeMillis())

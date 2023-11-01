@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.ka.billingsystem.R;
 import com.ka.billingsystem.DataBase.DataBaseHandler;
@@ -17,6 +18,7 @@ import com.ka.billingsystem.DataBase.DataBaseHandler;
 public class SignUpActivity extends AppCompatActivity {
 
     private DataBaseHandler db = new DataBaseHandler(this);
+    private EditText userid;
     private EditText username;
     private EditText newpassword;
     private EditText retypePassword;
@@ -27,10 +29,11 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        username=(EditText) findViewById(R.id.txtUsername);
+        userid=(EditText) findViewById(R.id.txtuserid);
         newpassword=(EditText) findViewById(R.id.newpassword);
         retypePassword=(EditText) findViewById(R.id.retypepassword);
         BtnSignUp=(Button) findViewById(R.id.btnSignUp);
+        username=(EditText) findViewById(R.id.txtUsername);
 
 
         BtnSignUp.setOnClickListener(new View.OnClickListener() {
@@ -38,10 +41,12 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (CheckAllFields()){
+                    String Uid=userid.getText().toString();
                     String Uname=username.getText().toString();
                     String password=newpassword.getText().toString();
                     long time= System.currentTimeMillis();
-                    db.insertData_to_user(Uname,password,time,time);
+                    db.insertData_to_user(Uname,Uid,password,time,time);
+                    Toast.makeText(SignUpActivity.this,"Created Successfully",Toast.LENGTH_LONG).show();
                     Intent i=new Intent(SignUpActivity.this,LoginActivity.class);
                     startActivity(i);
                     finish();
@@ -53,16 +58,24 @@ public class SignUpActivity extends AppCompatActivity {
     }
     private boolean CheckAllFields() {
         if (username.length() == 0) {
-            username.setError(getString(R.string.user_name_is_required));
+            username.setError("User Name is required");
             username.setFocusable(true);
             username.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(username, InputMethodManager.SHOW_IMPLICIT);
             return false;
         }
-        String usercheck=username.getText().toString();
-        String qurry = "Select * from user where user_name='"+ usercheck + "'";
-        System.out.println(qurry);
+
+        if (userid.length() == 0) {
+            userid.setError("User ID is required");
+            userid.setFocusable(true);
+            userid.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(userid, InputMethodManager.SHOW_IMPLICIT);
+            return false;
+        }
+        String usercheck=userid.getText().toString();
+        String qurry = "Select * from user where user_id='"+ usercheck + "'";
         boolean checkuserpass;
         Cursor c1 = db.get_value(qurry);
         if  (c1.getCount() > 0)
@@ -70,14 +83,14 @@ public class SignUpActivity extends AppCompatActivity {
         else
             checkuserpass = false;
         if (checkuserpass){
-            username.setText("");
+            userid.setText("");
             newpassword.setText("");
             retypePassword.setText("");
-            username.setError(getString(R.string.user_name_is_already_exist));
-            username.setFocusable(true);
-            username.requestFocus();
+            userid.setError("User id is already exist");
+            userid.setFocusable(true);
+            userid.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(username, InputMethodManager.SHOW_IMPLICIT);
+            imm.showSoftInput(userid, InputMethodManager.SHOW_IMPLICIT);
             return false;
         }
 

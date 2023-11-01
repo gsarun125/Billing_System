@@ -18,7 +18,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.ka.billingsystem.LogoutService
+import com.ka.billingsystem.Services.LogoutService
 import com.ka.billingsystem.R
 import com.ka.billingsystem.databinding.ActivityMain2Binding
 import java.util.Locale
@@ -26,7 +26,7 @@ import java.util.Locale
 class MainActivity2 : AppCompatActivity() {
 
     val storage_RQ=101
-    //arungssss
+    //arungssssa
     lateinit var binding: ActivityMain2Binding
     var checkedItem = 0
 

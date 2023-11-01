@@ -1,4 +1,4 @@
-package com.ka.billingsystem;
+package com.ka.billingsystem.Services;
 
 import android.app.Service;
 

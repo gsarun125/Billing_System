@@ -33,7 +33,7 @@ import kotlin.jvm.internal.Intrinsics;
 
 public class SalesActivity extends AppCompatActivity  {
     private DataBaseHandler db = new DataBaseHandler(this);
-    private static ActivitySalesBinding activitySalesBinding;
+    public static ActivitySalesBinding activitySalesBinding;
 
     int add_count=0;
     EditText qty;
@@ -161,33 +161,43 @@ public class SalesActivity extends AppCompatActivity  {
     private void checkIfBothFieldsHaveText() {
         String phone = phoneEdit.getText().toString().trim();
         String cusName = cusEdit.getText().toString().trim();
-        if (!cusName.isEmpty()){
-            cusEdit.setBackgroundResource(R.drawable.edit_text_green_bg);
-        }
-        else {
-            cusEdit.setBackgroundResource(R.drawable.edit_text_bg);
-        }
-        if (phone.length()==10){
-            activitySalesBinding.phonenoLayout.setBackgroundResource(R.drawable.edit_text_green_bg);
-        }else {
-            activitySalesBinding.phonenoLayout.setBackgroundResource(R.drawable.edit_text_bg);
-        }
-        if (!phone.isEmpty() && !cusName.isEmpty()) {
-            if (phone.length()==10){
 
-                activitySalesBinding.button.setVisibility(View.VISIBLE);
-                activitySalesBinding.buttonAdd.setVisibility(View.VISIBLE);
-                System.out.println();
-                if (add_count==0){
-                    addNewView();
-                    add_count++;
-                }
-            }
-        }
-        else {
+        setEditTextBackground(cusEdit, !cusName.isEmpty(), R.drawable.edit_text_green_bg, R.drawable.edit_text_bg);
+        setEditTextBackground(activitySalesBinding.phonenoLayout, phone.length() == 10, R.drawable.edit_text_green_bg, R.drawable.edit_text_bg);
+
+        if (!phone.isEmpty() && !cusName.isEmpty() && phone.length() == 10) {
+            updateButtonVisibility();
+        } else {
             activitySalesBinding.button.setVisibility(View.GONE);
         }
     }
+
+    private void setEditTextBackground(LinearLayout phonenoLayout, boolean condition, int trueBackground, int falseBackground) {
+        if (condition) {
+            phonenoLayout.setBackgroundResource(trueBackground);
+        } else {
+            phonenoLayout.setBackgroundResource(falseBackground);
+        }
+    }
+
+    private void setEditTextBackground(EditText editText, boolean condition, int trueBackground, int falseBackground) {
+        if (condition) {
+            editText.setBackgroundResource(trueBackground);
+        } else {
+            editText.setBackgroundResource(falseBackground);
+        }
+    }
+
+    private void updateButtonVisibility() {
+        activitySalesBinding.button.setVisibility(View.VISIBLE);
+        activitySalesBinding.buttonAdd.setVisibility(View.VISIBLE);
+        System.out.println();
+        if (add_count == 0) {
+            addNewView();
+            add_count++;
+        }
+    }
+
     public void onDelete(View v) {
         add_count--;
         activitySalesBinding.parentLinearLayout.removeView((View) v.getParent());

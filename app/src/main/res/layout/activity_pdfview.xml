@@ -13,6 +13,16 @@
     android:layout_marginBottom="60dp"
     >
     <ImageButton
+        android:id="@+id/camera"
+
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+
+        android:background="@drawable/ripple_effect_camera"
+        android:text="classic invoice" />
+
+    <ImageButton
         android:id="@+id/textButton"
 
         android:layout_width="30dp"

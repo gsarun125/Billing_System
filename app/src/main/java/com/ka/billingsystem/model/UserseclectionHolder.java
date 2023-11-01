@@ -19,6 +19,7 @@ public class UserseclectionHolder extends RecyclerView.ViewHolder {
         username=itemView.findViewById(R.id.Suser_name);
         userid=itemView.findViewById(R.id.Suser_id);
         generated_date=itemView.findViewById(R.id.Sgenerate_date);
+        container=itemView.findViewById(R.id.user_selection);
 
     }
 }
