@@ -21,7 +21,7 @@ public class PdfViewHolder extends RecyclerView.ViewHolder {
     public TextView IVtotal;
     public TextView IVCusName;
     public TextView IVcuspno;
-    ImageView overflowIcon;
+    ImageView Printerimg;
 
     public PdfViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -35,6 +35,6 @@ public class PdfViewHolder extends RecyclerView.ViewHolder {
         IVtotal=itemView.findViewById(R.id.IVTotal);
         IVCusName=itemView.findViewById(R.id.IVCusName);
         IVcuspno=itemView.findViewById(R.id.IVcuspno);
-
+        Printerimg=itemView.findViewById(R.id.printerimg);
     }
 }

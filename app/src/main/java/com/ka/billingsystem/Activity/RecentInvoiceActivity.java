@@ -24,20 +24,24 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.ka.billingsystem.DataBase.DataBaseHandler;
 import com.ka.billingsystem.R;
+import com.ka.billingsystem.java.ImageEncodeAndDecode;
 import com.ka.billingsystem.java.invoice1;
 import com.ka.billingsystem.model.OnPdfFileSelectListener;
 import com.ka.billingsystem.model.PdfAdapter;
@@ -66,6 +70,7 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
     private List<String> mPDate = new ArrayList();
     private List<String> mPtime = new ArrayList();
     private List<String> mPusername = new ArrayList();
+    private List<String> image = new ArrayList();
     private ProgressDialog progressDialog;
     SharedPreferences sharedpreferences;
 
@@ -117,6 +122,7 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
         mPcusPhoneno.clear();
         pdfList.clear();
         tempbillno.clear();
+        image.clear();
 
         Cursor c1;
         if (SPuser.equals("admin")) {
@@ -137,6 +143,7 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
                 @SuppressLint("Range") String data4 = c1.getString(c1.getColumnIndex("sales_user"));
                 @SuppressLint("Range") String data5 = c1.getString(c1.getColumnIndex("cus_name"));
                 @SuppressLint("Range") String data6 = c1.getString(c1.getColumnIndex("cus_Phone"));
+                @SuppressLint("Range") String data7 = c1.getString(c1.getColumnIndex("printer_img"));
 
                 File file;
                 if(path == null) {
@@ -151,6 +158,7 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
 
                     SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
                     Date res = new Date(data3);
+                    image.add(data7);
                     tempbillno.add(data1);
                     mPbillno.add("Bill No: "+data1);
                     mPtamount.add("Total Amount: "+data2+" Rs.");
@@ -164,7 +172,8 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
 
             } while (c1.moveToNext());
         }
-        pdfAdapter=new PdfAdapter(this,pdfList,this,mPbillno,tempbillno,mPtamount,mPDate,mPusername,mPtime,mPcusname,mPcusPhoneno);
+        System.out.println(image);
+        pdfAdapter=new PdfAdapter(this,pdfList,this,mPbillno,tempbillno,mPtamount,mPDate,mPusername,mPtime,mPcusname,mPcusPhoneno,image);
         recyclerView.setAdapter(pdfAdapter);
     }
 
@@ -260,6 +269,22 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
         }
 
     }
+
+    @Override
+    public void image(String image) {
+        Bitmap Printerimg= ImageEncodeAndDecode.decodeBase64ToBitmap(image);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.image_dialog_layout, null);
+        dialogBuilder.setView(dialogView);
+
+        ImageView imageView = dialogView.findViewById(R.id.dialogImageView);
+        imageView.setImageBitmap(Printerimg);
+
+        AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
+    }
+
 
     /*@Override
     public void Share(File file) {

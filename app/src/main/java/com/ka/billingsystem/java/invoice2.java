@@ -1,5 +1,7 @@
 package com.ka.billingsystem.java;
 
+import static com.ka.billingsystem.java.ImageEncodeAndDecode.decodeBase64ToBitmap;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -291,10 +293,7 @@ public  class invoice2 {
         canvas.drawText("-"+currentLine.toString(), x, y, paint);
         return end_item;
     }
-    private static Bitmap decodeBase64ToBitmap(String encodedString) {
-        byte[] decodedString = Base64.decode(encodedString, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-    }
+
 
     public static Bitmap resizeBitmap(Bitmap bitmap, int newWidth, int newHeight) {
         return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false);

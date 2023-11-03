@@ -2,9 +2,11 @@ package com.ka.billingsystem.Activity;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.app.DatePickerDialog;
@@ -18,6 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -34,6 +37,7 @@ import com.ka.billingsystem.R;
 
 import com.ka.billingsystem.databinding.ActivityHistoryBinding;
 
+import com.ka.billingsystem.java.ImageEncodeAndDecode;
 import com.ka.billingsystem.java.invoice1;
 import com.ka.billingsystem.model.OnPdfFileSelectListener;
 import com.ka.billingsystem.model.PdfAdapter;
@@ -56,6 +60,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
     private List<String> mPusername = new ArrayList();
     private List<String> mPcusname = new ArrayList();
     private List<String> mPcusPhoneno = new ArrayList();
+    private List<String> image = new ArrayList();
     private PdfAdapter pdfAdapter;
     private List<File> pdfList;
     Long FromDate=0l;
@@ -255,6 +260,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
         mPcusname.clear();
         mPcusPhoneno.clear();
         pdfList.clear();
+        image.clear();
 
         if (c1.moveToFirst()) {
             do {
@@ -267,6 +273,8 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
                 @SuppressLint("Range") String data4 = c1.getString(c1.getColumnIndex("sales_user"));
                 @SuppressLint("Range") String data5 = c1.getString(c1.getColumnIndex("cus_name"));
                 @SuppressLint("Range") String data6 = c1.getString(c1.getColumnIndex("cus_Phone"));
+                @SuppressLint("Range") String data7 = c1.getString(c1.getColumnIndex("printer_img"));
+
                 File file;
                 if(path == null) {
                     file=new File("/storage/emulated/0/DATA/Invoice"+data1+".pdf");
@@ -279,6 +287,8 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
 
 
                     SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
+
+                    image.add(data7);
                     Date res = new Date(data3);
                       tempbillno.add(data1);
 
@@ -296,7 +306,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
         System.out.println(mPcusname);
         System.out.println(mPcusPhoneno);
         System.out.println(mPtamount);
-        pdfAdapter=new PdfAdapter(this,pdfList,this,mPbillno,tempbillno,mPtamount,mPDate,mPusername,mPtime,mPcusname,mPcusPhoneno);
+        pdfAdapter=new PdfAdapter(this,pdfList,this,mPbillno,tempbillno,mPtamount,mPDate,mPusername,mPtime,mPcusname,mPcusPhoneno,image);
         recyclerView.setAdapter(pdfAdapter);
 
     }
@@ -404,6 +414,21 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
 
         }
 
+    }
+
+    @Override
+    public void image(String image) {
+        Bitmap Printerimg= ImageEncodeAndDecode.decodeBase64ToBitmap(image);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.image_dialog_layout, null);
+        dialogBuilder.setView(dialogView);
+
+        ImageView imageView = dialogView.findViewById(R.id.dialogImageView);
+        imageView.setImageBitmap(Printerimg);
+
+        AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
     }
 
 

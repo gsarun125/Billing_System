@@ -28,6 +28,7 @@ val COL_RATE = "rate"
 val COL_AMOUNT="amount"
 val COL_TIMESTAMP="time"
 val CoL_TOTAL_AMOUNT="tamount"
+val Col_Image_printer="printer_img"
 
 val TABLENAME3 = "customer"
 val COL_CUSID="cus_id"
@@ -49,7 +50,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         val createTable = "CREATE TABLE " + TABLENAME1 + " (" + COL_PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY + " INTEGER," + COL_COST + " INTEGER)"
         db?.execSQL(createTable)
 
-       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO  + " INTEGER ," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
+       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO  + " INTEGER ," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000),"+ Col_Image_printer+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
 
         db?.execSQL(createTable2)
 
@@ -59,9 +60,11 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
         val createTable4 = "CREATE TABLE " + TABLENAME4 + " ( "+ COL_ID +  " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_USER_id + " VARCHAR(1000) UNIQUE," + COL_USER_NAME + " VARCHAR(1000) ," + COL_PASS + " VARCHAR(1000)," + COL_TIMESTAMP_CREATE+ " LONG," + COL_TIMESTAMP_MODIFIE + " LONG)"
         db?.execSQL(createTable4)
-        val createTable5 = "CREATE TABLE " + TABLENAME5 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
+        val createTable5 = "CREATE TABLE " + TABLENAME5 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000),"+ Col_Image_printer+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
         db?.execSQL(createTable5)
         this.UserData(db, "Admin","admin", "admin");
+        this.UserData(db, "ARUN","a", "a");
+
         if (db != null) {
           // this.generateRandomData(db)
         };
@@ -200,6 +203,15 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         val values = ContentValues()
 
         values.put(COL_FILE_PATH,Path)
+        db.update(TABLENAME2, values, "Bill_No=?", arrayOf<String>(Bill_No.toString()))
+        ///db.close()
+    }
+    fun PrinterImage( Bill_No :Int ,image:String) {
+
+        val db = this.writableDatabase
+        val values = ContentValues()
+
+        values.put(Col_Image_printer,image)
         db.update(TABLENAME2, values, "Bill_No=?", arrayOf<String>(Bill_No.toString()))
         ///db.close()
     }

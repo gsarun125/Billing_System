@@ -1,5 +1,7 @@
 package com.ka.billingsystem.Activity;
 
+import static com.ka.billingsystem.java.ImageEncodeAndDecode.encodeToBase64;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -77,12 +79,6 @@ public class Signature extends AppCompatActivity {
 
     }
 
-    // Convert Bitmap to a Base64 encoded string
-    private String encodeToBase64(Bitmap image, Bitmap.CompressFormat compressFormat, int quality) {
-        ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
-        image.compress(compressFormat, quality, byteArrayOS);
-        return Base64.encodeToString(byteArrayOS.toByteArray(), Base64.DEFAULT);
-    }
 
     public void showCustomDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

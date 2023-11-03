@@ -13,14 +13,19 @@ import static com.ka.billingsystem.Activity.SalesActivity.mQty;
 import static com.ka.billingsystem.Activity.SalesActivity.mTotal;
 import static com.ka.billingsystem.Activity.SalesActivity.phoneEdit;
 import static com.ka.billingsystem.Activity.SalesActivity.removeView;
+import static com.ka.billingsystem.java.ImageEncodeAndDecode.encodeToBase64;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Camera;
 import android.net.Uri;
@@ -28,6 +33,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,12 +46,14 @@ import com.ka.billingsystem.DataBase.DataBaseHandler;
 import com.ka.billingsystem.R;
 import com.ka.billingsystem.java.invoice1;
 import com.ka.billingsystem.java.invoice2;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.List;
 
 public class PdfviewActivity extends AppCompatActivity {
 
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
+
     static PDFView pdfView;
     private DataBaseHandler db = new DataBaseHandler(this);
     ImageButton share;
@@ -55,10 +63,11 @@ public class PdfviewActivity extends AppCompatActivity {
     String SHARED_PREFS = "shared_prefs";
     String SHARED_PREFS_Logo = "logo";
     SharedPreferences sharedpreferences;
+    private static final int CAMERA_PERMISSION_CODE = 100;
+    private static final int CAMERA_REQUEST_CODE = 101;
     String SPIS_FIRST_TIME;
     String SPIS_FIRST_logo;
     String fileName;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,11 +108,10 @@ public class PdfviewActivity extends AppCompatActivity {
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dispatchTakePictureIntent();
-                System.out.println("jhfjgf");
+
+                openCamera();
             }
         });
-
 
         textButton.setOnClickListener(new View.OnClickListener() {
             boolean isMethod1 = true;
@@ -202,21 +210,44 @@ public class PdfviewActivity extends AppCompatActivity {
             }
         });
     }
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+    private void openCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+        } else {
+            requestCameraPermission();
         }
     }
+    private void requestCameraPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera();
+            }
+        }
+    }
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            // Do something with the image captured
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+            Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+            if (imageBitmap != null) {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                byte[] byteArray = byteArrayOutputStream.toByteArray();
+                String imageencoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                System.out.println(imageencoded);
+                db.PrinterImage(Bill_NO, imageencoded);
+                Toast.makeText(PdfviewActivity.this, "Printer Image is saved!", Toast.LENGTH_SHORT).show();
+            }
         }
     }
+
+
     @Override
     public void onBackPressed() {
 
@@ -334,10 +365,10 @@ public class PdfviewActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(File result) {
+            pdfView.fromFile(result).load();
             if (progressDialog != null && progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
-            pdfView.fromFile(result).load();
         }
     }
     private class PdfGenerationTask2 extends AsyncTask<Void, Void, File> {
@@ -396,10 +427,11 @@ public class PdfviewActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(File result) {
+
+            pdfView.fromFile(result).load();
             if (progressDialog != null && progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
-            pdfView.fromFile(result).load();
         }
     }
 }
