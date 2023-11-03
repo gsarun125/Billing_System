@@ -157,6 +157,12 @@ public class SalesActivity extends AppCompatActivity  {
                }
             }
         });
+        activitySalesBinding.backbuttonSale.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
     }
     private void checkIfBothFieldsHaveText() {
         String phone = phoneEdit.getText().toString().trim();

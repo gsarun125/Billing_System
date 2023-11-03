@@ -60,8 +60,6 @@ public class PdfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (mPbillno != null && mPbillno.size() > 0) {
-            // Show regular item views
-            System.out.println("gfbgffgfg");
             holder.itemView.setVisibility(View.VISIBLE);
             PdfViewHolder pdfViewHolder = (PdfViewHolder) holder;
             pdfViewHolder.tvname.setText(pdfFiles.get(position).getName());

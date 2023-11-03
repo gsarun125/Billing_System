@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -79,14 +81,17 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
     String SHARED_PREFS_Logo = "logo";
     String SPuser;
     Cursor c1;
+
+    private boolean fromDateSelected = false;
+    private boolean toDateSelected = false;
     private DataBaseHandler db = new DataBaseHandler(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activityHistoryBinding=ActivityHistoryBinding.inflate(getLayoutInflater());
+        activityHistoryBinding = ActivityHistoryBinding.inflate(getLayoutInflater());
         setContentView(activityHistoryBinding.getRoot());
-        sharedpreferences= getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        SPuser = sharedpreferences.getString(USER_KEY,null);
+        sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SPuser = sharedpreferences.getString(USER_KEY, null);
         System.out.println(SPuser);
         c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
         displayPdf(c1);
@@ -96,126 +101,213 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
 
         Autocompition();
 
+        editTextDatePickerFrom.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                checkDatesAndExecuteMethod();
+            }
+        });
+
+        editTextDatePickerTo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                checkDatesAndExecuteMethod();
+            }
+        });
+
         ArrayAdapter<String> Bill_no_adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(Bill_no_Auto));
         activityHistoryBinding.Hbillno.setAdapter(Bill_no_adapter);
         activityHistoryBinding.Hbillno.setThreshold(1);
+        activityHistoryBinding.Hbillno.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                search();
+            }
+        });
 
         ArrayAdapter<String> Cus_Name_adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(Customer_Name_Auto));
         activityHistoryBinding.Hcusname.setAdapter(Cus_Name_adapter);
         activityHistoryBinding.Hcusname.setThreshold(1);
 
+        activityHistoryBinding.Hcusname.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                search();
+            }
+        });
+
         ArrayAdapter<String> Pnone_no_adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(Phone_no_Auto));
         activityHistoryBinding.HPhoneno.setAdapter(Pnone_no_adapter);
         activityHistoryBinding.HPhoneno.setThreshold(1);
+        activityHistoryBinding.HPhoneno.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-        activityHistoryBinding.search.setOnClickListener(new View.OnClickListener() {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                search();
+            }
+        });
+
+        activityHistoryBinding.backbuttonHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              if (FromDate!=0l&&ToDate!=0l){
-
-                  if(FromDate<=ToDate) {
-                      System.out.println(FromDate);
-                      System.out.println(ToDate);
-
-                      filterWithDate();
-                  }else {
-                      editTextDatePickerFrom.setText("");
-                      editTextDatePickerFrom.setFocusable(true);
-                      editTextDatePickerFrom.requestFocus();
-
-                      InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                      imm.showSoftInput(editTextDatePickerFrom, InputMethodManager.SHOW_IMPLICIT);
-                      Toast.makeText(HistoryActivity.this,R.string.invalid_date,Toast.LENGTH_LONG).show();
-                      editTextDatePickerTo.setText("");
-                  }
-              }
-              else {
-                  filter();
-              }
+                onBackPressed();
             }
         });
-
     }
-    public void showDatePickerDialogFrom(View v){
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+    private void checkDatesAndExecuteMethod() {
+        String fromDate = editTextDatePickerFrom.getText().toString().trim();
+        String toDate = editTextDatePickerTo.getText().toString().trim();
+        System.out.println("jhhjhghj");
+        System.out.println(FromDate);
+        System.out.println(ToDate);
+    if (!fromDate.isEmpty() && !toDate.isEmpty()) {
+            System.out.println("hghfggfyyf");
+            search();
+        }
+    }
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (DatePicker view, int selectedYear, int selectedMonth, int selectedDay) -> {
-            editTextDatePickerFrom.setText(selectedDay + "-" + (selectedMonth + 1) + "-" + selectedYear);
+    public void search(){
+        if (FromDate!=0l&&ToDate!=0l){
 
-            Calendar calendar1 = Calendar.getInstance();
-            calendar1.set(selectedYear, selectedMonth, selectedDay, 0, 0);
+            if(FromDate<=ToDate) {
+                System.out.println(FromDate);
+                System.out.println(ToDate);
 
-            Calendar currentDate = Calendar.getInstance(); // Get current date
-            if (calendar1.after(currentDate)) {
-                // Set the date to the current date if the selected date is in the future
-                calendar1 = currentDate;
-
-            }
-
-            FromDate = calendar1.getTimeInMillis();
-
-        }, year, month, day);
-        datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
-            if (which == DialogInterface.BUTTON_NEGATIVE) {
+                filterWithDate();
+            }else {
                 editTextDatePickerFrom.setText("");
-                FromDate=0l;
+                editTextDatePickerFrom.setFocusable(true);
+                editTextDatePickerFrom.requestFocus();
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(editTextDatePickerFrom, InputMethodManager.SHOW_IMPLICIT);
+                Toast.makeText(HistoryActivity.this,R.string.invalid_date,Toast.LENGTH_LONG).show();
+                editTextDatePickerTo.setText("");
             }
-        });
-
-
-        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis()); // Set the maximum date to the current date
-        datePickerDialog.show();
+        }
+        else {
+            filter();
+        }
     }
-    public void showDatePickerDialogTO(View v) {
+    private DatePickerDialog createDatePickerDialog(boolean isFromDate) {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, (DatePicker view, int selectedYear, int selectedMonth, int selectedDay) -> {
-            editTextDatePickerTo.setText(selectedDay + "-" + (selectedMonth + 1) + "-" + selectedYear);
-
             Calendar calendar1 = Calendar.getInstance();
-            calendar1.set(selectedYear, selectedMonth, selectedDay, 23, 59);
+            calendar1.set(selectedYear, selectedMonth, selectedDay, isFromDate ? 0 : 23, isFromDate ? 0 : 59);
 
-            Calendar currentDate = Calendar.getInstance(); // Get current date
+            Calendar currentDate = Calendar.getInstance();
             if (calendar1.after(currentDate)) {
-                // Set the date to the current date if the selected date is in the future
                 calendar1 = currentDate;
-
             }
 
-            ToDate = calendar1.getTimeInMillis();
+            if (isFromDate) {
+                FromDate = calendar1.getTimeInMillis();
+                editTextDatePickerFrom.setText(selectedDay + "-" + (selectedMonth + 1) + "-" + selectedYear);
 
+            } else {
+                ToDate = calendar1.getTimeInMillis();
+                editTextDatePickerTo.setText(selectedDay + "-" + (selectedMonth + 1) + "-" + selectedYear);
+
+            }
         }, year, month, day);
 
         datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (dialog, which) -> {
             if (which == DialogInterface.BUTTON_NEGATIVE) {
-                editTextDatePickerTo.setText("");
-                ToDate=0l;
+                if (isFromDate) {
+                    editTextDatePickerFrom.setText("");
+                    FromDate = 0L;
+                } else {
+                    editTextDatePickerTo.setText("");
+                    ToDate = 0L;
+                }
             }
         });
-        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis()); // Set the maximum date to the current date
-        datePickerDialog.show();
+
+        if (isFromDate && ToDate != 0L) {
+            datePickerDialog.getDatePicker().setMaxDate(ToDate);
+        } else if (!isFromDate && FromDate != 0L) {
+            datePickerDialog.getDatePicker().setMinDate(FromDate);
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        } else {
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        }
+
+        return datePickerDialog;
     }
+
+    public void showDatePickerDialogFrom(View v) {
+        createDatePickerDialog(true).show();
+    }
+
+    public void showDatePickerDialogTo(View v) {
+        createDatePickerDialog(false).show();
+    }
+
 
     private void  filter(){
         if (activityHistoryBinding.Hbillno.getText().toString().length() !=0 & activityHistoryBinding.Hcusname.getText().toString().length() !=0){
-            Cursor c1 = db.get_value("SELECT DISTINCT * FROM ( SELECT *  FROM Transation WHERE sales_user='" + SPuser + "' AND cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"'  GROUP BY cus_id  UNION ALL SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' AND sorted.cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT DISTINCT * FROM ( SELECT *  FROM Transation WHERE sales_user='" + SPuser + "' AND cus_id LIKE '"+activityHistoryBinding.Hbillno.getText().toString()+"%'  GROUP BY cus_id  UNION ALL SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name LIKE '"+activityHistoryBinding.Hcusname.getText().toString()+"%' AND sorted.cus_id LIKE '"+activityHistoryBinding.Hbillno.getText().toString()+"%' ORDER BY sorted.time DESC");
             displayPdf(c1);
         } else if (activityHistoryBinding.Hcusname.getText().toString().length() !=0&&activityHistoryBinding.HPhoneno.getText().toString().length() !=0) {
-            Cursor c1 = db.get_value("SELECT * FROM ( SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id ) AS sorted JOIN customer  ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' AND customer.cus_Phone = '"+activityHistoryBinding.HPhoneno.getText().toString()+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT * FROM ( SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id ) AS sorted JOIN customer  ON sorted.cus_id = customer.cus_id WHERE customer.cus_name LIKE '"+activityHistoryBinding.Hcusname.getText().toString()+"%' AND customer.cus_Phone LIKE '"+activityHistoryBinding.HPhoneno.getText().toString()+"%' ORDER BY sorted.time DESC");
             displayPdf(c1);
         } else if (activityHistoryBinding.Hbillno.getText().toString().length() !=0 ){
-            Cursor c1 = db.get_value("SELECT *  FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' AND cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"' GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT *  FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' AND cus_id LIKE '"+activityHistoryBinding.Hbillno.getText().toString()+"%' GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
             displayPdf(c1);
         }
         else if (activityHistoryBinding.Hcusname.getText().toString().length() !=0 ){
-            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name LIKE '"+activityHistoryBinding.Hcusname.getText().toString()+"%' ORDER BY sorted.time DESC");
             displayPdf(c1);
         } else if (activityHistoryBinding.HPhoneno.getText().toString().length()!=0) {
-            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_Phone = '"+activityHistoryBinding.HPhoneno.getText().toString()+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_Phone LIKE '"+activityHistoryBinding.HPhoneno.getText().toString()+"%' ORDER BY sorted.time DESC");
             displayPdf(c1);
         }else {
            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC");
@@ -226,20 +318,20 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
 
     private void  filterWithDate(){
         if (activityHistoryBinding.Hbillno.getText().toString().length() !=0 & activityHistoryBinding.Hcusname.getText().toString().length() !=0){
-            Cursor c1 = db.get_value("SELECT DISTINCT * FROM ( SELECT *  FROM Transation WHERE cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"'  GROUP BY cus_id  UNION ALL SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' AND sorted.cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"' AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT DISTINCT * FROM ( SELECT *  FROM Transation WHERE cus_id LIKE '"+activityHistoryBinding.Hbillno.getText().toString()+"%' GROUP BY cus_id  UNION ALL SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name LIKE '"+activityHistoryBinding.Hcusname.getText().toString()+"%' AND sorted.cus_id LIKE '"+activityHistoryBinding.Hbillno.getText().toString()+"%' AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         } else if (activityHistoryBinding.Hcusname.getText().toString().length() !=0&&activityHistoryBinding.HPhoneno.getText().toString().length() !=0) {
-            Cursor c1 = db.get_value("SELECT * FROM ( SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id ) AS sorted JOIN customer  ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"' AND customer.cus_Phone = '"+activityHistoryBinding.HPhoneno.getText().toString()+"' AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT * FROM ( SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id ) AS sorted JOIN customer  ON sorted.cus_id = customer.cus_id WHERE customer.cus_name LIKE '"+activityHistoryBinding.Hcusname.getText().toString()+"%' AND customer.cus_Phone LIKE '"+activityHistoryBinding.HPhoneno.getText().toString()+"%' AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         } else if (activityHistoryBinding.Hbillno.getText().toString().length() !=0 ){
-            Cursor c1 = db.get_value("SELECT *  FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' AND cus_id = '"+activityHistoryBinding.Hbillno.getText().toString()+"' GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT *  FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' AND cus_id LIKE '"+activityHistoryBinding.Hbillno.getText().toString()+"%' GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         }
         else if (activityHistoryBinding.Hcusname.getText().toString().length() !=0 ){
-            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name = '"+activityHistoryBinding.Hcusname.getText().toString()+"'AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name LIKE '"+activityHistoryBinding.Hcusname.getText().toString()+"%' AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         } else if (activityHistoryBinding.HPhoneno.getText().toString().length()!=0) {
-            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_Phone = '"+activityHistoryBinding.HPhoneno.getText().toString()+"'AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
+            Cursor c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user='" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_Phone LIKE '"+activityHistoryBinding.HPhoneno.getText().toString()+"%'AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
             displayPdf(c1);
         }
         else {
@@ -303,9 +395,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
 
             } while (c1.moveToNext());
         }
-        System.out.println(mPcusname);
-        System.out.println(mPcusPhoneno);
-        System.out.println(mPtamount);
+
         pdfAdapter=new PdfAdapter(this,pdfList,this,mPbillno,tempbillno,mPtamount,mPDate,mPusername,mPtime,mPcusname,mPcusPhoneno,image);
         recyclerView.setAdapter(pdfAdapter);
 

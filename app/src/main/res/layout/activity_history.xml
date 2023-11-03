@@ -5,7 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.HistoryActivity">
-
+<RelativeLayout
+    android:id="@+id/RelativeLayout5"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <AutoCompleteTextView
         android:id="@+id/Hbillno"
         android:layout_width="80dp"
@@ -35,7 +38,7 @@
         android:focusable="false"
         android:hint="@string/to_date"
         android:inputType="none"
-        android:onClick="showDatePickerDialogTO"
+        android:onClick="showDatePickerDialogTo"
         android:singleLine="true" />
 
     <EditText
@@ -76,34 +79,57 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_toEndOf="@+id/Hcusname"
-         android:singleLine="true"
+        android:singleLine="true"
         android:inputType="number"
         android:hint="@string/phone_no"
         android:maxLength="10"
         android:background="@drawable/edit_text_border"
         android:padding="5dp" />
 
-    <ImageButton
-        android:id="@+id/search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/Hbillno"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="0dp"
-        android:layout_toEndOf="@+id/HPhoneno"
-        android:backgroundTint="#FFFFFF"
-        android:background="@drawable/circular_button_background"
-        android:src="@drawable/baseline_search_24"
-        android:padding="12dp"
-        />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/hisrecyle"
         android:layout_marginTop="150dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+</RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/RelativeLayout5"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="-50dp">
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/backbutton_history"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/riple_effect_linear"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/ripple_effect_backarrow"
+                    android:contentDescription="Back Arrow" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+                <!-- Add other contents here -->
+            </LinearLayout>
+
+        </LinearLayout>
+    </RelativeLayout>
+
 
 </RelativeLayout>
