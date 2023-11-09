@@ -14,12 +14,12 @@ import java.nio.channels.FileChannel;
 
 public class Import {
 
-    public static String ImportData(String packageName) {
+    public static String ImportData(String packageName,String filepath ) {
         try {
-            String zipFilePath = Environment.getExternalStorageDirectory() + "/DATA/Backup/backup.zip";
-            File zipFile = new File(zipFilePath);
+            //String zipFilePath = Environment.getExternalStorageDirectory() + "/KIRTHANA AGENCIES/Backup/backup.zip";
+            File zipFile = new File(filepath);
 
-            File dir = new File(Environment.getExternalStorageDirectory(), "DATA/Backup");
+            File dir = new File(Environment.getExternalStorageDirectory(), "KIRTHANA AGENCIES/Restore");
             if (!dir.exists()) {
                 dir.mkdirs();
             }
@@ -53,23 +53,32 @@ public class Import {
             File backupDB = new File(dir, copyPath);
             File backupSH = new File(dir, sharedCopyPath);
 
-            if (currentDB.exists() && currentSH.exists()) {
+            if (currentDB.exists() ) {
                 FileChannel src = new FileInputStream(backupDB).getChannel();
                 FileChannel dst = new FileOutputStream(currentDB).getChannel();
                 dst.transferFrom(src, 0, src.size());
 
-                FileChannel src2 = new FileInputStream(backupSH).getChannel();
-                FileChannel dst2 = new FileOutputStream(currentSH).getChannel();
-                dst2.transferFrom(src2, 0, src2.size());
-
                 src.close();
                 dst.close();
-
+                deleteDirectory(dir);
                 return "Successfully imported data";
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return "Failed to import data";
+
+
+    }
+    private static void deleteDirectory(File directory) {
+        if (directory.isDirectory()) {
+            File[] files = directory.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    deleteDirectory(file);
+                }
+            }
+        }
+        directory.delete();
     }
 }

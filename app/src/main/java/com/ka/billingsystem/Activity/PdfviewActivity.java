@@ -21,11 +21,13 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Camera;
 import android.net.Uri;
@@ -44,6 +46,7 @@ import android.widget.Toast;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.ka.billingsystem.DataBase.DataBaseHandler;
 import com.ka.billingsystem.R;
+import com.ka.billingsystem.java.Export;
 import com.ka.billingsystem.java.invoice1;
 import com.ka.billingsystem.java.invoice2;
 
@@ -53,9 +56,8 @@ import java.util.List;
 
 public class PdfviewActivity extends AppCompatActivity {
 
-
-    static PDFView pdfView;
     private DataBaseHandler db = new DataBaseHandler(this);
+    static PDFView pdfView;
     ImageButton share;
     ImageButton camera;
     ImageButton textButton;
@@ -78,19 +80,29 @@ public class PdfviewActivity extends AppCompatActivity {
         textButton = findViewById(R.id.textButton);
         camera=findViewById(R.id.camera);
         sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        SPIS_FIRST_TIME = sharedpreferences.getString(SHARED_PREFS_KEY, null);
+
+        String qurry = "Select * from user where id='1'";
+        Cursor c1 = db.get_value(qurry);
+        if (c1.moveToFirst()) {
+            @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("signature"));
+
+            SPIS_FIRST_TIME =data1;
+        }
+
+
         SPIS_FIRST_logo=sharedpreferences.getString(SHARED_PREFS_Logo,null);
 
         fileName = "Invoice" + Bill_NO + ".pdf";
-        File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
+
+        File dir = new File(this.getFilesDir(), "DATA");
         if (!dir.exists()) {
             dir.mkdir();
         }
 
         File file= new File(dir,fileName);
-        db.filePath(Bill_NO,file.getAbsolutePath());
+        db.filePath(Bill_NO,file.getAbsolutePath(),SPIS_FIRST_TIME);
 
-
+        Export.ExportData(getPackageName());
         new PdfGenerationTask(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME,SPIS_FIRST_logo, file).execute();
 
 //        File file = invoice1.PDF1(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME, fileName, 0, db);
@@ -236,11 +248,8 @@ public class PdfviewActivity extends AppCompatActivity {
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
             Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
             if (imageBitmap != null) {
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                byte[] byteArray = byteArrayOutputStream.toByteArray();
-                String imageencoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                System.out.println(imageencoded);
+                String imageencoded = encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100);
+                System.out.println(imageencoded.length());
                 db.PrinterImage(Bill_NO, imageencoded);
                 Toast.makeText(PdfviewActivity.this, "Printer Image is saved!", Toast.LENGTH_SHORT).show();
             }

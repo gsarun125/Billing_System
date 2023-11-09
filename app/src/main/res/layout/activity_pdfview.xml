@@ -20,7 +20,9 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:background="@drawable/ripple_effect_camera"
-        android:text="classic invoice" />
+        android:text="classic invoice"
+        android:contentDescription="Click here to capture an image for the classic invoice"
+        />
 
     <ImageButton
         android:id="@+id/textButton"
