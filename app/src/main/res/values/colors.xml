@@ -5,8 +5,9 @@
     <color name="green">#A0BA</color>
     <color name="red">#B00</color>
     <color name="yellow">#FF0</color>
-    <color name="purple_700">#4A148C</color>
-
-
+    <color name="purple_700">#3E0F77</color>
+    <color name="button_color">#116598</color>
+    <color name="start_color">#009FFF</color>
+    <color name="end_color">#ec2F4B</color>
 
 </resources>
