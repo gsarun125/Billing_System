@@ -49,7 +49,7 @@
     <string name="user_name">User Name</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
-    <string name="click_to_sign_up">Click To Sign UP</string>
+    <string name="click_to_sign_up">Click to sign up</string>
     <string name="username">Username</string>
     <string name="re_type_password">Re-type password</string>
     <string name="new_password">New password</string>
@@ -73,7 +73,7 @@
     <string name="invalid_credentials">Invalid Credentials</string>
     <string name="press_ok_to_logout">Press OK to Logout!</string>
     <string name="you_press_cancel_button">You pressed Cancel button</string>
-    <string name="choose_language">Choose Language...</string>
+    <string name="choose_language" translatable="false">Choose Language...</string>
     <string name="mobile_number_must_be_10_digits">Mobile number must be 10 digits</string>
     <string name="printer_type_is_required1">Printer type is required</string>
     <string name="add_printer_information">add Printer information</string>

@@ -55,7 +55,8 @@
                 android:ems="10"
                 android:hint="User Name"
                 android:inputType="textPersonName"
-                android:padding="9dp"
+                android:padding="15dp"
+                android:background="@drawable/edit_text_bg"
                 android:textColor="@color/black"/>
 
             <EditText
@@ -64,9 +65,10 @@
                 android:id="@+id/txtuserid"
                 android:layout_marginBottom="10dp"
                 android:ems="10"
+                android:background="@drawable/edit_text_bg"
                 android:hint="User id"
                 android:inputType="textPersonName"
-                android:padding="9dp"
+                android:padding="15dp"
                 android:textColor="@color/black"/>
 
 
@@ -78,7 +80,9 @@
                 android:ems="10"
                 android:hint="@string/new_password"
                 android:inputType="textPassword"
-                android:padding="9dp"
+                android:fontFamily="@font/aovelransrounded"
+                android:background="@drawable/edit_text_bg"
+                android:padding="15dp"
                 android:textColor="@color/black"/>
 
             <EditText
@@ -86,9 +90,11 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/retypepassword"
                 android:ems="10"
+                android:background="@drawable/edit_text_bg"
+                android:fontFamily="@font/aovelransrounded"
                 android:hint="@string/re_type_password"
                 android:inputType="textPassword"
-                android:padding="9dp"
+                android:padding="15dp"
                 android:textColor="@color/black"/>
 
             <Button

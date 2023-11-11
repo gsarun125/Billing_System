@@ -67,7 +67,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         db?.execSQL(createTable5)
 
         this.UserData(db, "Admin","admin", "admin",null);
-        this.UserData(db, "ARUN","a", "a",null);
+      //  this.UserData(db, "ARUN","a", "a",null);
 
         if (db != null) {
           // this.generateRandomData(db)
@@ -300,6 +300,15 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
             db.insert(TABLENAME4, null, userValues)
         }
     }
+    fun ForgotPasswordChange( Userid :String ,Password:String) {
+
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COL_PASS,Password)
+        db.update(TABLENAME4, values, "user_id=?", arrayOf<String>(Userid))
+        ///db.close()
+    }
+
     @SuppressLint("Range")
     fun moveDataFromTable2ToTable5(billNo: String) {
         val db = this.writableDatabase

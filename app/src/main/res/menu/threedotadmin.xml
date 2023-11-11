@@ -4,19 +4,23 @@
         android:id="@+id/lan"
         android:title="@string/language"
         android:icon="@drawable/baseline_language_24"
+        android:titleTextAppearance="@style/MenuItemTextAppearance"
         />
 
     <item android:id="@+id/EditSignature"
         android:title="@string/edit_signature"
         android:icon="@drawable/baseline_edit_sig"
+        android:titleTextAppearance="@style/MenuItemTextAppearance"
         />
     <item android:id="@+id/Export"
         android:title="@string/export_invoice"
         android:icon="@drawable/baseline_ios_share_24"
+        android:titleTextAppearance="@style/MenuItemTextAppearance"
         />
     <item android:id="@+id/Import"
         android:title="@string/import_invoice"
         android:icon="@drawable/baseline_import_export_24"
+        android:titleTextAppearance="@style/MenuItemTextAppearance"
         />
     <item
         android:id="@+id/Logout"

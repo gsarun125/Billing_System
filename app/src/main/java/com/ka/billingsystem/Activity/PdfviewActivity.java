@@ -102,7 +102,7 @@ public class PdfviewActivity extends AppCompatActivity {
         File file= new File(dir,fileName);
         db.filePath(Bill_NO,file.getAbsolutePath(),SPIS_FIRST_TIME);
 
-        Export.ExportData(getPackageName());
+
         new PdfGenerationTask(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME,SPIS_FIRST_logo, file).execute();
 
 //        File file = invoice1.PDF1(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME, fileName, 0, db);
@@ -263,12 +263,12 @@ public class PdfviewActivity extends AppCompatActivity {
         removeView();
         activitySalesBinding.buttonAdd.setVisibility(View.GONE);
         phoneEdit.setText("");
-        cusEdit.setText("");
         mQty.clear();
         mTotal.clear();
         mProduct_name.clear();
         mCost.clear();
         Net_AMT = 0;
+        cusEdit.setText("");
         finish();
     }
 
@@ -369,6 +369,7 @@ public class PdfviewActivity extends AppCompatActivity {
         }
         @Override
         protected File doInBackground(Void... voids) {
+            Export.ExportData(getPackageName());
             return invoice1.PDF1(count, netAmt, billNo, customerName, phoneNo, mQty, mCost, mTotal, mProductName, spIsFirstTime,spIsFirstLogo, file, 0);
         }
 
@@ -431,6 +432,7 @@ public class PdfviewActivity extends AppCompatActivity {
 
         @Override
         protected File doInBackground(Void... voids) {
+            Export.ExportData(getPackageName());
             return invoice2.PDF2(count, netAmt, billNo, customerName, phoneNo, mQty, mCost, mTotal, mProductName, spIsFirstTime,spIsFirstLogo,file);
         }
 

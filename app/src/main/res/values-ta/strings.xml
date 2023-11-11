@@ -52,7 +52,6 @@
     <string name="invalid_credentials">தவறான ஆவண சான்றுகள்</string>
     <string name="press_ok_to_logout">வெளியேறுவதற்கு சரி என்பதை அழுத்தவும்!</string>
     <string name="you_press_cancel_button">ரத்துசெய் பொத்தானை அழுத்தியுள்ளீர்கள்</string>
-    <string name="choose_language">மொழியை தேர்வு செய்யவும்...</string>
     <string name="mobile_number_must_be_10_digits">மொபைல் எண் 10 இலக்கங்களாக இருக்க வேண்டும்</string>
     <string name="printer_type_is_required1">பிரிண்டர் வகை தேவை</string>
     <string name="add_printer_information">அச்சுப்பொறி தகவலைச் சேர்க்கவும்</string>

@@ -2,6 +2,9 @@ package com.ka.billingsystem.Activity
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.ProgressDialog
+import android.content.ActivityNotFoundException
+import android.content.ContentResolver
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
@@ -12,6 +15,7 @@ import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.Settings
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -23,16 +27,22 @@ import com.ka.billingsystem.R
 import com.ka.billingsystem.Services.LogoutService
 import com.ka.billingsystem.databinding.ActivityMainBinding
 import com.ka.billingsystem.java.Export
+import com.ka.billingsystem.java.Import
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.Locale
 
 
 class MainActivity :  AppCompatActivity() {
 
     val storage_RQ=101
-
+    private var progressStatus = 0
+    private var handler: Handler? = null
+    private val PICK_FILE_REQUEST_CODE = 100
     lateinit var binding: ActivityMainBinding
     var checkedItem = 0
+    private var progressDialog: ProgressDialog? = null
     var SHARED_PREFS = "shared_prefs"
     private lateinit var sharedpreferences: SharedPreferences
     var ADMIN_LOGIN = "admin_login"
@@ -83,9 +93,7 @@ class MainActivity :  AppCompatActivity() {
 
                 }
                 else if (ch==R.id.Import){
-                    val packagesname:String= packageName
-                   // val status1 :String = Import.ImportData(packagesname);
-                   // Toast.makeText(applicationContext,status1,Toast.LENGTH_SHORT).show()
+                    selectFile()
                 }
                 true
             }
@@ -127,6 +135,99 @@ class MainActivity :  AppCompatActivity() {
         }
 
     }
+    private fun selectFile() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = "application/zip"
+        try {
+            startActivityForResult(intent, PICK_FILE_REQUEST_CODE)
+        } catch (ex: ActivityNotFoundException) {
+            // Handle the exception
+        }
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            val uri: Uri? = data.data
+            val filePath: String? = getFilePathFromUri(uri)
+            println(uri)
+
+            val packagesName: String = packageName
+
+            val status1: String = Import.ImportData(packagesName, filePath)
+            Toast.makeText(applicationContext, status1, Toast.LENGTH_SHORT).show()
+
+            showProgressDialog()
+            // Uncomment the following lines if you want to restart the application
+            // val intent: Intent = baseContext.packageManager.getLaunchIntentForPackage(baseContext.packageName)!!
+            // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            // startActivity(intent)
+            // finish()
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+    private fun showProgressDialog() {
+        progressStatus = 0 // Reset the progressStatus to 0
+        progressDialog = ProgressDialog(this)
+        progressDialog!!.setMessage("Importing your data...")
+        progressDialog!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+        progressDialog!!.setProgress(0)
+        progressDialog!!.setMax(100)
+        progressDialog!!.setCancelable(false)
+        progressDialog!!.show()
+        handler = Handler()
+        Thread {
+            while (progressStatus < 100) {
+                progressStatus += 1
+
+                // Update the progress bar
+                handler!!.post(Runnable { progressDialog!!.setProgress(progressStatus) })
+                try {
+                    // Sleep for 100 milliseconds to simulate progress in the background
+                    Thread.sleep(100)
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
+                if (progressStatus == 100) {
+                    progressDialog!!.dismiss()
+                    val intent = baseContext.packageManager
+                        .getLaunchIntentForPackage(baseContext.packageName)
+                    intent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    startActivity(intent)
+                    finish()
+                }
+            }
+        }.start()
+    }
+
+    private fun getFilePathFromUri(uri: Uri?): String? {
+        var filePath: String? = null
+        val scheme = uri?.scheme
+        if (ContentResolver.SCHEME_CONTENT == scheme) {
+            try {
+                val inputStream = contentResolver.openInputStream(uri)
+                if (inputStream != null) {
+                    val file = File(cacheDir, "temp")
+                    FileOutputStream(file).use { outputStream ->
+                        val buffer =
+                            ByteArray(4 * 1024) // or other buffer size
+                        var read: Int
+                        while (inputStream.read(buffer).also { read = it } != -1) {
+                            outputStream.write(buffer, 0, read)
+                        }
+                        outputStream.flush()
+                    }
+                    filePath = file.absolutePath
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        } else if (ContentResolver.SCHEME_FILE == scheme) {
+            filePath = uri.path
+        }
+        println(filePath)
+        return filePath
+    }
+
 
     private fun logOut(){
         val builder = androidx.appcompat.app.AlertDialog.Builder(this)
@@ -258,7 +359,7 @@ class MainActivity :  AppCompatActivity() {
     }
 
     private fun share(){
-        val zipFilePath = Environment.getExternalStorageDirectory().toString() + "/KIRTHANA AGENCIES/Backup/backup.zip"
+        val zipFilePath = Environment.getExternalStorageDirectory().toString() + "/KIRTHANA AGENCIES/Backup/kirthana_agencies_backup.zip"
         val zipFile = File(zipFilePath)
 
 

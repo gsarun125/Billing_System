@@ -12,13 +12,12 @@ import com.ka.billingsystem.R;
 
 
 public class PdfViewHolder extends RecyclerView.ViewHolder {
-    public TextView tvname;
+
     public CardView container;
     public TextView IVbillno;
     public TextView IVDate;
-    public TextView IVtime;
     public TextView IVuser;
-    public TextView IVtotal;
+
     public TextView IVCusName;
     public TextView IVcuspno;
     ImageView Printerimg;
@@ -26,13 +25,11 @@ public class PdfViewHolder extends RecyclerView.ViewHolder {
     public PdfViewHolder(@NonNull View itemView) {
         super(itemView);
 
-        tvname=itemView.findViewById(R.id.textPdfname);
+
         container=itemView.findViewById(R.id.container1);
         IVbillno=itemView.findViewById(R.id.IVBillNo);
         IVDate=itemView.findViewById(R.id.IVDate);
-        IVtime=itemView.findViewById(R.id.IVTime);
         IVuser=itemView.findViewById(R.id.IVUser);
-        IVtotal=itemView.findViewById(R.id.IVTotal);
         IVCusName=itemView.findViewById(R.id.IVCusName);
         IVcuspno=itemView.findViewById(R.id.IVcuspno);
         Printerimg=itemView.findViewById(R.id.printerimg);

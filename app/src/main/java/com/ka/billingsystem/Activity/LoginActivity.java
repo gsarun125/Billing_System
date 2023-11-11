@@ -37,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     LinearLayout Language;
     Button login;
     TextView ClickSignUP;
+    TextView ForgotPassword;
 
     String SHARED_PREFS = "shared_prefs";
     String USER_KEY = "user_key";
@@ -44,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     String ADMIN_LOGIN = "admin_login";
     String SPuser;
     String SPpass;
+    int invalid_login=0;
     private static final String SHARED_PREFS_KEY = "signature";
     private static final String SHARED_PREFS_Logo = "logo";
     String SPIS_FIRST_TIME;
@@ -72,7 +74,10 @@ public class LoginActivity extends AppCompatActivity {
         password = (EditText) findViewById(R.id.txtPassword);
         login = (Button) findViewById(R.id.btnLogin);
         ClickSignUP = (TextView) findViewById(R.id.txtClickSignUP);
+        ForgotPassword=findViewById(R.id.ForgotPassword);
         Language=findViewById(R.id.language);
+        Language.setVisibility(View.GONE);
+
 
         Drawable d = getResources().getDrawable(R.drawable.logo);
         Bitmap mBitmap = ((BitmapDrawable) d).getBitmap();
@@ -143,12 +148,19 @@ public class LoginActivity extends AppCompatActivity {
                     } else {
                         user_name.setText("");
                         password.setText("");
+                        invalid_login++;
+
                         Toast.makeText(LoginActivity.this,R.string.invalid_credentials, Toast.LENGTH_SHORT).show();
                     }
                 }
 
             }
         });
+    }
+    public void onForgotPasswordClick(View view) {
+        Intent i=new Intent(LoginActivity.this,ForgotPasswordActivity.class);
+        startActivity(i);
+
     }
     private void ShowChangeLanguage() {
         String[] lan = {"English", "தமிழ்"};

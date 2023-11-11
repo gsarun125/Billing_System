@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="9"
+    android:background="@color/white"
     tools:context=".Activity.PdfviewActivity">
 <RelativeLayout
     android:id="@+id/R1"

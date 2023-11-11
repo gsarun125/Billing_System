@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -35,7 +36,7 @@ import kotlin.jvm.internal.Intrinsics;
 public class SalesActivity extends AppCompatActivity  {
     private DataBaseHandler db = new DataBaseHandler(this);
     public static ActivitySalesBinding activitySalesBinding;
-
+    public static String SPIS_FIRST_TIME=null;
     int add_count=0;
     EditText qty;
     EditText Printer_Type;
@@ -83,6 +84,8 @@ public class SalesActivity extends AppCompatActivity  {
         SPuser = sharedpreferences.getString(USER_KEY,null);
     //    SPIS_FIRST_TIME=sharedpreferences.getString(SHARED_PREFS_KEY,null);
         phoneEdit=(EditText) findViewById(R.id.PhoneNo);
+
+
 
         phoneEdit.addTextChangedListener(new TextWatcher() {
             @Override
@@ -386,23 +389,25 @@ public class SalesActivity extends AppCompatActivity  {
         Customer_Id = id + 1;
         Bill_NO = id + 1;
     }
+         AsyncTask.execute(new Runnable() {
+             @Override
+             public void run() {
+                 for (Long total : mTotal) {
+
+                     Net_AMT = Net_AMT + total;
+
+                 }
+                 long time = System.currentTimeMillis();
+                 for (int i = 0; i < count; i++) {
+                     db.insertData_to_trancation(Customer_Id, Bill_NO, mProduct_name.get(i), mQty.get(i), mCost.get(i), mTotal.get(i), Net_AMT, time, SPuser);
+                 }
+             }
+         });
+
+         db.insertData_to_Customer(Customer_Id, Customer_Name, PHone_NO);
 
 
-    for (Long total : mTotal) {
-
-        Net_AMT = Net_AMT + total;
-
-    }
-
-    long time = System.currentTimeMillis();
-    for (int i = 0; i < count; i++) {
-        db.insertData_to_trancation(Customer_Id, Bill_NO, mProduct_name.get(i), mQty.get(i), mCost.get(i), mTotal.get(i), Net_AMT, time, SPuser);
-    }
-    db.insertData_to_Customer(Customer_Id, Customer_Name, PHone_NO);
-
-
-    String SPIS_FIRST_TIME=null;
-    String qurry = "Select * from user where id='1'";
+         String qurry = "Select * from user where id='1'";
          Cursor c1 = db.get_value(qurry);
          if (c1.moveToFirst()) {
              @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("signature"));
@@ -410,7 +415,8 @@ public class SalesActivity extends AppCompatActivity  {
              SPIS_FIRST_TIME =data1;
          }
 
-         if (SPIS_FIRST_TIME!=null){
+
+    if (SPIS_FIRST_TIME!=null){
         Intent intent = new Intent(SalesActivity.this, PdfviewActivity.class);
         startActivity(intent);
     }

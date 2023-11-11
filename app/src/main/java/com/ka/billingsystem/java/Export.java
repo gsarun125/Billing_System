@@ -1,12 +1,13 @@
 package com.ka.billingsystem.java;
 
 import android.os.Environment;
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
-import org.apache.commons.compress.utils.IOUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class Export {
     public static String ExportData(String packageName) {
@@ -27,14 +28,13 @@ public class Export {
                 subdir.mkdirs();
             }
 
-            File zipFile = new File(subdir, "backup.zip");
+            File zipFile = new File(subdir, "kirthana_agencies_backup.zip");
 
             if (currentDB.exists() && currentSH.exists()) {
-
                 try (FileOutputStream fos = new FileOutputStream(zipFile);
-                     ArchiveOutputStream aos = new ZipArchiveOutputStream(fos)) {
-                    addToZip(currentDB, copyPath, aos);
-                    addToZip(currentSH, sharedCopyPath, aos);
+                     ZipOutputStream zos = new ZipOutputStream(fos)) {
+                    addToZip(currentDB, copyPath, zos);
+                    addToZip(currentSH, sharedCopyPath, zos);
                 }
 
                 return "Successfully stored";
@@ -45,12 +45,18 @@ public class Export {
         return "File not found";
     }
 
-    private static void addToZip(File file, String fileName, ArchiveOutputStream out) throws IOException {
+    private static void addToZip(File file, String fileName, ZipOutputStream out) throws IOException {
         FileInputStream fis = new FileInputStream(file);
-        ArchiveEntry entry = out.createArchiveEntry(file, fileName);
-        out.putArchiveEntry(entry);
-        IOUtils.copy(fis, out);
-        out.closeArchiveEntry();
+        ZipEntry entry = new ZipEntry(fileName);
+        out.putNextEntry(entry);
+
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+        while ((bytesRead = fis.read(buffer)) != -1) {
+            out.write(buffer, 0, bytesRead);
+        }
+
+        out.closeEntry();
         fis.close();
     }
 }

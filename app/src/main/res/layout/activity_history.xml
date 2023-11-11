@@ -22,6 +22,7 @@
         android:hint="@string/bill_no"
         android:maxLength="10"
         android:inputType="number"
+
         android:background="@drawable/edit_text_border"
         android:padding="5dp" />
 
@@ -97,7 +98,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/RelativeLayout5"
-        android:layout_marginBottom="5dp"
         android:layout_marginTop="-50dp">
 
         <LinearLayout

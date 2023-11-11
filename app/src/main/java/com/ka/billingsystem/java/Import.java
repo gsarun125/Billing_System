@@ -61,7 +61,7 @@ public class Import {
                 src.close();
                 dst.close();
                 deleteDirectory(dir);
-                return "Successfully imported data";
+                return "Importing started";
             }
         } catch (Exception e) {
             e.printStackTrace();

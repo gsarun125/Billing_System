@@ -2,6 +2,7 @@ package com.ka.billingsystem.model;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,15 +63,11 @@ public class PdfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (mPbillno != null && mPbillno.size() > 0) {
             holder.itemView.setVisibility(View.VISIBLE);
             PdfViewHolder pdfViewHolder = (PdfViewHolder) holder;
-            pdfViewHolder.tvname.setText(pdfFiles.get(position).getName());
-            pdfViewHolder.tvname.setSelected(true);
-            pdfViewHolder.IVbillno.setText(mPbillno.get(position).toString().toUpperCase());
-            pdfViewHolder.IVDate.setText(mPDate.get(position).toString().toUpperCase());
-            pdfViewHolder.IVtime.setText(mPtime.get(position).toString().toUpperCase());
-            pdfViewHolder.IVuser.setText(mPusername.get(position).toString().toUpperCase());
-            pdfViewHolder.IVtotal.setText(mPtamount.get(position).toString().toUpperCase());
-            pdfViewHolder.IVCusName.setText(mPcusname.get(position).toString().toUpperCase());
-            pdfViewHolder.IVcuspno.setText(mPcuspnoneno.get(position).toString().toUpperCase());
+            pdfViewHolder.IVbillno.setText(mPbillno.get(position).toString());
+            pdfViewHolder.IVDate.setText(mPDate.get(position).toString());
+            pdfViewHolder.IVuser.setText(mPusername.get(position).toString());
+            pdfViewHolder.IVCusName.setText(mPcusname.get(position).toString());
+            pdfViewHolder.IVcuspno.setText(mPcuspnoneno.get(position).toString());
            if(image.get(position)!=null){
                pdfViewHolder.Printerimg.setImageBitmap(ImageEncodeAndDecode.decodeBase64ToBitmap(image.get(position)));
 
@@ -96,17 +93,15 @@ public class PdfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             pdfViewHolder.Printerimg.setVisibility(View.GONE);
             pdfViewHolder.IVbillno.setVisibility(View.GONE);
             pdfViewHolder.IVDate.setVisibility(View.GONE);
-            pdfViewHolder.IVtime.setVisibility(View.GONE);
             pdfViewHolder.IVuser.setVisibility(View.GONE);
-            pdfViewHolder.IVtotal.setVisibility(View.GONE);
             pdfViewHolder.IVCusName.setVisibility(View.GONE);
             pdfViewHolder.IVcuspno.setVisibility(View.GONE);
-            pdfViewHolder.tvname.setVisibility(View.GONE);
 
             holder.itemView.setVisibility(View.VISIBLE);
             RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
             layoutParams.setMargins(0, 300, 0, 0);
-            layoutParams.height=600;
+            layoutParams.height=300;
+            holder.itemView.setPivotY(Gravity.CENTER_VERTICAL);
             holder.itemView.setLayoutParams(layoutParams);
             LayoutInflater.from(context).inflate(R.layout.empty_state_layout, ((PdfViewHolder) holder).container, true);
         }

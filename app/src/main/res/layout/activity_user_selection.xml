@@ -9,61 +9,61 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:gravity="end"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal"
         >
 
-        <ImageButton
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="60dp"
+            >
 
-            android:layout_marginEnd="10dp"
-            android:id="@+id/btnmenu"
-            android:src="@drawable/baseline_menu_24"
-            android:backgroundTint="@color/white"
-            />
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/logo" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_toEndOf="@+id/logo"
+                android:autoSizeTextType="uniform"
+                android:fontFamily="@font/textfont"
+                android:maxLines="1"
+                android:text="KIRTHANA AGENCIES"
+                android:textSize="21dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="40dp"
+                android:layout_toEndOf="@+id/logo"
+                android:autoSizeTextType="uniform"
+                android:fontFamily="@font/textfont"
+                android:maxLines="1"
+                android:text="HOME"
+                android:textSize="21dp" />
+
+
+            <ImageButton
+                android:id="@+id/btnmenu"
+                android:layout_width="wrap_content"
+
+                android:layout_height="60dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"
+                android:backgroundTint="@color/white"
+                android:src="@drawable/baseline_menu_24" />
+        </RelativeLayout>
+
     </LinearLayout>
-   <RelativeLayout
-
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-
-        >
-
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="10dp"
-            android:src="@drawable/logo" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="15dp"
-            android:layout_toEndOf="@+id/logo"
-            android:autoSizeTextType="uniform"
-            android:fontFamily="@font/textfont"
-            android:maxLines="1"
-            android:text="KIRTHANA AGENCIES"
-            android:textSize="21dp" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="40dp"
-            android:layout_toEndOf="@+id/logo"
-            android:autoSizeTextType="uniform"
-            android:fontFamily="@font/textfont"
-            android:maxLines="1"
-            android:text="Users"
-            android:textSize="21dp" />
-
-    </RelativeLayout>
     <androidx.recyclerview.widget.RecyclerView
 
         android:id="@+id/userSelection_RV"
