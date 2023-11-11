@@ -22,7 +22,7 @@
         android:hint="@string/bill_no"
         android:maxLength="10"
         android:inputType="number"
-
+        android:textSize="16sp"
         android:background="@drawable/edit_text_border"
         android:padding="5dp" />
 
@@ -39,6 +39,7 @@
         android:focusable="false"
         android:hint="@string/to_date"
         android:inputType="none"
+        android:textSize="16sp"
         android:onClick="showDatePickerDialogTo"
         android:singleLine="true" />
 
@@ -55,6 +56,7 @@
         android:focusable="false"
         android:hint="@string/from_date"
         android:inputType="none"
+        android:textSize="16sp"
         android:onClick="showDatePickerDialogFrom"
         android:singleLine="true" />
 
@@ -69,6 +71,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:hint="@string/customer_name"
+        android:textSize="16sp"
         android:background="@drawable/edit_text_border"
         android:padding="5dp" />
 
@@ -84,6 +87,7 @@
         android:inputType="number"
         android:hint="@string/phone_no"
         android:maxLength="10"
+        android:textSize="16sp"
         android:background="@drawable/edit_text_border"
         android:padding="5dp" />
 

@@ -74,7 +74,7 @@
                     android:ems="10"
                     android:hint="@string/user_name"
                     android:inputType="text"
-
+                    android:textSize="20sp"
                     android:padding="15dp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/black"
@@ -90,6 +90,8 @@
                     android:hint="@string/password"
                     android:inputType="textPassword"
                     android:padding="15dp"
+
+                    android:textSize="20sp"
                     android:fontFamily="@font/aovelransrounded"
                     android:textColor="@color/black"
                     android:textColorHint="@color/black" />
@@ -101,6 +103,8 @@
                     android:layout_marginTop="10dp"
                     android:backgroundTint="@color/design_default_color_secondary_variant"
                     android:padding="15dp"
+
+                    android:textSize="20sp"
                     android:text="@string/login"
                     android:textAllCaps="false"
                     app:cornerRadius="8dp" />

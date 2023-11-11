@@ -26,5 +26,6 @@
         android:id="@+id/Logout"
         android:title="@string/logout"
         android:icon="@drawable/baseline_logout_24"
+        android:titleTextAppearance="@style/MenuItemTextAppearance"
         />
 </menu>
