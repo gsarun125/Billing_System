@@ -176,6 +176,8 @@ public class DeletedInvoice extends AppCompatActivity implements onpdfDelete {
                 List<Long> mCost= new ArrayList();
                 int  count=0;
                 long Net_AMT = 0;
+                String  SPIS_FIRST_TIME = null;
+
                 Cursor c1=db.get_value("SELECT * FROM Deleted INNER JOIN customer ON  Deleted.cus_id= customer.cus_id WHERE Bill_No ='"+mPbillno+"'");
 
                 if (c1.moveToFirst()) {
@@ -188,6 +190,7 @@ public class DeletedInvoice extends AppCompatActivity implements onpdfDelete {
                         @SuppressLint("Range") String data5 = c1.getString(c1.getColumnIndex("cus_name"));
                         @SuppressLint("Range") String data6 = c1.getString(c1.getColumnIndex("cus_Phone"));
                         @SuppressLint("Range") Long data7 = c1.getLong(c1.getColumnIndex("time"));
+                        @SuppressLint("Range") String data8 = c1.getString(c1.getColumnIndex("signature"));
 
                         mQty.add(data1);
                         mCost.add(data2);
@@ -197,6 +200,7 @@ public class DeletedInvoice extends AppCompatActivity implements onpdfDelete {
                             cusname=data5;
                             phoneno=data6;
                             time=data7;
+                            SPIS_FIRST_TIME=data8;
                         }
                         count++;
                     } while (c1.moveToNext());
@@ -208,9 +212,8 @@ public class DeletedInvoice extends AppCompatActivity implements onpdfDelete {
                 }
                 String fileName = "Invoice" + mPbillno + ".pdf";
 
-                String  SPIS_FIRST_TIME=sharedpreferences.getString(SHARED_PREFS_KEY,null);
                 String SPIS_FIRST_logo=sharedpreferences.getString(SHARED_PREFS_Logo,null);
-                File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
+                File dir = new File(this.getFilesDir(), "DATA");
                 if (!dir.exists()) {
                     dir.mkdir();
                 }

@@ -1,8 +1,7 @@
 package com.ka.billingsystem.Activity
 
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
@@ -19,12 +18,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.ka.billingsystem.Services.LogoutService
+import androidx.core.content.FileProvider
 import com.ka.billingsystem.R
+import com.ka.billingsystem.Services.LogoutService
 import com.ka.billingsystem.databinding.ActivityMainBinding
 import com.ka.billingsystem.java.Export
-import com.ka.billingsystem.java.Import
+import java.io.File
 import java.util.Locale
+
 
 class MainActivity :  AppCompatActivity() {
 
@@ -38,7 +39,8 @@ class MainActivity :  AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
+      //  sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
+        sharedpreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE)
 
 
         if(sharedpreferences.contains("checkeItem")) {
@@ -76,12 +78,14 @@ class MainActivity :  AppCompatActivity() {
                 else if (ch==R.id.Export){
                     val packagesname:String= packageName
                      val status :String = Export.ExportData(packagesname);
+                    share()
                     Toast.makeText(applicationContext,status,Toast.LENGTH_SHORT).show()
+
                 }
                 else if (ch==R.id.Import){
                     val packagesname:String= packageName
-                    val status1 :String = Import.ImportData(packagesname);
-                    Toast.makeText(applicationContext,status1,Toast.LENGTH_SHORT).show()
+                   // val status1 :String = Import.ImportData(packagesname);
+                   // Toast.makeText(applicationContext,status1,Toast.LENGTH_SHORT).show()
                 }
                 true
             }
@@ -169,6 +173,7 @@ class MainActivity :  AppCompatActivity() {
                 setLocale("Eng")
 
                 val intent = Intent(this, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                 finish()
                 startActivity(intent)
                // recreate()
@@ -176,6 +181,7 @@ class MainActivity :  AppCompatActivity() {
             else if(i==1){
                 setLocale("ta")
                 val intent = Intent(this, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                 finish()
                 startActivity(intent)
             //recreate()
@@ -193,13 +199,14 @@ class MainActivity :  AppCompatActivity() {
         val config=Configuration()
         config.locale=local
         baseContext.resources.updateConfiguration(config,baseContext.resources.displayMetrics)
-       val editor: SharedPreferences.Editor=getSharedPreferences("settings", MODE_PRIVATE).edit()
+        val editor = sharedpreferences.edit()
         editor.putString("My_lang",lan);
         editor.apply()
     }
+ @SuppressLint("SuspiciousIndentation")
  fun lodeLocale() {
-        val prefs:SharedPreferences=getSharedPreferences("settings",Activity.MODE_PRIVATE)
-        val  language: String? =prefs.getString("My_lang","")
+
+     val  language: String? =sharedpreferences.getString("My_lang","")
         if (language != null) {
             setLocale(language)
         }
@@ -250,4 +257,23 @@ class MainActivity :  AppCompatActivity() {
         dialog.show()
     }
 
+    private fun share(){
+        val zipFilePath = Environment.getExternalStorageDirectory().toString() + "/KIRTHANA AGENCIES/Backup/backup.zip"
+        val zipFile = File(zipFilePath)
+
+
+        if (zipFile.exists()) {
+            val uri = FileProvider.getUriForFile(this@MainActivity, this@MainActivity.getPackageName() + ".provider", zipFile)
+            println(this@MainActivity.getPackageName())
+            val share = Intent()
+            share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            share.action = Intent.ACTION_SEND
+            share.action = Intent.ACTION_SEND
+            share.type = "application/pdf"
+            share.putExtra(Intent.EXTRA_STREAM, uri)
+            startActivity(Intent.createChooser(share, "Share"))
+        } else {
+            Toast.makeText(this@MainActivity, R.string.file_not_found, Toast.LENGTH_SHORT).show()
+        }
+    }
 }

@@ -42,15 +42,18 @@ val COL_USER_id="user_id"
 val COL_PASS= "password"
 val COL_TIMESTAMP_CREATE="created_date"
 val COL_TIMESTAMP_MODIFIE="modified_date"
+val COL_SIGN="signature"
 
 val TABLENAME5 ="Deleted"
+
+
 class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASENAME, null,
     1) {
     override fun onCreate(db: SQLiteDatabase?) {
         val createTable = "CREATE TABLE " + TABLENAME1 + " (" + COL_PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY + " INTEGER," + COL_COST + " INTEGER)"
         db?.execSQL(createTable)
 
-       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO  + " INTEGER ," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000),"+ Col_Image_printer+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
+       val createTable2 = "CREATE TABLE " + TABLENAME2 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO  + " INTEGER ," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000)," + COL_SIGN + " VARCHAR(1000),"+ Col_Image_printer+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
 
         db?.execSQL(createTable2)
 
@@ -58,12 +61,13 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
         db?.execSQL(createTable3)
 
-        val createTable4 = "CREATE TABLE " + TABLENAME4 + " ( "+ COL_ID +  " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_USER_id + " VARCHAR(1000) UNIQUE," + COL_USER_NAME + " VARCHAR(1000) ," + COL_PASS + " VARCHAR(1000)," + COL_TIMESTAMP_CREATE+ " LONG," + COL_TIMESTAMP_MODIFIE + " LONG)"
+        val createTable4 = "CREATE TABLE " + TABLENAME4 + " ( "+ COL_ID +  " INTEGER PRIMARY KEY AUTOINCREMENT ," + COL_USER_id + " VARCHAR(1000) UNIQUE," + COL_USER_NAME + " VARCHAR(1000) ," + COL_PASS + " VARCHAR(1000)," + COL_TIMESTAMP_CREATE+ " LONG," + COL_TIMESTAMP_MODIFIE + " LONG," + COL_SIGN + " VARCHAR(1000))"
         db?.execSQL(createTable4)
-        val createTable5 = "CREATE TABLE " + TABLENAME5 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000),"+ Col_Image_printer+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
+        val createTable5 = "CREATE TABLE " + TABLENAME5 + " (" + COL_CUSID + " INTEGER ," + COL_BILL_NO + " INTEGER," + COL_PRODUCT_NAME + " VARCHAR(1000)," + COl_QUANTITY2 + " INTEGER," + COL_RATE + " INTEGER," + COL_AMOUNT + " INTEGER," + CoL_TOTAL_AMOUNT + " INTEGER," + COL_TIMESTAMP + " LONG,"+ COL_SALES_USER+" VARCHAR(1000),"+ COL_FILE_PATH+" VARCHAR(1000)," + COL_SIGN + " VARCHAR(1000),"+ Col_Image_printer+" VARCHAR(1000),FOREIGN KEY(cus_id) REFERENCES customer(cus_id))"
         db?.execSQL(createTable5)
-        this.UserData(db, "Admin","admin", "admin");
-        this.UserData(db, "ARUN","a", "a");
+
+        this.UserData(db, "Admin","admin", "admin",null);
+        this.UserData(db, "ARUN","a", "a",null);
 
         if (db != null) {
           // this.generateRandomData(db)
@@ -131,6 +135,16 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
     }
 
 
+    fun ADD_Sgin( Sgin:String) {
+
+        val db = this.writableDatabase
+        val values = ContentValues()
+
+        values.put(COL_SIGN,Sgin)
+        db.update(TABLENAME4, values, "$COL_ID=?", arrayOf<String>("1"))
+        ///db.close()
+    }
+
 
 
 
@@ -189,19 +203,20 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
     }
 
-    fun UserData( db:SQLiteDatabase?,username: String?,userid: String?, pass: String?) {
+    fun UserData( db:SQLiteDatabase?,username: String?,userid: String?, pass: String?,sign:String?) {
         val values = ContentValues()
         values.put(COL_USER_NAME,username)
         values.put(COL_USER_id, userid)
         values.put(COL_PASS, pass)
+        values.put(COL_SIGN,sign)
         db?.insert(TABLENAME4, null, values)
     }
 
-    fun filePath( Bill_No :Int ,Path:String) {
+    fun filePath( Bill_No :Int ,Path:String,Sgin: String) {
 
         val db = this.writableDatabase
         val values = ContentValues()
-
+        values.put(COL_SIGN,Sgin)
         values.put(COL_FILE_PATH,Path)
         db.update(TABLENAME2, values, "Bill_No=?", arrayOf<String>(Bill_No.toString()))
         ///db.close()
@@ -215,6 +230,8 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         db.update(TABLENAME2, values, "Bill_No=?", arrayOf<String>(Bill_No.toString()))
         ///db.close()
     }
+
+
     private  fun generateRandomData(db: SQLiteDatabase) {
         // Generate random data for Stock table
         for (i in 1..1000) {
@@ -290,7 +307,7 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
 
         db.execSQL(moveDataQuery)
 
-        val deleteDataQuery ="UPDATE " + TABLENAME2 + " SET " + COL_CUSID + " = NULL, " + COL_PRODUCT_NAME + " = NULL, " + COl_QUANTITY2 + " = NULL, " + COL_RATE + " = NULL, " + COL_AMOUNT + " = NULL, " + CoL_TOTAL_AMOUNT + " = NULL, " + COL_TIMESTAMP + " = NULL, " + COL_SALES_USER + " = NULL, " + COL_FILE_PATH + " = NULL WHERE " + COL_BILL_NO + " = " + billNo
+        val deleteDataQuery ="UPDATE " + TABLENAME2 + " SET " + COL_CUSID + " = NULL, " + COL_PRODUCT_NAME + " = NULL, " + COl_QUANTITY2 + " = NULL, " + COL_RATE + " = NULL, " + COL_AMOUNT + " = NULL, " + CoL_TOTAL_AMOUNT + " = NULL, " + COL_TIMESTAMP + " = NULL, " + COL_SALES_USER + " = NULL, " + COL_SIGN + " = NULL, " + Col_Image_printer + " = NULL, " + COL_FILE_PATH + " = NULL WHERE " + COL_BILL_NO + " = " + billNo
 
         db.execSQL(deleteDataQuery)
     }

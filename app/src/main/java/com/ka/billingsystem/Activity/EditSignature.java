@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 
+import com.ka.billingsystem.DataBase.DataBaseHandler;
 import com.ka.billingsystem.R;
 import com.ka.billingsystem.databinding.ActivityEditSignatureBinding;
 import com.ka.billingsystem.databinding.ActivitySignatureBinding;
@@ -24,6 +25,7 @@ import com.ka.billingsystem.databinding.ActivitySignatureBinding;
 import java.io.ByteArrayOutputStream;
 
 public class EditSignature extends AppCompatActivity {
+    private DataBaseHandler db = new DataBaseHandler(this);
     ActivityEditSignatureBinding binding;
     private SharedPreferences sharedPreferences;
     String SHARED_PREFS = "shared_prefs";
@@ -61,15 +63,9 @@ public class EditSignature extends AppCompatActivity {
         });
     }
     private void saveToSharedPreferences(Bitmap bitmap) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
         String encodedString = encodeToBase64(bitmap, Bitmap.CompressFormat.PNG, 100);
-
-        editor.putString(SHARED_PREFS_KEY, encodedString);
-        editor.apply();
-        Intent intent=new Intent(this,MainActivity.class);
-        startActivity(intent);
-        super.finish();
-
+        db.ADD_Sgin(encodedString);
+        onBackPressed();
     }
 
     // Convert Bitmap to a Base64 encoded string

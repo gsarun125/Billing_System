@@ -18,7 +18,7 @@ public class Export {
 
             File currentDB = new File(currentDBPath);
             File currentSH = new File(currentSHPath);
-            File dir = new File(Environment.getExternalStorageDirectory(), "DATA");
+            File dir = new File(Environment.getExternalStorageDirectory(), "KIRTHANA AGENCIES");
             if (!dir.exists()) {
                 dir.mkdirs();
             }

@@ -84,8 +84,8 @@
     <string name="re_type_password_is_required">Re-type password is required</string>
     <string name="new_password_and_re_type_password_doesn_t_match">New password and Re-type password doesn\'t match</string>
     <string name="enter_cost">Enter Cost</string>
-    <string name="language" translatable="false">Language</string>
-    <string name="logout" translatable="false">Logout</string>
+    <string name="language">Language</string>
+    <string name="logout">Logout</string>
     <string name="edit_signature" translatable="false">Edit Signature</string>
     <string name="export_invoice" translatable="false">Export Invoice</string>
     <string name="import_invoice" translatable="false">Import Invoice</string>

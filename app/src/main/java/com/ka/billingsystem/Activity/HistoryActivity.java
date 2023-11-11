@@ -455,6 +455,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
                 List<Long> mCost= new ArrayList();
                 int  count=0;
                 long Net_AMT = 0;
+                String  SPIS_FIRST_TIME = null;
 
                 Cursor c1=db.get_value("SELECT * FROM Transation INNER JOIN customer ON  Transation.cus_id= customer.cus_id WHERE Bill_No ='"+mPbillno+"'");
 
@@ -468,6 +469,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
                         @SuppressLint("Range") String data5 = c1.getString(c1.getColumnIndex("cus_name"));
                         @SuppressLint("Range") String data6 = c1.getString(c1.getColumnIndex("cus_Phone"));
                         @SuppressLint("Range") Long data7 = c1.getLong(c1.getColumnIndex("time"));
+                        @SuppressLint("Range") String data8 = c1.getString(c1.getColumnIndex("signature"));
 
                         mQty.add(data1);
                         mCost.add(data2);
@@ -477,6 +479,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
                             cusname=data5;
                             phoneno=data6;
                             time=data7;
+                            SPIS_FIRST_TIME=data8;
                         }
                         count++;
                     } while (c1.moveToNext());
@@ -487,9 +490,10 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
 
                 }
                 String fileName = "Invoice" + mPbillno + ".pdf";
-                String  SPIS_FIRST_TIME=sharedpreferences.getString(SHARED_PREFS_KEY,null);
+                System.out.println(SPIS_FIRST_TIME);
                 String SPIS_FIRST_logo=sharedpreferences.getString(SHARED_PREFS_Logo,null);
-                File  dir= new File(Environment.getExternalStorageDirectory(),"DATA");
+                File dir = new File(this.getFilesDir(), "DATA");
+
                 if (!dir.exists()) {
                     dir.mkdir();
                 }

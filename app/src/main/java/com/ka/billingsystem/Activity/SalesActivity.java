@@ -1,6 +1,7 @@
 package com.ka.billingsystem.Activity;
 
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -399,11 +400,17 @@ public class SalesActivity extends AppCompatActivity  {
     }
     db.insertData_to_Customer(Customer_Id, Customer_Name, PHone_NO);
 
-    String SHARED_PREFS_KEY = "signature";
 
-    String SPIS_FIRST_TIME=sharedpreferences.getString(SHARED_PREFS_KEY,null);
+    String SPIS_FIRST_TIME=null;
+    String qurry = "Select * from user where id='1'";
+         Cursor c1 = db.get_value(qurry);
+         if (c1.moveToFirst()) {
+             @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("signature"));
 
-    if (SPIS_FIRST_TIME!=null){
+             SPIS_FIRST_TIME =data1;
+         }
+
+         if (SPIS_FIRST_TIME!=null){
         Intent intent = new Intent(SalesActivity.this, PdfviewActivity.class);
         startActivity(intent);
     }

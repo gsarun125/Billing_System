@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 
+import com.ka.billingsystem.DataBase.DataBaseHandler;
 import com.ka.billingsystem.R;
 import com.ka.billingsystem.databinding.ActivitySignatureBinding;
 
@@ -26,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 
 public class Signature extends AppCompatActivity {
     ActivitySignatureBinding binding;
+    private DataBaseHandler db = new DataBaseHandler(this);
     private SharedPreferences sharedPreferences;
     String SHARED_PREFS = "shared_prefs";
     String SPuser;
@@ -47,12 +49,6 @@ public class Signature extends AppCompatActivity {
         SPpass = sharedPreferences.getString(PASSWORD_KEY, null);
         SPIS_FIRST_TIME = sharedPreferences.getString(SHARED_PREFS_KEY, null);
 
-        Drawable d = getResources().getDrawable(R.drawable.logo);
-        Bitmap mBitmap = ((BitmapDrawable) d).getBitmap();
-        String logo = encodeToBase64(mBitmap, Bitmap.CompressFormat.PNG, 100);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SHARED_PREFS_Logo, logo);
-        editor.apply();
 
         binding.clear.setOnClickListener(v ->{
             binding.signatureView.clearCanvas();
@@ -69,10 +65,9 @@ public class Signature extends AppCompatActivity {
         });
     }
     private void saveToSharedPreferences(Bitmap bitmap) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+
         String encodedString = encodeToBase64(bitmap, Bitmap.CompressFormat.PNG, 100);
-        editor.putString(SHARED_PREFS_KEY, encodedString);
-        editor.apply();
+        db.ADD_Sgin(encodedString);
         Intent intent=new Intent(this,PdfviewActivity.class);
         startActivity(intent);
         super.finish();

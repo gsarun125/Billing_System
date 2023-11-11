@@ -83,9 +83,7 @@
     <string name="please_add_product_first">முதலில் தயாரிப்பைச் சேர்க்கவும்!</string>
     <string name="you_cannot_add_more_then_10_value">நீங்கள் 10 மதிப்பிற்கு மேல் சேர்க்க முடியாது</string>
     <string name="add_values">" மதிப்புகளைச் சேர்க்கவும்"</string>
-    <string name="language">மொழி</string>
-    <string name="logout">வெளியேறு</string>
-    <string name="edit_signature">கையொப்பத்தைத் திருத்தவும்</string>
-    <string name="export_invoice">ஏற்றுமதி விலைப்பட்டியல்</string>
+    <string name="language">Language</string>
+    <string name="logout">Logout</string>
 
 </resources>

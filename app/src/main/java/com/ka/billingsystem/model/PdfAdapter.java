@@ -79,7 +79,9 @@ public class PdfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
            }
             pdfViewHolder.Printerimg.setOnClickListener(view -> {
-                listener.image(image.get(position));
+                if(image.get(position)!=null) {
+                    listener.image(image.get(position));
+                }
             });
             holder.itemView.setOnClickListener(view -> {
 

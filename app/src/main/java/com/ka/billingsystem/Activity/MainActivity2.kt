@@ -18,8 +18,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.ka.billingsystem.Services.LogoutService
 import com.ka.billingsystem.R
+import com.ka.billingsystem.Services.LogoutService
 import com.ka.billingsystem.databinding.ActivityMain2Binding
 import java.util.Locale
 
@@ -175,13 +175,13 @@ class MainActivity2 : AppCompatActivity() {
         val config= Configuration()
         config.locale=local
         baseContext.resources.updateConfiguration(config,baseContext.resources.displayMetrics)
-        val editor: SharedPreferences.Editor=getSharedPreferences("settings", MODE_PRIVATE).edit()
+        val editor = sharedpreferences.edit()
         editor.putString("My_lang",lan);
         editor.apply()
     }
     fun lodeLocale() {
-        val prefs: SharedPreferences =getSharedPreferences("settings", Activity.MODE_PRIVATE)
-        val  language: String? =prefs.getString("My_lang","")
+
+        val  language: String? =sharedpreferences.getString("My_lang","")
         if (language != null) {
             setLocale(language)
         }

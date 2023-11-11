@@ -1,5 +1,7 @@
 package com.ka.billingsystem.Activity;
 
+import static com.ka.billingsystem.java.ImageEncodeAndDecode.encodeToBase64;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -9,7 +11,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -39,23 +44,17 @@ public class LoginActivity extends AppCompatActivity {
     String ADMIN_LOGIN = "admin_login";
     String SPuser;
     String SPpass;
+    private static final String SHARED_PREFS_KEY = "signature";
+    private static final String SHARED_PREFS_Logo = "logo";
     String SPIS_FIRST_TIME;
     int checkedItem = 0;
     SharedPreferences sharedpreferences;
-    private static final String SHARED_PREFS_KEY = "signature";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
-
-        user_name = (EditText) findViewById(R.id.txtUserName);
-        password = (EditText) findViewById(R.id.txtPassword);
-        login = (Button) findViewById(R.id.btnLogin);
-        ClickSignUP = (TextView) findViewById(R.id.txtClickSignUP);
-        Language=findViewById(R.id.language);
-        sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
         if (sharedpreferences.contains("checkeItem")) {
             String SPcheckedItem = sharedpreferences.getString("checkeItem", null);
             if (SPcheckedItem != null) {
@@ -64,6 +63,23 @@ public class LoginActivity extends AppCompatActivity {
             }
             lodeLocale();
         }
+
+
+        setContentView(R.layout.activity_login);
+
+
+        user_name = (EditText) findViewById(R.id.txtUserName);
+        password = (EditText) findViewById(R.id.txtPassword);
+        login = (Button) findViewById(R.id.btnLogin);
+        ClickSignUP = (TextView) findViewById(R.id.txtClickSignUP);
+        Language=findViewById(R.id.language);
+
+        Drawable d = getResources().getDrawable(R.drawable.logo);
+        Bitmap mBitmap = ((BitmapDrawable) d).getBitmap();
+        String logo = encodeToBase64(mBitmap, Bitmap.CompressFormat.PNG, 100);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString(SHARED_PREFS_Logo, logo);
+        editor.apply();
 
         SPuser = sharedpreferences.getString(USER_KEY, null);
         SPpass = sharedpreferences.getString(PASSWORD_KEY, null);
@@ -147,14 +163,18 @@ public class LoginActivity extends AppCompatActivity {
             if (i == 0) {
                 setLocale("Eng");
                 Intent intent = new Intent(this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 finish();
                 startActivity(intent);
+                overridePendingTransition(0, 0);
             } else if (i == 1) {
                 setLocale("ta");
 
                 Intent intent = new Intent(this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 finish();
                 startActivity(intent);
+                overridePendingTransition(0, 0);
             }
             dialogInterface.dismiss();
         });
@@ -164,9 +184,11 @@ public class LoginActivity extends AppCompatActivity {
         customAlertDialog.show();
     }
     public void lodeLocale() {
-        SharedPreferences prefs = getSharedPreferences("settings", Activity.MODE_PRIVATE);
-        String language = prefs.getString("My_lang", "");
+
+        String language = sharedpreferences.getString("My_lang", null);
+
         if (language != null) {
+            System.out.println(language);
             setLocale(language);
         }
     }
@@ -176,9 +198,10 @@ public class LoginActivity extends AppCompatActivity {
         Configuration config = new Configuration();
         config.locale = local;
         getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
-        SharedPreferences.Editor editor = getSharedPreferences("settings", MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("My_lang", lan);
         editor.apply();
+
     }
 
 
