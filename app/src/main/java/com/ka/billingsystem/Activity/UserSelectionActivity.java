@@ -512,23 +512,24 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
 
         if (zipFile.exists()) {
             try {
-                Uri uri = FileProvider.getUriForFile(UserSelectionActivity.this, getPackageName() + ".provider", zipFile);
+                Uri uri = FileProvider.getUriForFile(this, "com.ka.billingsystem.provider", zipFile);
 
-                Intent share = new Intent();
-                share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                share.setAction(Intent.ACTION_SEND);
-                share.setType("application/zip");
+                Intent share = new Intent(Intent.ACTION_SEND);
+               // share.setType("application/zip");
+                share.setDataAndType(uri, "application/zip");
                 share.putExtra(Intent.EXTRA_STREAM, uri);
+                share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+               this.startActivity(Intent.createChooser(share, "Share"));
 
-                startActivity(Intent.createChooser(share, "Share"));
+
             } catch (Exception e) {
-                e.printStackTrace();
-                // Handle exception, log it, or show an error message
+                Log.e("ShareError", "Error sharing file", e);
             }
         } else {
-            // File not found, show a user-friendly message
             Toast.makeText(UserSelectionActivity.this, "File not found", Toast.LENGTH_SHORT).show();
         }
+
+
     }
 
 

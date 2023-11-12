@@ -445,7 +445,8 @@ class MainActivity :  AppCompatActivity() {
             share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             share.action = Intent.ACTION_SEND
             share.action = Intent.ACTION_SEND
-            share.type = "application/zip"
+            // share.setType("application/zip");
+            share.setDataAndType(uri, "application/zip")
             share.putExtra(Intent.EXTRA_STREAM, uri)
             startActivity(Intent.createChooser(share, "Share"))
         } else {

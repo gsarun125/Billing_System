@@ -103,7 +103,7 @@ public class DocmentActivity extends AppCompatActivity {
                     share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     share.setAction(Intent.ACTION_SEND);
                     share.setAction(Intent.ACTION_SEND);
-                    share.setType("application/pdf");
+                    share.setDataAndType(uri, "application/zip");
                     share.putExtra(Intent.EXTRA_STREAM, uri);
                     startActivity(Intent.createChooser(share, "Share"));
                 } else {
