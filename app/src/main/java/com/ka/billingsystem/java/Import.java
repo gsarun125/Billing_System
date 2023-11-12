@@ -1,6 +1,8 @@
 package com.ka.billingsystem.java;
 
 import android.os.Environment;
+import android.util.Log;
+
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -15,14 +17,16 @@ import java.nio.channels.FileChannel;
 public class Import {
 
     public static String ImportData(String packageName,String filepath ) {
+
         try {
-            //String zipFilePath = Environment.getExternalStorageDirectory() + "/KIRTHANA AGENCIES/Backup/backup.zip";
+            Log.i("ImportData()", "ImportData()-Line1");
             File zipFile = new File(filepath);
 
             File dir = new File(Environment.getExternalStorageDirectory(), "KIRTHANA AGENCIES/Restore");
             if (!dir.exists()) {
                 dir.mkdirs();
             }
+            Log.i("ImportData()", "ImportData()-Line2");
 
             try (FileInputStream fis = new FileInputStream(zipFile);
                  ArchiveInputStream ais = new ArchiveStreamFactory()
@@ -41,30 +45,33 @@ public class Import {
                     }
                 }
             }
+            Log.i("ImportData()", "ImportData()-Line3");
+
 
             String currentDBPath = "/data/data/" + packageName + "/databases/BILLING_SYSTEM";
-            String currentSHPath = "/data/data/" + packageName + "/shared_prefs/shared_prefs.xml";
             String copyPath = "BILLING_SYSTEM.db";
-            String sharedCopyPath = "shared_prefs.xml";
 
             File currentDB = new File(currentDBPath);
-            File currentSH = new File(currentSHPath);
 
             File backupDB = new File(dir, copyPath);
-            File backupSH = new File(dir, sharedCopyPath);
+            Log.i("ImportData()", "ImportData()-Line4");
 
             if (currentDB.exists() ) {
                 FileChannel src = new FileInputStream(backupDB).getChannel();
                 FileChannel dst = new FileOutputStream(currentDB).getChannel();
                 dst.transferFrom(src, 0, src.size());
+                Log.i("ImportData()", "ImportData()-Line5");
 
                 src.close();
                 dst.close();
                 deleteDirectory(dir);
+                Log.i("ImportData()", "ImportData()-Line6");
+
                 return "Importing started";
+
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("ImportData()", "ImportData()-An exception occurred", e);
         }
         return "Failed to import data";
 

@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/lan"
-        android:title="@string/language"
-        android:icon="@drawable/baseline_language_24"
-        android:titleTextAppearance="@style/MenuItemTextAppearance"
-        />
 
     <item android:id="@+id/EditSignature"
         android:title="@string/edit_signature"

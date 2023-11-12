@@ -1,5 +1,6 @@
 package com.ka.billingsystem.Activity
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -38,13 +39,13 @@ class MainActivity2 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
 
-        if(sharedpreferences.contains("checkeItem")) {
-            var SPcheckedItem = sharedpreferences.getString("checkeItem", null)
-            if (SPcheckedItem != null) {
-                checkedItem = Integer.parseInt(SPcheckedItem)
-            }
-            lodeLocale()
-        }
+            //  if(sharedpreferences.contains("checkeItem")) {
+            //var SPcheckedItem = sharedpreferences.getString("checkeItem", null)
+            //if (SPcheckedItem != null) {
+             //   checkedItem = Integer.parseInt(SPcheckedItem)
+            //}
+            //lodeLocale()
+        //}
 
         binding = ActivityMain2Binding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -56,10 +57,11 @@ class MainActivity2 : AppCompatActivity() {
             popupMenu.menuInflater.inflate(R.menu.threedot, popupMenu.menu)
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 val ch = menuItem.itemId
-                if (ch== R.id.lan){
-                    ShowChangeLanguage()
-                }
-                else if (ch== R.id.Logout){
+               if(ch==R.id.EditSignature2){
+                   val intent =Intent(this, EditSignature::class.java)
+                   startActivity(intent)
+               }
+               else if (ch== R.id.Logout){
                     logOut()
                 }
                 true
@@ -72,41 +74,84 @@ class MainActivity2 : AppCompatActivity() {
         }
 
         binding.invoiceCard.setOnClickListener {
+            if(checkStoragePermission()){
             val intent = Intent(this, SalesActivity::class.java)
-            startActivity(intent)
+            startActivity(intent)}
+            else{        Toast.makeText(this@MainActivity2, "Storage permission denied", Toast.LENGTH_LONG).show()
+                Permission()
+            }
         }
        
         binding.historyCard.setOnClickListener {
+            if (checkStoragePermission()){
             val intent = Intent(this, HistoryActivity::class.java)
-            startActivity(intent)
+            startActivity(intent)}
+            else{
+                Toast.makeText(this@MainActivity2, "Storage permission denied", Toast.LENGTH_LONG).show()
+                Permission()
+            }
         }
 
 
         binding.recentinvoice.setOnClickListener {
+            if (checkStoragePermission()){
             val intent =Intent(this, RecentInvoiceActivity::class.java)
-            startActivity(intent)
+            startActivity(intent)}
+            else{        Toast.makeText(this@MainActivity2, "Storage permission denied", Toast.LENGTH_LONG).show()
+                Permission()
+            }
         }
         binding.deleteCard.setOnClickListener {
+            if (checkStoragePermission()){
             val intent =Intent(this, DeletedInvoice::class.java)
-            startActivity(intent)
+            startActivity(intent)}
+            else{
+                Toast.makeText(this@MainActivity2, "Storage permission denied", Toast.LENGTH_LONG).show()
+                Permission()
+            }
         }
+        Permission()
 
+    }
+    private fun Permission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
-                //request for the permission
                 val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
                 val uri = Uri.fromParts("package", packageName, null)
                 intent.data = uri
                 startActivity(intent)
             }
         } else {
-            checkForPermission(
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                "storage",
-                storage_RQ
-            )
+            checkForPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, "storage", storage_RQ)
         }
-
+    }
+    private fun checkStoragePermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // Check for MANAGE_EXTERNAL_STORAGE permission on Android 11 and above
+                if (Environment.isExternalStorageManager()) {
+                    true // Permission is granted
+                } else {
+                    // You may need to request MANAGE_EXTERNAL_STORAGE permission here
+                    // or redirect the user to the system settings to grant the permission
+                    false
+                }
+            } else {
+                // For versions below Android 11, check for WRITE_EXTERNAL_STORAGE permission
+                if (ContextCompat.checkSelfPermission(
+                        applicationContext,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    true // Permission is granted
+                } else {
+                    // You may need to request WRITE_EXTERNAL_STORAGE permission here
+                    // or redirect the user to the system settings to grant the permission
+                    false
+                }
+            }
+        } else true
+        // Permission is implicitly granted on versions below M
     }
     private  fun logOut(){
         val builder = androidx.appcompat.app.AlertDialog.Builder(this)

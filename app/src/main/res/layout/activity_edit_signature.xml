@@ -47,7 +47,7 @@
                 android:autoSizeTextType="uniform"
                 android:fontFamily="@font/textfont"
                 android:maxLines="1"
-                android:text="HOME"
+                android:text="EDIT SIGNATURE"
                 android:textSize="21dp" />
 
 

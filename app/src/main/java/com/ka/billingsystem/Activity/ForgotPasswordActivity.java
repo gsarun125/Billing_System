@@ -47,9 +47,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
                     db.ForgotPasswordChange(UserId,NewPassword);
                     Toast.makeText(ForgotPasswordActivity.this,"Your password has been changed", Toast.LENGTH_SHORT).show();
-                    Intent i=new Intent(ForgotPasswordActivity.this,LoginActivity.class);
-                    startActivity(i);
-                    finish();
+                   onBackPressed();
                 }
             }
         });

@@ -47,9 +47,7 @@ public class SignUpActivity extends AppCompatActivity {
                     long time= System.currentTimeMillis();
                     db.insertData_to_user(Uname,Uid,password,time,time);
                     Toast.makeText(SignUpActivity.this,"Created Successfully",Toast.LENGTH_LONG).show();
-                    Intent i=new Intent(SignUpActivity.this,LoginActivity.class);
-                    startActivity(i);
-                    finish();
+                    onBackPressed();
                 }
             }
         });

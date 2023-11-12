@@ -1,5 +1,6 @@
 package com.ka.billingsystem.Activity
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.ProgressDialog
@@ -10,6 +11,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.database.sqlite.SQLiteOpenHelper
 import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
@@ -23,14 +25,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.ka.billingsystem.DataBase.DataBaseHandler
 import com.ka.billingsystem.R
 import com.ka.billingsystem.Services.LogoutService
 import com.ka.billingsystem.databinding.ActivityMainBinding
-import com.ka.billingsystem.java.Export
+import com.ka.billingsystem.java.Export.ExportData
 import com.ka.billingsystem.java.Import
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 
@@ -53,14 +58,14 @@ class MainActivity :  AppCompatActivity() {
         sharedpreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE)
 
 
-        if(sharedpreferences.contains("checkeItem")) {
-                var SPcheckedItem = sharedpreferences.getString("checkeItem", null)
-                if (SPcheckedItem != null) {
-                    checkedItem = Integer.parseInt(SPcheckedItem)
-                    println(checkedItem)
-                }
-            lodeLocale()
-        }
+     //   if(sharedpreferences.contains("checkeItem")) {
+       ///         var SPcheckedItem = sharedpreferences.getString("checkeItem", null)
+          //      if (SPcheckedItem != null) {
+            //        checkedItem = Integer.parseInt(SPcheckedItem)
+              //      println(checkedItem)
+                //}
+            //lodeLocale()
+       // }
 
 
 
@@ -75,10 +80,7 @@ class MainActivity :  AppCompatActivity() {
             popupMenu.menuInflater.inflate(R.menu.threedotadmin, popupMenu.menu)
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 val ch = menuItem.itemId
-                if (ch==R.id.lan){
-                    ShowChangeLanguage()
-                }
-                else if(ch==R.id.EditSignature){
+               if(ch==R.id.EditSignature){
                     val intent =Intent(this, EditSignature::class.java)
                     startActivity(intent)
                 }
@@ -86,14 +88,32 @@ class MainActivity :  AppCompatActivity() {
                     logOut()
                 }
                 else if (ch==R.id.Export){
-                    val packagesname:String= packageName
-                     val status :String = Export.ExportData(packagesname);
-                    share()
-                    Toast.makeText(applicationContext,status,Toast.LENGTH_SHORT).show()
+                   if (checkStoragePermission()) {
+                       println("arybb")
+                       val packagesname = packageName
+                       val sdf = SimpleDateFormat("dd-MM-yyyy-hh_mm_ssa", Locale.getDefault())
+                       val currentDateAndTime = sdf.format(Date())
+                       val Backup_filename = "Kirthana_backup_$currentDateAndTime.zip"
 
+                       val result = ExportData(packagesname,Backup_filename,create(Backup_filename))
+                       val message = result.message
+                       val file_name = result.fileName
+                       Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                        if (file_name!=null){
+                            share(file_name)
+                        }
+                       } else {
+                       Toast.makeText(this@MainActivity, "Storage permission denied", Toast.LENGTH_LONG).show()
+                       Permission()
+                   }
                 }
                 else if (ch==R.id.Import){
-                    selectFile()
+                   if (checkStoragePermission()) {
+                       selectFile()
+                   } else {
+                       Toast.makeText(this@MainActivity, "Storage permission denied", Toast.LENGTH_LONG).show()
+                       Permission()
+                   }
                 }
                 true
             }
@@ -105,35 +125,85 @@ class MainActivity :  AppCompatActivity() {
         }
 
         binding.historyCard.setOnClickListener {
+            if(checkStoragePermission()){
             val intent = Intent(this, HistoryActivity::class.java)
             startActivity(intent)
+            }else{
+                Toast.makeText(this@MainActivity, "Storage permission denied", Toast.LENGTH_LONG).show()
+
+                Permission()
+            }
         }
 
         binding.recentinvoice.setOnClickListener {
+            if (checkStoragePermission()){
             val intent =Intent(this, RecentInvoiceActivity::class.java)
             startActivity(intent)
+            }else{
+                Toast.makeText(this@MainActivity, "Storage permission denied", Toast.LENGTH_LONG).show()
+                Permission()
+            }
         }
         binding.deleteCard.setOnClickListener {
+            if(checkStoragePermission()){
             val intent =Intent(this, DeletedInvoice::class.java)
             startActivity(intent)
+            }else{
+                Toast.makeText(this@MainActivity, "Storage permission denied", Toast.LENGTH_LONG).show()
+                Permission()
+            }
+
         }
 
+        Permission()
+
+    }
+    private fun create(Backup_filename: String): File? {
+        val subdir = File(this.filesDir, "Backup")
+        if (!subdir.exists()) {
+            subdir.mkdir()
+        }
+        return File(subdir, Backup_filename)
+    }
+    private fun checkStoragePermission(): Boolean {
+        return if (SDK_INT >= Build.VERSION_CODES.M) {
+            if (SDK_INT >= Build.VERSION_CODES.R) {
+                // Check for MANAGE_EXTERNAL_STORAGE permission on Android 11 and above
+                if (Environment.isExternalStorageManager()) {
+                    true // Permission is granted
+                } else {
+                    // You may need to request MANAGE_EXTERNAL_STORAGE permission here
+                    // or redirect the user to the system settings to grant the permission
+                    false
+                }
+            } else {
+                // For versions below Android 11, check for WRITE_EXTERNAL_STORAGE permission
+                if (ContextCompat.checkSelfPermission(
+                        applicationContext,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    true // Permission is granted
+                } else {
+                    // You may need to request WRITE_EXTERNAL_STORAGE permission here
+                    // or redirect the user to the system settings to grant the permission
+                    false
+                }
+            }
+        } else true
+        // Permission is implicitly granted on versions below M
+    }
+    private fun Permission() {
         if (SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
-                //request for the permission
                 val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
                 val uri = Uri.fromParts("package", packageName, null)
                 intent.data = uri
                 startActivity(intent)
             }
         } else {
-            checkForPermission(
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                "storage",
-                storage_RQ
-            )
+            checkForPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, "storage", storage_RQ)
         }
-
     }
     private fun selectFile() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
@@ -155,7 +225,9 @@ class MainActivity :  AppCompatActivity() {
 
             val status1: String = Import.ImportData(packagesName, filePath)
             Toast.makeText(applicationContext, status1, Toast.LENGTH_SHORT).show()
-
+            val dbHelper: SQLiteOpenHelper = DataBaseHandler(this)
+            val db = dbHelper.writableDatabase
+            db.close()
             showProgressDialog()
             // Uncomment the following lines if you want to restart the application
             // val intent: Intent = baseContext.packageManager.getLaunchIntentForPackage(baseContext.packageName)!!
@@ -358,23 +430,29 @@ class MainActivity :  AppCompatActivity() {
         dialog.show()
     }
 
-    private fun share(){
-        val zipFilePath = Environment.getExternalStorageDirectory().toString() + "/KIRTHANA AGENCIES/Backup/kirthana_agencies_backup.zip"
-        val zipFile = File(zipFilePath)
 
-
+    private fun share(filename: String) {
+        val subdir = File(this.filesDir, "Backup")
+        val zipFile = File(subdir, filename)
         if (zipFile.exists()) {
-            val uri = FileProvider.getUriForFile(this@MainActivity, this@MainActivity.getPackageName() + ".provider", zipFile)
-            println(this@MainActivity.getPackageName())
+            val uri = FileProvider.getUriForFile(
+                this@MainActivity,this@MainActivity.getPackageName() + ".provider",
+                zipFile
+            )
+
+            //System.out.println(PdfviewActivity.this.getPackageName());
             val share = Intent()
             share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             share.action = Intent.ACTION_SEND
             share.action = Intent.ACTION_SEND
-            share.type = "application/pdf"
+            share.type = "application/zip"
             share.putExtra(Intent.EXTRA_STREAM, uri)
             startActivity(Intent.createChooser(share, "Share"))
         } else {
-            Toast.makeText(this@MainActivity, R.string.file_not_found, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@MainActivity, R.string.file_not_found, Toast.LENGTH_SHORT)
+                .show()
         }
     }
+
+
 }

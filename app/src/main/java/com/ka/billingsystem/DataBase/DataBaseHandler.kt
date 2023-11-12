@@ -7,6 +7,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.os.Build
 import android.widget.Toast
 import java.util.Calendar
 import java.util.Random
@@ -45,6 +46,8 @@ val COL_TIMESTAMP_MODIFIE="modified_date"
 val COL_SIGN="signature"
 
 val TABLENAME5 ="Deleted"
+private const val DATABASE_NAME = "BILLING_SYSTEM.db"
+private const val DATABASE_VERSION = 1
 
 
 class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASENAME, null,
@@ -74,9 +77,19 @@ class DataBaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         };
     }
 
+    override fun onOpen(db: SQLiteDatabase?) {
+        super.onOpen(db);
+        if(Build.VERSION.SDK_INT >= 28)
+        {
+            if (db != null) {
+                db.disableWriteAheadLogging()
+            };
+        }
+    }
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         //onCreate(db);
     }
+
 
     fun insertData(product_name: String,quantity:Int,cost:Int) {
         val database = this.writableDatabase

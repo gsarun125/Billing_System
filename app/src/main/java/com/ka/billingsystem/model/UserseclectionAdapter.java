@@ -1,5 +1,7 @@
 package com.ka.billingsystem.model;
 
+import static android.widget.RelativeLayout.CENTER_IN_PARENT;
+
 import android.content.Context;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -54,7 +56,7 @@ public class UserseclectionAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             userseclectionHolder.userid.setVisibility(View.GONE);
             userseclectionHolder.generated_date.setVisibility(View.GONE);
             RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
-            layoutParams.setMargins(50, 300, 50, 0);
+            layoutParams.setMargins(50, Gravity.CENTER_VERTICAL, 50, 0);
             layoutParams.height=500;
             layoutParams.width=600;
             holder.itemView.setPivotY(Gravity.CENTER_VERTICAL);

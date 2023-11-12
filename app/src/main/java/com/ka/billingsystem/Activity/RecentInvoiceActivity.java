@@ -481,7 +481,7 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
         }
         @Override
         protected File doInBackground(Void... voids) {
-            Export.ExportData(getPackageName());
+
             return invoice1.PDF1(count, netAmt, billNo, customerName, phoneNo, mQty, mCost, mTotal, mProductName, spIsFirstTime,spIsFirstLogo, file, time);
         }
 

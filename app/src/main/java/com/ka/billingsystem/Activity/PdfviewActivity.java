@@ -369,10 +369,23 @@ public class PdfviewActivity extends AppCompatActivity {
         }
         @Override
         protected File doInBackground(Void... voids) {
-            Export.ExportData(getPackageName());
+            Export.ExportData(getPackageName(),"Kirthana_backup.zip",create("Kirthana_backup.zip"));
             return invoice1.PDF1(count, netAmt, billNo, customerName, phoneNo, mQty, mCost, mTotal, mProductName, spIsFirstTime,spIsFirstLogo, file, 0);
         }
 
+        public  File  create(String Backup_filename){
+            File dir = new File(Environment.getExternalStorageDirectory(), "KIRTHANA AGENCIES");
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            File subdir = new File(dir, "Backup");
+            if (!subdir.exists()) {
+                subdir.mkdirs();
+            }
+
+            File zipFile = new File(subdir,Backup_filename );
+            return zipFile;
+        }
         @Override
         protected void onPostExecute(File result) {
             pdfView.fromFile(result).load();
@@ -432,7 +445,6 @@ public class PdfviewActivity extends AppCompatActivity {
 
         @Override
         protected File doInBackground(Void... voids) {
-            Export.ExportData(getPackageName());
             return invoice2.PDF2(count, netAmt, billNo, customerName, phoneNo, mQty, mCost, mTotal, mProductName, spIsFirstTime,spIsFirstLogo,file);
         }
 

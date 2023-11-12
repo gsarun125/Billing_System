@@ -57,14 +57,14 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         sharedpreferences = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
-        if (sharedpreferences.contains("checkeItem")) {
-            String SPcheckedItem = sharedpreferences.getString("checkeItem", null);
-            if (SPcheckedItem != null) {
-                checkedItem = Integer.parseInt(SPcheckedItem);
-                System.out.println(checkedItem);
-            }
-            lodeLocale();
-        }
+       // if (sharedpreferences.contains("checkeItem")) {
+         //   String SPcheckedItem = sharedpreferences.getString("checkeItem", null);
+           // if (SPcheckedItem != null) {
+             //   checkedItem = Integer.parseInt(SPcheckedItem);
+               // System.out.println(checkedItem);
+            //}
+            //lodeLocale();
+       // }
 
 
         setContentView(R.layout.activity_login);
@@ -78,6 +78,12 @@ public class LoginActivity extends AppCompatActivity {
         Language=findViewById(R.id.language);
         Language.setVisibility(View.GONE);
 
+        String qurry = "Select * from user";
+        Cursor c1 = db.get_value(qurry);
+        if  (c1.getCount() > 1)
+            ForgotPassword.setVisibility(View.VISIBLE);
+        else
+            ForgotPassword.setVisibility(View.GONE);
 
         Drawable d = getResources().getDrawable(R.drawable.logo);
         Bitmap mBitmap = ((BitmapDrawable) d).getBitmap();
@@ -94,6 +100,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent i = new Intent(LoginActivity.this, SignUpActivity.class);
                 startActivity(i);
+
             }
         });
 

@@ -1,5 +1,7 @@
 package com.ka.billingsystem.Activity;
 
+import static com.ka.billingsystem.java.Export.ExportData;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -20,12 +22,15 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -37,7 +42,6 @@ import com.ka.billingsystem.DataBase.DataBaseHandler;
 import com.ka.billingsystem.R;
 import com.ka.billingsystem.java.Export;
 import com.ka.billingsystem.java.Import;
-import com.ka.billingsystem.model.OnPdfFileSelectListener;
 import com.ka.billingsystem.model.UserseclectionAdapter;
 import com.ka.billingsystem.model.selectionListener;
 
@@ -83,18 +87,8 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
 
         menu=findViewById(R.id.btnmenu);
         displayPdf();
+        Permission();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (!Environment.isExternalStorageManager()) {
-                // Request for the permission
-                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                intent.setData(uri);
-                startActivity(intent);
-            }
-        } else {
-            checkForPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, "storage", storage_RQ);
-        }
 
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,21 +99,53 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         int ch = menuItem.getItemId();
-                        if (ch == R.id.lan) {
-                            ShowChangeLanguage();
-                        } else if (ch == R.id.EditSignature) {
+                      if (ch == R.id.EditSignature) {
                             Intent intent = new Intent(UserSelectionActivity.this, EditSignature.class);
                             startActivity(intent);
                         } else if (ch == R.id.Logout) {
                             logOut();
                         } else if (ch == R.id.Export) {
-                            String packagesname = getPackageName();
-                            String status = Export.ExportData(packagesname);
-                            share();
-                            Toast.makeText(getApplicationContext(), status, Toast.LENGTH_SHORT).show();
+                          if(checkStoragePermission()) {
+                              System.out.println("arybb");
+                              SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-hh_mm_ssa", Locale.getDefault());
+                              String currentDateAndTime = sdf.format(new Date());
+
+
+                              String Backup_filename="Kirthana_backup_"+currentDateAndTime+".zip";
+
+                              String packagesname = getPackageName();
+                              Export.ExportResult result = ExportData(packagesname,Backup_filename,create(Backup_filename));
+                              String message = result.getMessage();
+                              String filename = result.getFileName();
+                              Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                              if(filename!=null) {
+                                  share(filename);
+                              }
+
+                          }
+                          else {
+                              Toast.makeText(UserSelectionActivity.this, "Storage permission denied", Toast.LENGTH_LONG).show();
+                              Permission();
+
+                          }
                         } else if (ch == R.id.Import) {
-                            selectFile();
-                            }
+                          Log.i("Import", "Import-Start");
+                          try {
+                              if(checkStoragePermission()){
+                                  selectFile();
+
+
+                              }else {
+                                  Log.i("Import", "Import-Storage permission denied");
+                                  Toast.makeText(UserSelectionActivity.this, "Storage permission denied", Toast.LENGTH_LONG).show();
+                                  Permission();
+                              }
+                          }catch (Exception e){
+
+                              Log.e("Import", "Import-Start exception occurred", e);
+                          }
+
+                      }
                         return true;
                     }
                 });
@@ -131,6 +157,68 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
             }
         });
     }
+
+    private   File  create(String Backup_filename){
+        File subdir = new File(this.getFilesDir(), "Backup");
+        if (!subdir.exists()) {
+            subdir.mkdir();
+        }
+
+        File zipFile = new File(subdir,Backup_filename );
+        return zipFile;
+    }
+
+    private  void Permission(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+            }
+        } else {
+            checkForPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, "storage", storage_RQ);
+        }
+
+    }
+
+    private boolean checkStoragePermission() {
+       try{
+           Log.i("Line1", "checkStoragePermission()-Line1");
+           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                   // Check for MANAGE_EXTERNAL_STORAGE permission on Android 11 and above
+                   Log.i("Line2", "checkStoragePermission()-Lin2");
+
+                   if (Environment.isExternalStorageManager()) {
+                       return true;  // Permission is granted
+                   } else {
+                       // You may need to request MANAGE_EXTERNAL_STORAGE permission here
+                       // or redirect the user to the system settings to grant the permission
+                       return false;
+                   }
+               } else {
+                   Log.i("Line2", "checkStoragePermission()-Line3");
+
+                   // For versions below Android 11, check for WRITE_EXTERNAL_STORAGE permission
+                   if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                       return true;  // Permission is granted
+                   } else {
+                       // You may need to request WRITE_EXTERNAL_STORAGE permission here
+                       // or redirect the user to the system settings to grant the permission
+                       return false;
+                   }
+               }
+           }
+
+       }catch (Exception e){
+           Log.e("Exception", "checkStoragePermission()", e);
+
+       }
+        return true;// Permission is implicitly granted on versions below M
+    }
+
     private void checkForPermission(String permission, String name, int requestCode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(getApplicationContext(), permission) == PackageManager.PERMISSION_GRANTED) {
@@ -159,39 +247,57 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
 
 
     private void selectFile() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("application/zip");
-
+        Log.i("selectFile", "selectFile()-Start");
         try {
-            startActivityForResult(intent, PICK_FILE_REQUEST_CODE);
-        } catch (android.content.ActivityNotFoundException ex) {
-            // Handle the exception
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("application/zip");
+            Log.i("selectFile", "selectFile()-Line2");
+
+            try {
+                Log.i("selectFile", "selectFile()-Line3");
+
+                startActivityForResult(intent, PICK_FILE_REQUEST_CODE);
+            } catch (android.content.ActivityNotFoundException ex) {
+                Log.e("selectFile() inner try", "selectFile()-exception occurred", ex);
+            }
+
+        }catch (Exception e){
+            Log.e("selectFile() outer try", "selectFile()-An exception occurred", e);
         }
+
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            String filePath = getFilePathFromUri(uri);
-            System.out.println(uri);
+        Log.i("onActivityResult()", "onActivityResult()-start");
+        try {
 
-            String packagesname = getPackageName();
+            if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+                Uri uri = data.getData();
+                String filePath = getFilePathFromUri(uri);
+                System.out.println(uri);
+                Log.i("onActivityResult()", "onActivityResult()-if Line1");
+                String packagesname = getPackageName();
 
 
-            String status1 = Import.ImportData(packagesname,filePath);
-            Toast.makeText(getApplicationContext(), status1, Toast.LENGTH_SHORT).show();
+                String status1 = Import.ImportData(packagesname,filePath);
+                Toast.makeText(getApplicationContext(), status1, Toast.LENGTH_SHORT).show();
 
-            showProgressDialog();
-           // Intent intent = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
-            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            //startActivity(intent);
-            //finish();
+                Log.i("onActivityResult()", "onActivityResult()-if Line2");
+                showProgressDialog();
 
+            }
+            Log.i("onActivityResult()", "onActivityResult()-if not Executed");
+            super.onActivityResult(requestCode, resultCode, data);
+
+        }catch (Exception e){
+            Log.e("onActivityResult()", "onActivityResult()-An exception occurred", e);
         }
-        super.onActivityResult(requestCode, resultCode, data);
+
     }
     private void showProgressDialog() {
+
+        Log.i("showProgressDialog()", "showProgressDialog()-start");
         progressStatus = 0; // Reset the progressStatus to 0
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Importing your data...");
@@ -200,6 +306,8 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
         progressDialog.setMax(100);
         progressDialog.setCancelable(false);
         progressDialog.show();
+
+        Log.i("showProgressDialog()", "showProgressDialog()-Line1");
 
         handler = new Handler();
         new Thread(() -> {
@@ -210,7 +318,7 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
                 handler.post(() -> progressDialog.setProgress(progressStatus));
 
                 try {
-                    // Sleep for 100 milliseconds to simulate progress in the background
+
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -218,6 +326,10 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
 
                 if (progressStatus == 100) {
                     progressDialog.dismiss();
+
+                    Log.i("showProgressDialog()", "showProgressDialog()-Line4");
+
+                    Log.i("showProgressDialog()", "showProgressDialog()-End");
                     Intent intent = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
@@ -394,23 +506,31 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
             getBaseContext().getResources().updateConfiguration(configuration, getBaseContext().getResources().getDisplayMetrics());
         }
     }
-    private void share() {
-        String zipFilePath = Environment.getExternalStorageDirectory().toString() + "/KIRTHANA AGENCIES/Backup/kirthana_agencies_backup.zip";
-        File zipFile = new File(zipFilePath);
+    private void share(String filename) {
+        File subdir = new File(getFilesDir(), "Backup");
+        File zipFile = new File(subdir, filename);
 
         if (zipFile.exists()) {
-            Uri uri = FileProvider.getUriForFile(UserSelectionActivity.this, UserSelectionActivity.this.getPackageName() + ".provider", zipFile);
-            //System.out.println(MainActivity.this.getPackageName());
-            Intent share = new Intent();
-            share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            share.setAction(Intent.ACTION_SEND);
-            share.setType("application/zip");
-            share.putExtra(Intent.EXTRA_STREAM, uri);
-            startActivity(Intent.createChooser(share, "Share"));
+            try {
+                Uri uri = FileProvider.getUriForFile(UserSelectionActivity.this, getPackageName() + ".provider", zipFile);
+
+                Intent share = new Intent();
+                share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                share.setAction(Intent.ACTION_SEND);
+                share.setType("application/zip");
+                share.putExtra(Intent.EXTRA_STREAM, uri);
+
+                startActivity(Intent.createChooser(share, "Share"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle exception, log it, or show an error message
+            }
         } else {
-            Toast.makeText(UserSelectionActivity.this, R.string.file_not_found, Toast.LENGTH_SHORT).show();
+            // File not found, show a user-friendly message
+            Toast.makeText(UserSelectionActivity.this, "File not found", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
 }

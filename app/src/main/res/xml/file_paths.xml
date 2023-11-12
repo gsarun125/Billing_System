@@ -2,4 +2,5 @@
 <paths>
     <external-path name="external_files" path="."/>
     <files-path name="export" path="DATA/" />
+    <files-path name="backup" path="Backup/" />
 </paths>
