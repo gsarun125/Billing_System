@@ -1,7 +1,7 @@
 package com.ka.billingsystem.Activity
 
 import android.Manifest
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -9,23 +9,29 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.Settings
+import android.text.format.DateUtils
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.ka.billingsystem.DataBase.DataBaseHandler
 import com.ka.billingsystem.R
 import com.ka.billingsystem.Services.LogoutService
 import com.ka.billingsystem.databinding.ActivityMain2Binding
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class MainActivity2 : AppCompatActivity() {
-
+    private val db = DataBaseHandler(this)
     val storage_RQ=101
     //arungssssa
     lateinit var binding: ActivityMain2Binding
@@ -33,12 +39,15 @@ class MainActivity2 : AppCompatActivity() {
 
     var SHARED_PREFS = "shared_prefs"
     private lateinit var sharedpreferences: SharedPreferences
-
+    var SPuser: String? = null
+    var USER_KEY = "user_key"
+    var LastLogout: Long? = null
+    private var handler: Handler? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
-
+        SPuser = sharedpreferences.getString(USER_KEY, null)
             //  if(sharedpreferences.contains("checkeItem")) {
             //var SPcheckedItem = sharedpreferences.getString("checkeItem", null)
             //if (SPcheckedItem != null) {
@@ -46,9 +55,14 @@ class MainActivity2 : AppCompatActivity() {
             //}
             //lodeLocale()
         //}
-
         binding = ActivityMain2Binding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        handler = Handler()
+
+        Lastdateset()
+        handler!!.postDelayed(runnableCode, 1000 * 60);
+
         startService(Intent(this, LogoutService::class.java))
 
         binding.btnlogout.setOnClickListener {
@@ -165,7 +179,8 @@ class MainActivity2 : AppCompatActivity() {
         }
         builder.setPositiveButton("Ok",
             DialogInterface.OnClickListener { dialog: DialogInterface?, which: Int ->
-
+                val time = System.currentTimeMillis()
+                db.LastLogout(SPuser,time)
                 val editor = sharedpreferences.edit()
 
                 editor.remove("user_key")
@@ -273,5 +288,63 @@ class MainActivity2 : AppCompatActivity() {
     }
     override fun onBackPressed() {
         logOut()
+    }
+    private fun Lastdateset(){
+        val c1: Cursor
+        c1 = db.get_value("SELECT * FROM user WHERE user_id ='"+SPuser+"'")!!
+        if (c1.moveToFirst()) {
+            @SuppressLint("Range") val data1: Long = c1.getLong(c1.getColumnIndex("Last_Logout"))
+           println(data1);
+            LastLogout=data1
+        }
+        if (LastLogout!=0L) {
+            val lastLogoutTimestamp = LastLogout!!
+
+            val lastLogoutDate = Date(lastLogoutTimestamp)
+
+            val currentTimeMillis = System.currentTimeMillis()
+
+            val timeDifference = currentTimeMillis - lastLogoutTimestamp
+
+            val relativeTimeSpan = DateUtils.getRelativeTimeSpanString(
+                lastLogoutTimestamp,
+                currentTimeMillis,
+                DateUtils.MINUTE_IN_MILLIS,
+                DateUtils.FORMAT_ABBREV_RELATIVE
+            )
+
+            if (timeDifference > DateUtils.DAY_IN_MILLIS) {
+                // Customize the date format based on your requirements
+                val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
+                val formattedDate = dateFormat.format(lastLogoutDate)
+
+                // Set the formatted date and time to the TextView
+                binding.LastLogout.text = "Last Logout: $formattedDate"
+            } else {
+                // Set the formatted relative time span to the TextView
+                binding.LastLogout.text = "Last Logout: $relativeTimeSpan"
+            }
+        }else {
+            binding.LastLogout.text = ""
+        }
+        binding.welometxt.text = "Hii!.. "+SPuser
+    }
+    private val runnableCode: Runnable = object : Runnable {
+        override fun run() {
+            // Run the method periodically
+            Lastdateset()
+
+            // Schedule the method to run again after a delay
+            handler!!.postDelayed(
+                this,
+                (1000 * 60).toLong()
+            ) // Run every 60 seconds (adjust as needed)
+        }
+    }
+
+    override fun onDestroy() {
+        // Remove the callback when the activity is destroyed to prevent memory leaks
+        handler!!.removeCallbacks(runnableCode)
+        super.onDestroy()
     }
 }

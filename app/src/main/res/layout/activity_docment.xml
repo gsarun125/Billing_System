@@ -13,27 +13,48 @@
     android:layout_marginBottom="60dp"
 >
     <ImageButton
+        android:id="@+id/Dcamera"
+
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/ripple_effect_camera"
+        android:text="classic invoice"
+        android:contentDescription="Click here to capture an image for the classic invoice"
+        />
+    <ImageButton
         android:id="@+id/delete"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+
+        android:layout_marginTop="10dp"
+
+        android:layout_marginEnd="20dp"
+        android:layout_toStartOf="@+id/share1"
+        android:background="@drawable/ripple_effect_delete" />
+
+    <ImageButton
+        android:id="@+id/ChangePdf"
+
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginTop="10dp"
 
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="80dp"
+        android:layout_marginEnd="20dp"
+        android:layout_toStartOf="@+id/Undo1"
+        android:background="@drawable/ripple_effect"
+        android:text="classic invoice" />
 
-        android:background="@drawable/ripple_effect_delete"
-        />
     <ImageButton
         android:id="@+id/Undo1"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginTop="10dp"
 
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="80dp"
-
-        android:background="@drawable/ripple_effect_undo"
-        />
+        android:layout_marginEnd="20dp"
+        android:layout_toStartOf="@+id/delete"
+        android:background="@drawable/ripple_effect_undo" />
 
     <ImageButton
         android:id="@+id/share1"

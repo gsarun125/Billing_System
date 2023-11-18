@@ -65,6 +65,8 @@ public class PdfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             PdfViewHolder pdfViewHolder = (PdfViewHolder) holder;
             pdfViewHolder.IVbillno.setText(mPbillno.get(position).toString());
             pdfViewHolder.IVDate.setText(mPDate.get(position).toString());
+            pdfViewHolder.IVtime.setText(mPtime.get(position).toString());
+
             pdfViewHolder.IVuser.setText(mPusername.get(position).toString());
             pdfViewHolder.IVCusName.setText(mPcusname.get(position).toString());
             pdfViewHolder.IVcuspno.setText(mPcuspnoneno.get(position).toString());
@@ -96,7 +98,7 @@ public class PdfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             pdfViewHolder.IVuser.setVisibility(View.GONE);
             pdfViewHolder.IVCusName.setVisibility(View.GONE);
             pdfViewHolder.IVcuspno.setVisibility(View.GONE);
-
+            pdfViewHolder.IVtime.setVisibility(View.GONE);
             holder.itemView.setVisibility(View.VISIBLE);
             RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
             layoutParams.setMargins(0, 300, 0, 0);

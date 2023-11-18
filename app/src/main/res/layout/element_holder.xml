@@ -35,12 +35,21 @@
             android:padding="6dp"
             android:text="Generated Date"
             android:textSize="15sp" />
+        <TextView
+            android:id="@+id/IVTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/IVDate"
+            android:layout_marginStart="15dp"
+            android:padding="6dp"
+            android:text="Time"
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/IVCusName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/IVDate"
+            android:layout_below="@+id/IVTime"
             android:layout_marginStart="15dp"
             android:maxWidth="250dp"
             android:maxLines="2"

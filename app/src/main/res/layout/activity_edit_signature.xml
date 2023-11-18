@@ -93,7 +93,10 @@
             app:penColor="#000000"
             app:penSize="2dp"
             tools:ignore="MissingConstraints" />
-
+<ImageView
+    android:id="@+id/sigimg"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
         <LinearLayout
             android:id="@+id/buttons_layout"
             android:layout_width="wrap_content"
@@ -115,6 +118,30 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:text="@string/save" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/sigUpload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/buttons_layout"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/image_button_upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_file_upload_24" />
+
+            <TextView
+                android:id="@+id/upload_design_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload" />
+
 
         </LinearLayout>
 

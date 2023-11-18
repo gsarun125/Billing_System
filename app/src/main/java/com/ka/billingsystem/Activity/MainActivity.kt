@@ -6,11 +6,13 @@ import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.ContentResolver
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.database.Cursor
 import android.database.sqlite.SQLiteOpenHelper
 import android.net.Uri
 import android.os.Build
@@ -19,7 +21,12 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.provider.Settings
+import android.text.InputFilter
+import android.text.format.DateUtils
+import android.widget.CheckBox
+import android.widget.EditText
 import android.widget.PopupMenu
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -31,6 +38,7 @@ import com.ka.billingsystem.Services.LogoutService
 import com.ka.billingsystem.databinding.ActivityMainBinding
 import com.ka.billingsystem.java.Export.ExportData
 import com.ka.billingsystem.java.Import
+import com.ka.billingsystem.java.RangeFilter
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -40,7 +48,7 @@ import java.util.Locale
 
 
 class MainActivity :  AppCompatActivity() {
-
+    private val db = DataBaseHandler(this)
     val storage_RQ=101
     private var progressStatus = 0
     private var handler: Handler? = null
@@ -51,13 +59,16 @@ class MainActivity :  AppCompatActivity() {
     var SHARED_PREFS = "shared_prefs"
     private lateinit var sharedpreferences: SharedPreferences
     var ADMIN_LOGIN = "admin_login"
+    var SPuser: String? = null
+    var USER_KEY = "user_key"
+    var LastLogout: Long? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
       //  sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
-        sharedpreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE)
 
-
+        sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
+        SPuser = sharedpreferences.getString(USER_KEY, null)
      //   if(sharedpreferences.contains("checkeItem")) {
        ///         var SPcheckedItem = sharedpreferences.getString("checkeItem", null)
           //      if (SPcheckedItem != null) {
@@ -72,6 +83,12 @@ class MainActivity :  AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        handler = Handler()
+
+        Lastdateset()
+        handler!!.postDelayed(runnableCode, 1000 * 60);
+
         startService(Intent(this, LogoutService::class.java))
 
 
@@ -83,28 +100,40 @@ class MainActivity :  AppCompatActivity() {
                if(ch==R.id.EditSignature){
                     val intent =Intent(this, EditSignature::class.java)
                     startActivity(intent)
-                }
-                else if (ch==R.id.Logout){
+                } else if (ch == R.id.GST) {
+                   AddGst()
+               } else if (ch==R.id.Logout){
                     logOut()
                 }
                 else if (ch==R.id.Export){
-                   if (checkStoragePermission()) {
-                       println("arybb")
-                       val packagesname = packageName
-                       val sdf = SimpleDateFormat("dd-MM-yyyy-hh_mm_ssa", Locale.getDefault())
-                       val currentDateAndTime = sdf.format(Date())
-                       val Backup_filename = "Kirthana_backup_$currentDateAndTime.zip"
+                   val qurry = "Select * from Transation"
+                   val c1: Cursor = db.get_value(qurry)!!
+                   if (c1.count > 1) {
+                       if (checkStoragePermission()) {
+                           println("arybb")
+                           val packagesname = packageName
+                           val sdf = SimpleDateFormat("dd-MM-yyyy-hh_mm_ssa", Locale.getDefault())
+                           val currentDateAndTime = sdf.format(Date())
+                           val Backup_filename = "Kirthana_backup_$currentDateAndTime.zip"
 
-                       val result = ExportData(packagesname,Backup_filename,create(Backup_filename))
-                       val message = result.message
-                       val file_name = result.fileName
-                       Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
-                        if (file_name!=null){
-                            share(file_name)
-                        }
+                           val result =
+                               ExportData(packagesname, Backup_filename, create(Backup_filename))
+                           val message = result.message
+                           val file_name = result.fileName
+                           Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                           if (file_name != null) {
+                               share(file_name)
+                           }
                        } else {
-                       Toast.makeText(this@MainActivity, "Storage permission denied", Toast.LENGTH_LONG).show()
-                       Permission()
+                           Toast.makeText(
+                               this@MainActivity,
+                               "Storage permission denied",
+                               Toast.LENGTH_LONG
+                           ).show()
+                           Permission()
+                       }
+                   } else {
+                       AlertDialog()
                    }
                 }
                 else if (ch==R.id.Import){
@@ -157,6 +186,16 @@ class MainActivity :  AppCompatActivity() {
 
         Permission()
 
+    }
+    private fun AlertDialog() {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setMessage(R.string.no_invoice_found_to_export)
+        builder.setTitle(R.string.alert)
+        builder.setCancelable(true)
+        builder.setPositiveButton("ok",
+            DialogInterface.OnClickListener { dialog: DialogInterface, which: Int -> dialog.dismiss() })
+        val alertDialog = builder.create()
+        alertDialog.show()
     }
     private fun create(Backup_filename: String): File? {
         val subdir = File(this.filesDir, "Backup")
@@ -454,6 +493,95 @@ class MainActivity :  AppCompatActivity() {
                 .show()
         }
     }
+    private fun Lastdateset(){
+        val c1: Cursor
+        c1 = db.get_value("SELECT * FROM user WHERE user_id ='"+SPuser+"'")!!
+        if (c1.moveToFirst()) {
+            @SuppressLint("Range") val data1: Long = c1.getLong(c1.getColumnIndex("Last_Logout"))
+            LastLogout=data1
+        }
+       if(LastLogout!=0L){
+        val lastLogoutTimestamp = LastLogout!!
 
+        val lastLogoutDate = Date(lastLogoutTimestamp)
 
+        val currentTimeMillis = System.currentTimeMillis()
+
+        val timeDifference = currentTimeMillis - lastLogoutTimestamp
+
+        val relativeTimeSpan = DateUtils.getRelativeTimeSpanString(
+            lastLogoutTimestamp,
+            currentTimeMillis,
+            DateUtils.MINUTE_IN_MILLIS,
+            DateUtils.FORMAT_ABBREV_RELATIVE
+        )
+
+        if (timeDifference > DateUtils.DAY_IN_MILLIS) {
+            // Customize the date format based on your requirements
+            val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
+            val formattedDate = dateFormat.format(lastLogoutDate)
+
+            // Set the formatted date and time to the TextView
+            binding.LastLogout.text = "Last Logout: $formattedDate"
+        } else {
+            // Set the formatted relative time span to the TextView
+            binding.LastLogout.text = "Last Logout: $relativeTimeSpan"
+        }
+       }else{
+           binding.LastLogout.text = ""
+       }
+        binding.welometxt.text = "Hii!.. "+SPuser
+
+    }
+    private val runnableCode: Runnable = object : Runnable {
+        override fun run() {
+            // Run the method periodically
+            Lastdateset()
+            // Schedule the method to run again after a delay
+            handler!!.postDelayed(
+                this,
+                (1000 * 60).toLong()
+            ) // Run every 60 seconds (adjust as needed)
+        }
+    }
+
+    override fun onDestroy() {
+        // Remove the callback when the activity is destroyed to prevent memory leaks
+        handler!!.removeCallbacks(runnableCode)
+        super.onDestroy()
+    }
+    private fun AddGst() {
+        try {
+            val builder = AlertDialog.Builder(this)
+            val dialogView = layoutInflater.inflate(R.layout.custom_dialog_addgst, null)
+            builder.setView(dialogView)
+            builder.setCancelable(false)
+            val textView = dialogView.findViewById<TextView>(R.id.currentGst)
+            val qurry = "Select * from user where id='1'"
+            val c1 = db.get_value(qurry)
+            if (c1!!.moveToFirst()) {
+                @SuppressLint("Range") val data1 = c1.getString(c1.getColumnIndex("gst"))
+                textView.text = "Current GST : $data1"
+            }
+            val gstvalue = dialogView.findViewById<EditText>(R.id.editGst)
+            val agreeCheckbox = dialogView.findViewById<CheckBox>(R.id.agree_checkbox)
+            gstvalue.filters = arrayOf<InputFilter>(RangeFilter(0, 100))
+            builder.setPositiveButton(
+                "OK"
+            ) { dialog: DialogInterface, which: Int ->
+                if (agreeCheckbox.isChecked && gstvalue.text.length != 0) {
+                    db.ADD_GST(gstvalue.text.toString())
+                    dialog.dismiss()
+                } else {
+                    //Toast.makeText(this, R.string.please_agree_to_continue, Toast.LENGTH_SHORT).show();
+                }
+            }
+            builder.setNegativeButton(
+                "Cancel"
+            ) { dialog: DialogInterface, which: Int -> dialog.dismiss() }
+            val alertDialog = builder.create()
+            alertDialog.show()
+        } catch (e: Exception) {
+        }
+    }
 }

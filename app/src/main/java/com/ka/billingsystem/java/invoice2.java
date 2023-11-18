@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 public  class invoice2 {
-    public static File PDF2(int count, long Net_AMT, int Bill_NO,String CusName,String CusPhone ,List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProduct_name, String SPIS_FIRST_TIME ,String SPIS_FIRST_LOGO,File file){
+    public static File PDF2(int count, Long Net_AMT, int Bill_NO,String CusName,String CusPhone ,List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProduct_name, String SPIS_FIRST_TIME ,String SPIS_FIRST_LOGO,File file,Long GST){
         NumberFormat indianCurrencyFormat = NumberFormat.getInstance(new Locale("en", "IN"));
         indianCurrencyFormat.setMinimumFractionDigits(2); // If you want to show decimal places
 
@@ -142,8 +142,13 @@ public  class invoice2 {
         int start_item6=1020;
 
 
-        long IGST= (long) (Net_AMT*0.18);
-        long TotalAmount=Net_AMT+IGST;
+
+        double IGST = (double) Net_AMT * GST / 100.0;
+
+
+        System.out.println("GST kjfjkfk"+IGST);
+        double TotalAmount=(double) Net_AMT+IGST;
+
         long time= System.currentTimeMillis();
         for (int i=0;i<count;i++){
 
@@ -166,14 +171,14 @@ public  class invoice2 {
 
         canvas.drawText(indianCurrencyFormat.format(Net_AMT),1010,1300,myPaint);
 
-        canvas.drawText("18% IGST",830,1390,myPaint);
+        canvas.drawText(GST+"% IGST",830,1390,myPaint);
         canvas.drawText(indianCurrencyFormat.format(IGST),1010,1390,myPaint);
         canvas.drawText("Total Amount",830,1440,myPaint);
         canvas.drawText(indianCurrencyFormat.format(TotalAmount),1010,1440,myPaint);
 
         //canvas.drawText(numbertoword.convert((int) TotalAmount)+" Only",50,1300,myPaint);
 
-        end_item=print_next_line(canvas,myPaint,50,1300,600,numbertoword.convert((int) TotalAmount)+" Only",end_item);
+        end_item=print_next_line(canvas,myPaint,50,1300,600,numbertoword.convert((long) TotalAmount)+" Only",end_item);
 
         canvas.drawText("DC No. : "+Bill_NO,50,1440,myPaint);
         canvas.drawText("DC Date : "+formatter1.format(day),350,1440,myPaint);
@@ -202,16 +207,16 @@ public  class invoice2 {
         myPaint.setTextSize(40);
         myPaint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.BOLD_ITALIC));
         Bitmap bitmap = decodeBase64ToBitmap(SPIS_FIRST_TIME);
-        canvas.drawText("Signature",850,1660,myPaint);
+        drawSignature(canvas,myPaint,bitmap);
+
+        // canvas.drawText("Signature",850,1660,myPaint);
         float scaleX = 0.3f; // Adjust the scale factor for the x-axis as needed
         float scaleY = 0.3f; // Adjust the scale factor for the y-axis as needed
         canvas.scale(scaleX, scaleY, 800, 1550); // Apply the scale at the specified position
 
 // Draw the scaled Bitmap at the position (700, 1660) on the canvas
         myPaint.setTextSize(20f);
-        if (bitmap != null) {
-            canvas.drawBitmap(bitmap, 950, 1550, myPaint);
-        }
+
 
         ColorFilter filter1 = new LightingColorFilter(Color.WHITE, 1);
         myPaint.setColorFilter(filter1);
@@ -297,5 +302,33 @@ public  class invoice2 {
 
     public static Bitmap resizeBitmap(Bitmap bitmap, int newWidth, int newHeight) {
         return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false);
+    }
+    public static void drawSignature(Canvas canvas, Paint myPaint, Bitmap bitmap){
+        myPaint.setTextSize(40);
+        float signatureTextX = 850;
+        float signatureTextY = 1660;
+        canvas.drawText("Signature", signatureTextX, signatureTextY, myPaint);
+// Calculate the position for the bitmap
+        float originalBitmapX = 750; // Original x-coordinate for the bitmap
+        float originalBitmapY = 1550; // Original y-coordinate for the bitmap
+        float scaleX = 0.3f; // Adjust the scale factor for the x-axis as needed
+        float scaleY = 0.3f; // Adjust the scale factor for the y-axis as needed
+        myPaint.setTextSize(20f);
+
+// Calculate the scaled dimensions of the bitmap
+        float scaledWidth = bitmap.getWidth() * scaleX;
+        float scaledHeight = bitmap.getHeight() * scaleY;
+
+// Calculate the adjusted position for the scaled bitmap
+        float adjustedBitmapX = originalBitmapX - (scaledWidth - bitmap.getWidth()) / 2;
+        float adjustedBitmapY = originalBitmapY - (scaledHeight - bitmap.getHeight()) / 2 - 5; // Adjusted 5 units above
+
+// Draw the "scaled" Bitmap at the adjusted position on the canvas
+        if (bitmap != null) {
+            canvas.save(); // Save the current canvas state
+            canvas.scale(scaleX, scaleY, 800, 1550); // Apply the scale at the specified position
+            canvas.drawBitmap(bitmap, adjustedBitmapX, adjustedBitmapY, myPaint);
+            canvas.restore(); // Restore the canvas to the saved state
+        }
     }
 }

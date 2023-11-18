@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -66,12 +67,10 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
     private List<String> image = new ArrayList();
     private PdfAdapter pdfAdapter;
     private List<File> pdfList;
-    Long FromDate=0l;
-    Long ToDate=0l;
+    Long FromDate = 0l;
+    Long ToDate = 0l;
     private RecyclerView recyclerView;
-    private HashSet<String> Bill_no_Auto=new HashSet<>();
-    private HashSet<String> Phone_no_Auto=new HashSet<>();
-    private HashSet<String> Customer_Name_Auto=new HashSet<>();
+    private HashSet<String> AutoCompletion = new HashSet<>();
     EditText editTextDatePickerFrom;
     EditText editTextDatePickerTo;
     Calendar calendar;
@@ -86,6 +85,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
     private boolean fromDateSelected = false;
     private boolean toDateSelected = false;
     private DataBaseHandler db = new DataBaseHandler(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,52 +131,10 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
                 checkDatesAndExecuteMethod();
             }
         });
-
-        ArrayAdapter<String> Bill_no_adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(Bill_no_Auto));
-        activityHistoryBinding.Hbillno.setAdapter(Bill_no_adapter);
-        activityHistoryBinding.Hbillno.setThreshold(1);
-        activityHistoryBinding.Hbillno.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                search();
-            }
-        });
-
-        ArrayAdapter<String> Cus_Name_adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(Customer_Name_Auto));
-        activityHistoryBinding.Hcusname.setAdapter(Cus_Name_adapter);
-        activityHistoryBinding.Hcusname.setThreshold(1);
-
-        activityHistoryBinding.Hcusname.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                search();
-            }
-        });
-
-        ArrayAdapter<String> Pnone_no_adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(Phone_no_Auto));
-        activityHistoryBinding.HPhoneno.setAdapter(Pnone_no_adapter);
-        activityHistoryBinding.HPhoneno.setThreshold(1);
-        activityHistoryBinding.HPhoneno.addTextChangedListener(new TextWatcher() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(AutoCompletion));
+        activityHistoryBinding.Hsearchbox.setAdapter(adapter);
+        activityHistoryBinding.Hsearchbox.setThreshold(3);
+        activityHistoryBinding.Hsearchbox.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -200,41 +158,44 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
             }
         });
     }
+
     private void checkDatesAndExecuteMethod() {
         String fromDate = editTextDatePickerFrom.getText().toString().trim();
         String toDate = editTextDatePickerTo.getText().toString().trim();
         System.out.println("jhhjhghj");
         System.out.println(FromDate);
         System.out.println(ToDate);
-    if (!fromDate.isEmpty() && !toDate.isEmpty()) {
+        if (!fromDate.isEmpty() && !toDate.isEmpty()) {
             System.out.println("hghfggfyyf");
             search();
         }
     }
 
-    public void search(){
-        if (FromDate!=0l&&ToDate!=0l){
+    public void search() {
+        if (FromDate != 0l && ToDate != 0l) {
 
-            if(FromDate<=ToDate) {
+            if (FromDate <= ToDate) {
                 System.out.println(FromDate);
                 System.out.println(ToDate);
+                //filterWithDate();
+                filterWithDate(SPuser, activityHistoryBinding.Hsearchbox.getText().toString(), Long.toString(FromDate), Long.toString(ToDate));
 
-                filterWithDate();
-            }else {
+            } else {
                 editTextDatePickerFrom.setText("");
                 editTextDatePickerFrom.setFocusable(true);
                 editTextDatePickerFrom.requestFocus();
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.showSoftInput(editTextDatePickerFrom, InputMethodManager.SHOW_IMPLICIT);
-                Toast.makeText(HistoryActivity.this,R.string.invalid_date,Toast.LENGTH_LONG).show();
+                Toast.makeText(HistoryActivity.this, R.string.invalid_date, Toast.LENGTH_LONG).show();
                 editTextDatePickerTo.setText("");
             }
-        }
-        else {
-            filter();
+        } else {
+            // filter();
+            filter(SPuser, activityHistoryBinding.Hsearchbox.getText().toString());
         }
     }
+
     private DatePickerDialog createDatePickerDialog(boolean isFromDate) {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -291,8 +252,93 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
     public void showDatePickerDialogTo(View v) {
         createDatePickerDialog(false).show();
     }
+// filterWithDate
+
+    private void filterWithDate(String SPuser, String search, String fromDate, String toDate) {
+        String query = "SELECT * FROM (SELECT * FROM Transation WHERE sales_user=? GROUP BY cus_id) AS sorted " +
+                "JOIN customer ON sorted.cus_id = customer.cus_id ";
+
+        List<String> params = new ArrayList<>();
+        params.add(SPuser);
+
+        if (!TextUtils.isEmpty(search) || (!TextUtils.isEmpty(fromDate) && !TextUtils.isEmpty(toDate))) {
+            query += "WHERE ";
+            boolean hasConditions = false;
+
+            if (!TextUtils.isEmpty(search)) {
+                query += "(customer.cus_id LIKE ? OR customer.cus_name LIKE ? OR customer.cus_Phone LIKE ?) ";
+                params.add(search + "%"); // for cus_id
+                params.add(search + "%"); // for cus_name
+                params.add(search + "%"); // for cus_Phone
+                hasConditions = true;
+            }
+
+            if (!TextUtils.isEmpty(fromDate) && !TextUtils.isEmpty(toDate)) {
+                if (hasConditions) {
+                    query += "AND ";
+                }
+                query += "sorted.time BETWEEN ? AND ? ";
+                params.add(fromDate);
+                params.add(toDate);
+            }
+
+            // Add dynamic ORDER BY clause based on the search value type
+            if (isNumeric(search)) {
+                query += "ORDER BY CASE WHEN customer.cus_id LIKE ? THEN 1 ELSE 2 END, customer.cus_id, sorted.time DESC";
+                params.add(search + "%"); // for cus_id
+            } else if (!TextUtils.isEmpty(search)) {
+                query += "ORDER BY customer.cus_id, sorted.time DESC";
+            } else {
+                query += "ORDER BY sorted.time DESC";
+            }
+        }
+
+        System.out.println(query);
+        Cursor c1 = db.get_value(query, params.toArray(new String[0]));
+        displayPdf(c1);
+    }
 
 
+
+    // Helper method to check if a string is numeric
+    private boolean isNumeric(String str) {
+        return str.matches("\\d+");
+    }
+
+
+    private void filter(String SPuser, String search) {
+        String query = "SELECT * FROM (SELECT * FROM Transation WHERE sales_user=? GROUP BY cus_id) AS sorted " +
+                "JOIN customer ON sorted.cus_id = customer.cus_id ";
+
+        List<String> params = new ArrayList<>();
+        params.add(SPuser);
+
+        if (!TextUtils.isEmpty(search)) {
+            query += "WHERE (customer.cus_id LIKE ? OR customer.cus_name LIKE ? OR customer.cus_Phone LIKE ?) ";
+            params.add(search + "%"); // for cus_id
+            params.add(search + "%"); // for cus_name
+            params.add(search + "%"); // for cus_Phone
+
+            // Add dynamic ORDER BY clause based on the search value type
+            query += "ORDER BY ";
+            if (isNumeric(search)) {
+                query += "CASE WHEN customer.cus_id LIKE ? THEN 1 ELSE 2 END, ";
+            }
+            query += "customer.cus_id, sorted.time DESC";
+            params.add(search + "%"); // for cus_id
+        } else {
+            query += "ORDER BY sorted.time DESC";
+        }
+
+        System.out.println(query);
+        Cursor c1 = db.get_value(query, params.toArray(new String[0]));
+        displayPdf(c1);
+    }
+
+
+
+
+    /*
     private void  filter(){
         if (activityHistoryBinding.Hbillno.getText().toString().length() !=0 & activityHistoryBinding.Hcusname.getText().toString().length() !=0){
             Cursor c1 = db.get_value("SELECT DISTINCT * FROM ( SELECT *  FROM Transation WHERE sales_user='" + SPuser + "' AND cus_id LIKE '"+activityHistoryBinding.Hbillno.getText().toString()+"%'  GROUP BY cus_id  UNION ALL SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name LIKE '"+activityHistoryBinding.Hcusname.getText().toString()+"%' AND sorted.cus_id LIKE '"+activityHistoryBinding.Hbillno.getText().toString()+"%' ORDER BY sorted.time DESC");
@@ -317,6 +363,9 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
         }
     }
 
+     */
+
+/*
     private void  filterWithDate(){
         if (activityHistoryBinding.Hbillno.getText().toString().length() !=0 & activityHistoryBinding.Hcusname.getText().toString().length() !=0){
             Cursor c1 = db.get_value("SELECT DISTINCT * FROM ( SELECT *  FROM Transation WHERE cus_id LIKE '"+activityHistoryBinding.Hbillno.getText().toString()+"%' GROUP BY cus_id  UNION ALL SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id WHERE customer.cus_name LIKE '"+activityHistoryBinding.Hcusname.getText().toString()+"%' AND sorted.cus_id LIKE '"+activityHistoryBinding.Hbillno.getText().toString()+"%' AND sorted.time BETWEEN '"+FromDate+"' AND '" +ToDate+"' ORDER BY sorted.time DESC");
@@ -340,11 +389,14 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
             displayPdf(c1);
         }
     }
-    private void displayPdf(Cursor c1){
-        recyclerView=findViewById(R.id.hisrecyle);
+
+ */
+
+    private void displayPdf(Cursor c1) {
+        recyclerView = findViewById(R.id.hisrecyle);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(this,1));
-        pdfList=new ArrayList<>();
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
+        pdfList = new ArrayList<>();
         mPbillno.clear();
         mPtamount.clear();
         mPtime.clear();
@@ -369,44 +421,44 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
                 @SuppressLint("Range") String data7 = c1.getString(c1.getColumnIndex("printer_img"));
 
                 File file;
-                if(path == null) {
-                    file=new File("/storage/emulated/0/DATA/Invoice"+data1+".pdf");
-                }
-                else {
+                if (path == null) {
+                    file = new File("/storage/emulated/0/DATA/Invoice" + data1 + ".pdf");
+                } else {
                     file = new File(path);
                 }
 
-                    SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+                SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
 
 
-                    SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
 
-                    image.add(data7);
-                    Date res = new Date(data3);
-                      tempbillno.add(data1);
+                image.add(data7);
+                Date res = new Date(data3);
+                tempbillno.add(data1);
 
-                    mPbillno.add("Bill No: "+data1);
-                    mPtamount.add("Total Amount: "+data2+" Rs.");
-                    mPtime.add("Time:"+formatter.format(res));
-                    mPDate.add("Generated Date : "+formatter1.format(res));
-                    mPusername.add("Generated BY: "+data4);
-                    mPcusname.add("Name: "+data5);
-                    mPcusPhoneno.add("Mobile no: "+data6);
-                    pdfList.add(file);
+                mPbillno.add("Bill No: " + data1);
+                mPtamount.add("Total Amount: " + data2 + " Rs.");
+                mPtime.add("Time:" + formatter.format(res));
+                mPDate.add("Generated Date : " + formatter1.format(res));
+                mPusername.add("Generated BY: " + data4);
+                mPcusname.add("Name: " + data5);
+                mPcusPhoneno.add("Mobile no: " + data6);
+                pdfList.add(file);
 
             } while (c1.moveToNext());
         }
 
-        pdfAdapter=new PdfAdapter(this,pdfList,this,mPbillno,tempbillno,mPtamount,mPDate,mPusername,mPtime,mPcusname,mPcusPhoneno,image);
+        pdfAdapter = new PdfAdapter(this, pdfList, this, mPbillno, tempbillno, mPtamount, mPDate, mPusername, mPtime, mPcusname, mPcusPhoneno, image);
         recyclerView.setAdapter(pdfAdapter);
 
     }
-    private void Autocompition(){
+
+    private void Autocompition() {
         Cursor c1 = db.get_value("select Bill_No from transation");
         if (c1.moveToFirst()) {
             do {
                 @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Bill_No"));
-                 Bill_no_Auto.add(data1);
+                AutoCompletion.add(data1);
             } while (c1.moveToNext());
         }
         Cursor c2 = db.get_value("select cus_name,cus_Phone from customer");
@@ -414,94 +466,39 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
             do {
                 @SuppressLint("Range") String data1 = c2.getString(c2.getColumnIndex("cus_name"));
                 @SuppressLint("Range") String data2 = c2.getString(c2.getColumnIndex("cus_Phone"));
-               Customer_Name_Auto.add(data1);
-               Phone_no_Auto.add(data2);
+                AutoCompletion.add(data1);
+                AutoCompletion.add(data2);
             } while (c2.moveToNext());
         }
     }
 
 
-
-
-
-
     @Override
     public void onpdfSelected(File file, String mPbillno, String filename) {
 
-        if (file.exists()){
-            String a="2";
-            Intent i=new Intent(this,DocmentActivity.class);
-            i.putExtra("path",file.getAbsolutePath());
-            i.putExtra("billno",mPbillno);
-            i.putExtra("option",a);
+        if (file.exists()) {
+            String a = "2";
+            Intent i = new Intent(this, DocmentActivity.class);
+            i.putExtra("billno", mPbillno);
+            i.putExtra("option", a);
             startActivity(i);
 
-        }else {
+        } else {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(R.string.file_is_removed_form_internal_storage_do_you_want_to_generate_again);
             builder.setTitle(R.string.alert);
             builder.setCancelable(true);
-            builder.setNegativeButton(R.string.no,(DialogInterface.OnClickListener)(dialog, which) ->{
+            builder.setNegativeButton(R.string.no, (DialogInterface.OnClickListener) (dialog, which) -> {
                 dialog.dismiss();
             });
             builder.setPositiveButton(R.string.yes, (DialogInterface.OnClickListener) (dialog, which) -> {
                 dialog.dismiss();
-                String cusname=null;
-                String phoneno=null;
-                Long time=0l;
-                List<String> mQty = new ArrayList();
-                List<String> mProduct_name = new ArrayList();
-                List<Long> mTotal = new ArrayList();
-                List<Long> mCost= new ArrayList();
-                int  count=0;
-                long Net_AMT = 0;
-                String  SPIS_FIRST_TIME = null;
-
-                Cursor c1=db.get_value("SELECT * FROM Transation INNER JOIN customer ON  Transation.cus_id= customer.cus_id WHERE Bill_No ='"+mPbillno+"'");
-
-                if (c1.moveToFirst()) {
-                    do {
-                        @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("quantity"));
-                        @SuppressLint("Range") Long data2 = c1.getLong(c1.getColumnIndex("rate"));
-
-                        @SuppressLint("Range") Long data3 = c1.getLong(c1.getColumnIndex("amount"));
-                        @SuppressLint("Range") String data4 = c1.getString(c1.getColumnIndex("Product_Name"));
-                        @SuppressLint("Range") String data5 = c1.getString(c1.getColumnIndex("cus_name"));
-                        @SuppressLint("Range") String data6 = c1.getString(c1.getColumnIndex("cus_Phone"));
-                        @SuppressLint("Range") Long data7 = c1.getLong(c1.getColumnIndex("time"));
-                        @SuppressLint("Range") String data8 = c1.getString(c1.getColumnIndex("signature"));
-
-                        mQty.add(data1);
-                        mCost.add(data2);
-                        mTotal.add(data3);
-                        mProduct_name.add(data4);
-                        if(cusname == null || phoneno == null ||time==0l){
-                            cusname=data5;
-                            phoneno=data6;
-                            time=data7;
-                            SPIS_FIRST_TIME=data8;
-                        }
-                        count++;
-                    } while (c1.moveToNext());
-                }
-                for (Long total : mTotal) {
-
-                    Net_AMT = Net_AMT + total;
-
-                }
-                String fileName = "Invoice" + mPbillno + ".pdf";
-                System.out.println(SPIS_FIRST_TIME);
-                String SPIS_FIRST_logo=sharedpreferences.getString(SHARED_PREFS_Logo,null);
-                File dir = new File(this.getFilesDir(), "DATA");
-
-                if (!dir.exists()) {
-                    dir.mkdir();
-                }
-
-                File file2= new File(dir,fileName);
-               // File file1 = invoice1.PDF1(count,Net_AMT, Integer.parseInt(mPbillno),cusname,phoneno,mQty,mCost,mTotal,mProduct_name,SPIS_FIRST_TIME,SPIS_FIRST_logo,file2,time);
-                new HistoryActivity.PdfREGenerationTask(count,Net_AMT, Integer.parseInt(mPbillno),cusname,phoneno,mQty,mCost,mTotal,mProduct_name,SPIS_FIRST_TIME,SPIS_FIRST_logo,file2,time).execute();
+                String a = "2";
+                Intent i = new Intent(this, DocmentActivity.class);
+                i.putExtra("billno", mPbillno);
+                i.putExtra("option", a);
+                startActivity(i);
 
             });
             AlertDialog alertDialog = builder.create();
@@ -513,7 +510,7 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
 
     @Override
     public void image(String image) {
-        Bitmap Printerimg= ImageEncodeAndDecode.decodeBase64ToBitmap(image);
+        Bitmap Printerimg = ImageEncodeAndDecode.decodeBase64ToBitmap(image);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.image_dialog_layout, null);
@@ -574,78 +571,4 @@ public class HistoryActivity extends AppCompatActivity implements OnPdfFileSelec
 
      */
 
-
-    private class PdfREGenerationTask extends AsyncTask<Void, Void, File> {
-
-        private int count;
-        private long netAmt;
-        private int billNo;
-        private String customerName;
-        private String phoneNo;
-        private List<String> mQty;
-        private List<Long> mCost;
-        private List<Long> mTotal;
-        private List<String> mProductName;
-        private String spIsFirstTime;
-        private String spIsFirstLogo;
-        private File file;
-        Long time;
-
-        public PdfREGenerationTask(int count, long netAmt, int billNo, String customerName, String phoneNo,
-                                   List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProductName,
-                                   String spIsFirstTime, String spIsFirstLogo, File file,Long time) {
-            this.count = count;
-            this.netAmt = netAmt;
-            this.billNo = billNo;
-            this.customerName = customerName;
-            this.phoneNo = phoneNo;
-            this.mQty = mQty;
-            this.mCost = mCost;
-            this.mTotal = mTotal;
-            this.mProductName = mProductName;
-            this.spIsFirstTime = spIsFirstTime;
-            this.file = file;
-            this.time=time;
-            this.spIsFirstLogo=spIsFirstLogo;
-        }
-        private android.app.AlertDialog progressDialog;
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            ProgressBar progressBar = new ProgressBar(HistoryActivity.this, null, android.R.attr.progressBarStyleLarge);
-            progressBar.setIndeterminate(true);
-
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.gravity = Gravity.CENTER;
-            progressBar.setLayoutParams(params);
-
-            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(HistoryActivity.this);
-            builder.setView(progressBar);
-            builder.setCancelable(false);
-            progressDialog = builder.create();
-            progressDialog.show();
-
-        }
-        @Override
-        protected File doInBackground(Void... voids) {
-            return invoice1.PDF1(count, netAmt, billNo, customerName, phoneNo, mQty, mCost, mTotal, mProductName, spIsFirstTime,spIsFirstLogo, file, time);
-        }
-
-        @Override
-        protected void onPostExecute(File result) {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-
-
-            String a="2";
-            Intent i=new Intent(HistoryActivity.this,DocmentActivity.class);
-
-            i.putExtra("path",result.getAbsolutePath());
-            i.putExtra("billno",billNo);
-            i.putExtra("option",a);
-            startActivity(i);
-
-        }
-    }
 }

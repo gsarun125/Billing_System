@@ -6,6 +6,11 @@
         android:icon="@drawable/baseline_edit_sig"
         android:titleTextAppearance="@style/MenuItemTextAppearance"
         />
+    <item android:id="@+id/GST"
+        android:title="Add GST"
+        android:icon="@drawable/baseline_attach_money_24"
+        android:titleTextAppearance="@style/MenuItemTextAppearance"
+        />
     <item android:id="@+id/Export"
         android:title="@string/export_invoice"
         android:icon="@drawable/baseline_ios_share_24"

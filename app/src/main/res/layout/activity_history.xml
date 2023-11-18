@@ -5,103 +5,79 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.HistoryActivity">
-<RelativeLayout
-    android:id="@+id/RelativeLayout5"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <AutoCompleteTextView
-        android:id="@+id/Hbillno"
-        android:layout_width="80dp"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_toEndOf="@+id/editTextDatePickerTO"
-        android:hint="@string/bill_no"
-        android:maxLength="10"
-        android:inputType="number"
-        android:textSize="16sp"
-        android:background="@drawable/edit_text_border"
-        android:padding="5dp" />
-
-    <EditText
-        android:background="@drawable/edit_text_border"
-        android:id="@+id/editTextDatePickerTO"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_toEndOf="@+id/editTextDatePickrFrom"
-        android:cursorVisible="false"
-        android:focusable="false"
-        android:hint="@string/to_date"
-        android:inputType="none"
-        android:textSize="16sp"
-        android:onClick="showDatePickerDialogTo"
-        android:singleLine="true" />
-
-    <EditText
-        android:background="@drawable/edit_text_border"
-        android:id="@+id/editTextDatePickrFrom"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:cursorVisible="false"
-        android:focusable="false"
-        android:hint="@string/from_date"
-        android:inputType="none"
-        android:textSize="16sp"
-        android:onClick="showDatePickerDialogFrom"
-        android:singleLine="true" />
-
-
-    <AutoCompleteTextView
-        android:id="@+id/Hcusname"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:layout_below="@+id/editTextDatePickrFrom"
-        android:layout_alignParentStart="true"
-        android:singleLine="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
-        android:hint="@string/customer_name"
-        android:textSize="16sp"
-        android:background="@drawable/edit_text_border"
-        android:padding="5dp" />
-
-    <AutoCompleteTextView
-        android:id="@+id/HPhoneno"
-        android:layout_width="105dp"
-        android:layout_height="60dp"
-        android:layout_below="@+id/editTextDatePickerTO"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_toEndOf="@+id/Hcusname"
-        android:singleLine="true"
-        android:inputType="number"
-        android:hint="@string/phone_no"
-        android:maxLength="10"
-        android:textSize="16sp"
-        android:background="@drawable/edit_text_border"
-        android:padding="5dp" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/hisrecyle"
-        android:layout_marginTop="150dp"
+    <RelativeLayout
+        android:id="@+id/RelativeLayout5"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:id="@+id/lineardate"
+            android:layout_width="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/editTextDatePickrFrom"
+                android:layout_width="115dp"
+                android:layout_height="50dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/edit_text_border"
+               android:gravity="center"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:hint="@string/from_date"
+                android:inputType="none"
+                android:onClick="showDatePickerDialogFrom"
+                android:singleLine="true" />
 
-</RelativeLayout>
+
+            <EditText
+                android:id="@+id/editTextDatePickerTO"
+                android:layout_width="115dp"
+                android:layout_height="50dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@+id/editTextDatePickrFrom"
+                android:gravity="center"
+                android:background="@drawable/edit_text_border"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:hint="@string/to_date"
+                android:inputType="none"
+                android:onClick="showDatePickerDialogTo"
+                android:singleLine="true" />
+
+
+        </RelativeLayout>
+
+        <AutoCompleteTextView
+            android:id="@+id/Hsearchbox"
+            android:layout_width="270dp"
+            android:layout_height="60dp"
+            android:layout_below="@+id/lineardate"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="96dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/edit_text_bg"
+            android:drawableRight="@android:drawable/ic_menu_search"
+            android:drawablePadding="8dp"
+            android:hint="Search"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:textColor="@android:color/black" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/hisrecyle"
+            android:layout_marginTop="150dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/RelativeLayout5"
+
         android:layout_marginTop="-50dp">
 
         <LinearLayout

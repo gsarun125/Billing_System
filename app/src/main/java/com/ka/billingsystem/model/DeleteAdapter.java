@@ -61,11 +61,12 @@ public class DeleteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             System.out.println("gfbgffgfg");
             holder.itemView.setVisibility(View.VISIBLE);
             PdfViewHolder pdfViewHolder = (PdfViewHolder) holder;
-            pdfViewHolder.IVbillno.setText(mPbillno.get(position).toString().toUpperCase());
-            pdfViewHolder.IVDate.setText(mPDate.get(position).toString().toUpperCase());
-            pdfViewHolder.IVuser.setText(mPusername.get(position).toString().toUpperCase());
-            pdfViewHolder.IVCusName.setText(mPcusname.get(position).toString().toUpperCase());
-            pdfViewHolder.IVcuspno.setText(mPcuspnoneno.get(position).toString().toUpperCase());
+            pdfViewHolder.IVbillno.setText(mPbillno.get(position).toString());
+            pdfViewHolder.IVDate.setText(mPDate.get(position).toString());
+            pdfViewHolder.IVtime.setText(mPtime.get(position).toString());
+            pdfViewHolder.IVuser.setText(mPusername.get(position).toString());
+            pdfViewHolder.IVCusName.setText(mPcusname.get(position).toString());
+            pdfViewHolder.IVcuspno.setText(mPcuspnoneno.get(position).toString());
 
             if(image.get(position)!=null){
                 pdfViewHolder.Printerimg.setImageBitmap(ImageEncodeAndDecode.decodeBase64ToBitmap(image.get(position)));
@@ -94,6 +95,7 @@ public class DeleteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             pdfViewHolder.IVuser.setVisibility(View.GONE);
             pdfViewHolder.IVCusName.setVisibility(View.GONE);
             pdfViewHolder.IVcuspno.setVisibility(View.GONE);
+            pdfViewHolder.IVtime.setVisibility(View.GONE);
 
 
             holder.itemView.setVisibility(View.VISIBLE);

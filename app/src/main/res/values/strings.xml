@@ -89,6 +89,8 @@
     <string name="edit_signature" translatable="false">Edit Signature</string>
     <string name="export_invoice" translatable="false">Export Invoice</string>
     <string name="import_invoice" translatable="false">Import Invoice</string>
+    <string name="user_id">User Id</string>
+    <string name="no_invoice_found_to_export">"No Invoice found to Export "</string>
 
 
 </resources>

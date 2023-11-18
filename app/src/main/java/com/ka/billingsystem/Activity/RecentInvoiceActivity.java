@@ -28,6 +28,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -80,6 +81,8 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
 
     private RecyclerView recyclerView;
     private int scrollPosition = 0;
+    private static final String TAG = "RecentInvoiceActivity";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,50 +110,48 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
 
 
     private void displayPdf(){
+        try {
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
+            pdfList = new ArrayList<>();
 
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(this,1));
-        pdfList=new ArrayList<>();
+            mPbillno.clear();
+            mPtamount.clear();
+            mPtime.clear();
+            mPDate.clear();
+            mPusername.clear();
+            mPcusname.clear();
+            mPcusPhoneno.clear();
+            pdfList.clear();
+            tempbillno.clear();
+            image.clear();
 
-        mPbillno.clear();
-        mPtamount.clear();
-        mPtime.clear();
-        mPDate.clear();
-        mPusername.clear();
-        mPcusname.clear();
-        mPcusPhoneno.clear();
-        pdfList.clear();
-        tempbillno.clear();
-        image.clear();
+            Cursor c1;
+            if (SPuser.equals("admin")) {
+                c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC LIMIT 10");
+            } else {
+                c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user=" + "'" + SPuser + "' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC LIMIT 10");
+            }
 
-        Cursor c1;
-        if (SPuser.equals("admin")) {
-            c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation GROUP BY cus_id ) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC LIMIT 10");
-        }
-        else {
-            c1 = db.get_value("SELECT * FROM (SELECT * FROM Transation WHERE sales_user="+"'"+SPuser+"' GROUP BY cus_id) AS sorted JOIN customer ON sorted.cus_id = customer.cus_id ORDER BY sorted.time DESC LIMIT 10");
-        }
+            if (c1.moveToFirst()) {
+                do {
+                    @SuppressLint("Range") String path = c1.getString(c1.getColumnIndex("file_Path"));
+                    @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Bill_No"));
+                    @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("tamount"));
 
-        if (c1.moveToFirst()) {
-            do {
-                @SuppressLint("Range") String path = c1.getString(c1.getColumnIndex("file_Path"));
-                @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("Bill_No"));
-                @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("tamount"));
+                    @SuppressLint("Range") Long data3 = c1.getLong(c1.getColumnIndex("time"));
 
-                @SuppressLint("Range") Long data3 = c1.getLong(c1.getColumnIndex("time"));
+                    @SuppressLint("Range") String data4 = c1.getString(c1.getColumnIndex("sales_user"));
+                    @SuppressLint("Range") String data5 = c1.getString(c1.getColumnIndex("cus_name"));
+                    @SuppressLint("Range") String data6 = c1.getString(c1.getColumnIndex("cus_Phone"));
+                    @SuppressLint("Range") String data7 = c1.getString(c1.getColumnIndex("printer_img"));
 
-                @SuppressLint("Range") String data4 = c1.getString(c1.getColumnIndex("sales_user"));
-                @SuppressLint("Range") String data5 = c1.getString(c1.getColumnIndex("cus_name"));
-                @SuppressLint("Range") String data6 = c1.getString(c1.getColumnIndex("cus_Phone"));
-                @SuppressLint("Range") String data7 = c1.getString(c1.getColumnIndex("printer_img"));
-
-                File file;
-                if(path == null) {
-                    file=new File("/storage/emulated/0/DATA/Invoice"+data1+".pdf");
-                }
-                else {
-                    file = new File(path);
-                }
+                    File file;
+                    if (path == null) {
+                        file = new File("/storage/emulated/0/DATA/Invoice" + data1 + ".pdf");
+                    } else {
+                        file = new File(path);
+                    }
 
                     SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
 
@@ -159,21 +160,25 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
                     Date res = new Date(data3);
                     image.add(data7);
                     tempbillno.add(data1);
-                    mPbillno.add("Bill No: "+data1);
-                    mPtamount.add("Total Amount: "+data2+" Rs.");
-                    mPtime.add("Time:"+formatter.format(res));
-                    mPDate.add("Generated Date : "+formatter1.format(res));
-                    mPusername.add("Generated By: "+data4);
-                    mPcusname.add("Name: "+data5);
-                    mPcusPhoneno.add("Mobile no: "+data6);
+                    mPbillno.add("Bill No: " + data1);
+                    mPtamount.add("Total Amount: " + data2 + " Rs.");
+                    mPtime.add("Time:" + formatter.format(res));
+                    mPDate.add("Generated Date : " + formatter1.format(res));
+                    mPusername.add("Generated By: " + data4);
+                    mPcusname.add("Name: " + data5);
+                    mPcusPhoneno.add("Mobile no: " + data6);
                     System.out.println(file);
                     pdfList.add(file);
 
-            } while (c1.moveToNext());
+                } while (c1.moveToNext());
+            }
+            System.out.println(image);
+            pdfAdapter = new PdfAdapter(this, pdfList, this, mPbillno, tempbillno, mPtamount, mPDate, mPusername, mPtime, mPcusname, mPcusPhoneno, image);
+            recyclerView.setAdapter(pdfAdapter);
         }
-        System.out.println(image);
-        pdfAdapter=new PdfAdapter(this,pdfList,this,mPbillno,tempbillno,mPtamount,mPDate,mPusername,mPtime,mPcusname,mPcusPhoneno,image);
-        recyclerView.setAdapter(pdfAdapter);
+        catch (Exception e) {
+            Log.e(TAG, "Error displaying PDF", e);
+        }
     }
 
     //@Override
@@ -190,7 +195,6 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
 
             String a="0";
              Intent i=new Intent(this,DocmentActivity.class);
-             i.putExtra("path",file.getAbsolutePath());
              i.putExtra("billno",mPbillno);
              i.putExtra("option",a);
              startActivity(i);
@@ -207,61 +211,12 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
             });
             builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
                 dialog.dismiss();
-                String cusname=null;
-                String phoneno=null;
-                Long time=0l;
-                List<String> mQty = new ArrayList();
-                List<String> mProduct_name = new ArrayList();
-                List<Long> mTotal = new ArrayList();
-                List<Long> mCost= new ArrayList();
-                int  count=0;
-                long Net_AMT = 0;
+                Intent i=new Intent(RecentInvoiceActivity.this,DocmentActivity.class);
 
-                String  SPIS_FIRST_TIME = null;
-                Cursor c1=db.get_value("SELECT * FROM Transation INNER JOIN customer ON  Transation.cus_id= customer.cus_id WHERE Bill_No ='"+mPbillno+"'");
-
-                if (c1.moveToFirst()) {
-                    do {
-                        @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("quantity"));
-                        @SuppressLint("Range") Long data2 = c1.getLong(c1.getColumnIndex("rate"));
-
-                        @SuppressLint("Range") Long data3 = c1.getLong(c1.getColumnIndex("amount"));
-                        @SuppressLint("Range") String data4 = c1.getString(c1.getColumnIndex("Product_Name"));
-                        @SuppressLint("Range") String data5 = c1.getString(c1.getColumnIndex("cus_name"));
-                        @SuppressLint("Range") String data6 = c1.getString(c1.getColumnIndex("cus_Phone"));
-                        @SuppressLint("Range") Long data7 = c1.getLong(c1.getColumnIndex("time"));
-                        @SuppressLint("Range") String data8 = c1.getString(c1.getColumnIndex("signature"));
-
-                        mQty.add(data1);
-                        mCost.add(data2);
-                        mTotal.add(data3);
-                        mProduct_name.add(data4);
-                        if(cusname == null || phoneno == null ||time==0l){
-                            cusname=data5;
-                            phoneno=data6;
-                            SPIS_FIRST_TIME=data8;
-                            time=data7;
-                        }
-                        count++;
-                    } while (c1.moveToNext());
-                }
-                for (Long total : mTotal) {
-
-                    Net_AMT = Net_AMT + total;
-
-                }
-                String fileName = "Invoice" + mPbillno + ".pdf";
-                String SPIS_FIRST_logo=sharedpreferences.getString(SHARED_PREFS_Logo,null);
-                File dir = new File(this.getFilesDir(), "DATA");
-                if (!dir.exists()) {
-                    dir.mkdir();
-                }
-
-                File file2= new File(dir,fileName);
-             ///   = invoice1.PDF1(count,Net_AMT, Integer.parseInt(mPbillno),cusname,phoneno,mQty,mCost,mTotal,mProduct_name,SPIS_FIRST_TIME,SPIS_FIRST_logo,file2,time);
-              new PdfREGenerationTask(count,Net_AMT, Integer.parseInt(mPbillno),cusname,phoneno,mQty,mCost,mTotal,mProduct_name,SPIS_FIRST_TIME,SPIS_FIRST_logo,file2,time).execute();
-
-
+                String a="0";
+                i.putExtra("billno",mPbillno);
+                i.putExtra("option",a);
+                startActivity(i);
 
             });
             AlertDialog alertDialog = builder.create();
@@ -425,79 +380,6 @@ public class RecentInvoiceActivity extends AppCompatActivity implements OnPdfFil
         super.onResume();
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
-        }
-    }
-
-    private class PdfREGenerationTask extends AsyncTask<Void, Void, File> {
-
-        private int count;
-        private long netAmt;
-        private int billNo;
-        private String customerName;
-        private String phoneNo;
-        private List<String> mQty;
-        private List<Long> mCost;
-        private List<Long> mTotal;
-        private List<String> mProductName;
-        private String spIsFirstTime;
-        private String spIsFirstLogo;
-        private File file;
-        Long time;
-
-        public PdfREGenerationTask(int count, long netAmt, int billNo, String customerName, String phoneNo,
-                                 List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProductName,
-                                 String spIsFirstTime, String spIsFirstLogo, File file,Long time) {
-            this.count = count;
-            this.netAmt = netAmt;
-            this.billNo = billNo;
-            this.customerName = customerName;
-            this.phoneNo = phoneNo;
-            this.mQty = mQty;
-            this.mCost = mCost;
-            this.mTotal = mTotal;
-            this.mProductName = mProductName;
-            this.spIsFirstTime = spIsFirstTime;
-            this.file = file;
-            this.time=time;
-            this.spIsFirstLogo=spIsFirstLogo;
-        }
-        private android.app.AlertDialog progressDialog;
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            ProgressBar progressBar = new ProgressBar(RecentInvoiceActivity.this, null, android.R.attr.progressBarStyleLarge);
-            progressBar.setIndeterminate(true);
-
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.gravity = Gravity.CENTER;
-            progressBar.setLayoutParams(params);
-
-            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(RecentInvoiceActivity.this);
-            builder.setView(progressBar);
-            builder.setCancelable(false);
-            progressDialog = builder.create();
-            progressDialog.show();
-
-        }
-        @Override
-        protected File doInBackground(Void... voids) {
-
-            return invoice1.PDF1(count, netAmt, billNo, customerName, phoneNo, mQty, mCost, mTotal, mProductName, spIsFirstTime,spIsFirstLogo, file, time);
-        }
-
-        @Override
-        protected void onPostExecute(File result) {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-            Intent i=new Intent(RecentInvoiceActivity.this,DocmentActivity.class);
-
-           String a="0";
-            i.putExtra("path",result.getAbsolutePath());
-            i.putExtra("billno",String.valueOf(billNo));
-            i.putExtra("option",a);
-            startActivity(i);
-
         }
     }
 }

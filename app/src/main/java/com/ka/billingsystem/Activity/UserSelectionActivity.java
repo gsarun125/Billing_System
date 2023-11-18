@@ -30,18 +30,25 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ka.billingsystem.DataBase.DataBaseHandler;
 import com.ka.billingsystem.R;
 import com.ka.billingsystem.java.Export;
 import com.ka.billingsystem.java.Import;
+import com.ka.billingsystem.java.RangeFilter;
 import com.ka.billingsystem.model.UserseclectionAdapter;
 import com.ka.billingsystem.model.selectionListener;
 
@@ -64,7 +71,7 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
     private Handler handler;
 
     private RecyclerView recyclerView;
-    int storage_RQ=101;
+    int storage_RQ = 101;
     private UserseclectionAdapter userseclectionAdapter;
     private List<String> mUsername = new ArrayList();
     private List<String> mUserid = new ArrayList();
@@ -78,14 +85,17 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
 
     int checkedItem = 0;
     ImageButton menu;
+    LinearLayout emptystate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_selection);
-        recyclerView=findViewById(R.id.userSelection_RV);
-        sharedpreferences= getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+        recyclerView = findViewById(R.id.userSelection_RV);
+        sharedpreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
 
-        menu=findViewById(R.id.btnmenu);
+        menu = findViewById(R.id.btnmenu);
+        emptystate=findViewById(R.id.USEmpty1);
         displayPdf();
         Permission();
 
@@ -93,59 +103,67 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PopupMenu popupMenu = new PopupMenu(UserSelectionActivity.this,view);
+                PopupMenu popupMenu = new PopupMenu(UserSelectionActivity.this, view);
                 popupMenu.getMenuInflater().inflate(R.menu.threedotadmin, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         int ch = menuItem.getItemId();
-                      if (ch == R.id.EditSignature) {
+                        if (ch == R.id.EditSignature) {
                             Intent intent = new Intent(UserSelectionActivity.this, EditSignature.class);
                             startActivity(intent);
+                        } else if (ch == R.id.GST) {
+                            AddGst();
+
                         } else if (ch == R.id.Logout) {
                             logOut();
                         } else if (ch == R.id.Export) {
-                          if(checkStoragePermission()) {
-                              System.out.println("arybb");
-                              SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-hh_mm_ssa", Locale.getDefault());
-                              String currentDateAndTime = sdf.format(new Date());
+                            String qurry = "Select * from Transation";
+                            Cursor c1 = db.get_value(qurry);
+                            if (c1.getCount() > 1) {
+                                if (checkStoragePermission()) {
+                                    System.out.println("arybb");
+                                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy-hh_mm_ssa", Locale.getDefault());
+                                    String currentDateAndTime = sdf.format(new Date());
 
 
-                              String Backup_filename="Kirthana_backup_"+currentDateAndTime+".zip";
+                                    String Backup_filename = "Kirthana_backup_" + currentDateAndTime + ".zip";
 
-                              String packagesname = getPackageName();
-                              Export.ExportResult result = ExportData(packagesname,Backup_filename,create(Backup_filename));
-                              String message = result.getMessage();
-                              String filename = result.getFileName();
-                              Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                              if(filename!=null) {
-                                  share(filename);
-                              }
+                                    String packagesname = getPackageName();
+                                    Export.ExportResult result = ExportData(packagesname, Backup_filename, create(Backup_filename));
+                                    String message = result.getMessage();
+                                    String filename = result.getFileName();
+                                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                                    if (filename != null) {
+                                        share(filename);
+                                    }
 
-                          }
-                          else {
-                              Toast.makeText(UserSelectionActivity.this, "Storage permission denied", Toast.LENGTH_LONG).show();
-                              Permission();
+                                } else {
+                                    Toast.makeText(UserSelectionActivity.this, "Storage permission denied", Toast.LENGTH_LONG).show();
+                                    Permission();
 
-                          }
+                                }
+                            } else {
+                                AlertDialog();
+                            }
                         } else if (ch == R.id.Import) {
-                          Log.i("Import", "Import-Start");
-                          try {
-                              if(checkStoragePermission()){
-                                  selectFile();
+                            Log.i("Import", "Import-Start");
+                            try {
+                                if (checkStoragePermission()) {
+                                    selectFile();
 
 
-                              }else {
-                                  Log.i("Import", "Import-Storage permission denied");
-                                  Toast.makeText(UserSelectionActivity.this, "Storage permission denied", Toast.LENGTH_LONG).show();
-                                  Permission();
-                              }
-                          }catch (Exception e){
+                                } else {
+                                    Log.i("Import", "Import-Storage permission denied");
+                                    Toast.makeText(UserSelectionActivity.this, "Storage permission denied", Toast.LENGTH_LONG).show();
+                                    Permission();
+                                }
+                            } catch (Exception e) {
 
-                              Log.e("Import", "Import-Start exception occurred", e);
-                          }
+                                Log.e("Import", "Import-Start exception occurred", e);
+                            }
 
-                      }
+                        }
                         return true;
                     }
                 });
@@ -158,17 +176,31 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
         });
     }
 
-    private   File  create(String Backup_filename){
+    private void AlertDialog() {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setMessage(R.string.no_invoice_found_to_export);
+        builder.setTitle(R.string.alert);
+        builder.setCancelable(true);
+
+        builder.setPositiveButton("ok", (DialogInterface.OnClickListener) (dialog, which) -> {
+            dialog.dismiss();
+
+        });
+        androidx.appcompat.app.AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private File create(String Backup_filename) {
         File subdir = new File(this.getFilesDir(), "Backup");
         if (!subdir.exists()) {
             subdir.mkdir();
         }
 
-        File zipFile = new File(subdir,Backup_filename );
+        File zipFile = new File(subdir, Backup_filename);
         return zipFile;
     }
 
-    private  void Permission(){
+    private void Permission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
@@ -183,39 +215,39 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
     }
 
     private boolean checkStoragePermission() {
-       try{
-           Log.i("Line1", "checkStoragePermission()-Line1");
-           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        try {
+            Log.i("Line1", "checkStoragePermission()-Line1");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                   // Check for MANAGE_EXTERNAL_STORAGE permission on Android 11 and above
-                   Log.i("Line2", "checkStoragePermission()-Lin2");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    // Check for MANAGE_EXTERNAL_STORAGE permission on Android 11 and above
+                    Log.i("Line2", "checkStoragePermission()-Lin2");
 
-                   if (Environment.isExternalStorageManager()) {
-                       return true;  // Permission is granted
-                   } else {
-                       // You may need to request MANAGE_EXTERNAL_STORAGE permission here
-                       // or redirect the user to the system settings to grant the permission
-                       return false;
-                   }
-               } else {
-                   Log.i("Line2", "checkStoragePermission()-Line3");
+                    if (Environment.isExternalStorageManager()) {
+                        return true;  // Permission is granted
+                    } else {
+                        // You may need to request MANAGE_EXTERNAL_STORAGE permission here
+                        // or redirect the user to the system settings to grant the permission
+                        return false;
+                    }
+                } else {
+                    Log.i("Line2", "checkStoragePermission()-Line3");
 
-                   // For versions below Android 11, check for WRITE_EXTERNAL_STORAGE permission
-                   if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                       return true;  // Permission is granted
-                   } else {
-                       // You may need to request WRITE_EXTERNAL_STORAGE permission here
-                       // or redirect the user to the system settings to grant the permission
-                       return false;
-                   }
-               }
-           }
+                    // For versions below Android 11, check for WRITE_EXTERNAL_STORAGE permission
+                    if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                        return true;  // Permission is granted
+                    } else {
+                        // You may need to request WRITE_EXTERNAL_STORAGE permission here
+                        // or redirect the user to the system settings to grant the permission
+                        return false;
+                    }
+                }
+            }
 
-       }catch (Exception e){
-           Log.e("Exception", "checkStoragePermission()", e);
+        } catch (Exception e) {
+            Log.e("Exception", "checkStoragePermission()", e);
 
-       }
+        }
         return true;// Permission is implicitly granted on versions below M
     }
 
@@ -262,11 +294,12 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
                 Log.e("selectFile() inner try", "selectFile()-exception occurred", ex);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e("selectFile() outer try", "selectFile()-An exception occurred", e);
         }
 
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         Log.i("onActivityResult()", "onActivityResult()-start");
@@ -280,7 +313,7 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
                 String packagesname = getPackageName();
 
 
-                String status1 = Import.ImportData(packagesname,filePath);
+                String status1 = Import.ImportData(packagesname, filePath);
                 Toast.makeText(getApplicationContext(), status1, Toast.LENGTH_SHORT).show();
 
                 Log.i("onActivityResult()", "onActivityResult()-if Line2");
@@ -290,11 +323,12 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
             Log.i("onActivityResult()", "onActivityResult()-if not Executed");
             super.onActivityResult(requestCode, resultCode, data);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e("onActivityResult()", "onActivityResult()-An exception occurred", e);
         }
 
     }
+
     private void showProgressDialog() {
 
         Log.i("showProgressDialog()", "showProgressDialog()-start");
@@ -369,10 +403,8 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
     }
 
 
-
-    private void displayPdf(){
+    private void displayPdf() {
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(this,2));
         mGen_Date.clear();
         mUserid.clear();
         mUsername.clear();
@@ -382,15 +414,31 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
             do {
                 @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("user_name"));
                 @SuppressLint("Range") String data2 = c1.getString(c1.getColumnIndex("user_id"));
-                @SuppressLint("Range") Long data3 = c1.getLong(c1.getColumnIndex("created_date"));
-                SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
+                @SuppressLint("Range") Long data3 = c1.getLong(c1.getColumnIndex("Last_Logout"));
+                SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy : HH:mm");
                 Date res = new Date(data3);
                 mUsername.add(data1);
                 mUserid.add(data2);
-                mGen_Date.add(formatter1.format(res));
-            }while (c1.moveToNext());
-         }
-        userseclectionAdapter=new UserseclectionAdapter(this,this,mUsername,mUserid,mGen_Date);
+                if (data3 != 0) {
+                    mGen_Date.add(formatter1.format(res));
+                } else {
+                    mGen_Date.add("0");
+                }
+
+            } while (c1.moveToNext());
+        }
+        if (mUsername.isEmpty()) {
+            recyclerView.setVisibility(View.GONE);
+            emptystate.setVisibility(View.VISIBLE);
+
+        } else {
+            emptystate.setVisibility(View.GONE);
+
+            recyclerView.setVisibility(View.VISIBLE);
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        }
+
+        userseclectionAdapter = new UserseclectionAdapter(this, this, mUsername, mUserid, mGen_Date);
         recyclerView.setAdapter(userseclectionAdapter);
 
     }
@@ -411,7 +459,7 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString(USER_KEY, userid);
         editor.apply();
-        Intent i=new Intent(this,MainActivity.class);
+        Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
     }
 
@@ -462,7 +510,7 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         logOut();
     }
 
@@ -506,6 +554,7 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
             getBaseContext().getResources().updateConfiguration(configuration, getBaseContext().getResources().getDisplayMetrics());
         }
     }
+
     private void share(String filename) {
         File subdir = new File(getFilesDir(), "Backup");
         File zipFile = new File(subdir, filename);
@@ -515,13 +564,12 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
                 Uri uri = FileProvider.getUriForFile(this, "com.ka.billingsystem.provider", zipFile);
 
                 Intent share = new Intent(Intent.ACTION_SEND);
-               // share.setType("application/zip");
+                // share.setType("application/zip");
                 share.setDataAndType(uri, "application/zip");
                 share.putExtra(Intent.EXTRA_STREAM, uri);
                 share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-               this.startActivity(Intent.createChooser(share, "Share"));
 
-
+                this.startActivity(Intent.createChooser(share, "Share"));
             } catch (Exception e) {
                 Log.e("ShareError", "Error sharing file", e);
             }
@@ -532,6 +580,43 @@ public class UserSelectionActivity extends AppCompatActivity implements selectio
 
     }
 
+    private void AddGst() {
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            View dialogView = getLayoutInflater().inflate(R.layout.custom_dialog_addgst, null);
+            builder.setView(dialogView);
+            builder.setCancelable(false);
+            TextView textView = dialogView.findViewById(R.id.currentGst);
+            String qurry = "Select * from user where id='1'";
+            Cursor c1 = db.get_value(qurry);
+            if (c1.moveToFirst()) {
+                @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("gst"));
 
+                textView.setText("Current GST : " + data1);
+            }
 
+            EditText gstvalue = dialogView.findViewById(R.id.editGst);
+            CheckBox agreeCheckbox = dialogView.findViewById(R.id.agree_checkbox);
+            gstvalue.setFilters(new InputFilter[]{new RangeFilter(0, 100)});
+            builder.setPositiveButton("OK", (dialog, which) -> {
+                if (agreeCheckbox.isChecked() && gstvalue.getText().length() != 0) {
+
+                    db.ADD_GST(gstvalue.getText().toString());
+                    dialog.dismiss();
+                } else {
+                    //Toast.makeText(this, R.string.please_agree_to_continue, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            builder.setNegativeButton("Cancel", (dialog, which) -> {
+                dialog.dismiss();
+            });
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        } catch (Exception e) {
+
+        }
+
+    }
 }

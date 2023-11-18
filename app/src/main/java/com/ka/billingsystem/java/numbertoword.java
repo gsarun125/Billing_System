@@ -1,27 +1,25 @@
 package com.ka.billingsystem.java;
 
-import java.text.DecimalFormat;
-
 public class numbertoword {
 
     static String string;
     static String st1[] = { "", "One", "Two", "Three", "Four", "Five", "Six", "Seven",
             "Eight", "Nine", };
-    static String st2[] = { "Hundred", "Thousand", "Lakh", "Crore" };
+    static String st2[] = { "Hundred", "Thousand", "Lakh", "Crore", "Million", "Billion", "Trillion" };
     static String st3[] = { "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen",
-            "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Ninteen", };
-    static String st4[] = { "Twenty", "Thirty", "Fourty", "Fifty", "Sixty", "Seventy",
-            "Eighty", "Ninty" };
+            "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen", };
+    static String st4[] = { "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy",
+            "Eighty", "Ninety" };
 
-    public static String convert(int number) {
+    public static String convert(long number) {
         int n = 1;
-        int word;
+        long word;
         string = "";
         while (number != 0) {
             switch (n) {
                 case 1:
                     word = number % 100;
-                    pass(word);
+                    pass((int) word);
                     if (number > 100 && number % 100 != 0) {
                         show("And ");
                     }
@@ -29,49 +27,36 @@ public class numbertoword {
                     break;
 
                 case 2:
-                    word = number % 10;
+                case 4:
+                case 6:
+                case 8:
+                case 10:
+                case 12:
+                    word = number % 100;
                     if (word != 0) {
                         show(" ");
-                        show(st2[0]);
+                        show(st2[n / 2]);
                         show(" ");
-                        pass(word);
+                        pass((int) word);
                     }
-                    number /= 10;
+                    number /= 100;
                     break;
 
                 case 3:
-                    word = number % 100;
-                    if (word != 0) {
-                        show(" ");
-                        show(st2[1]);
-                        show(" ");
-                        pass(word);
-                    }
-                    number /= 100;
-                    break;
-
-                case 4:
-                    word = number % 100;
-                    if (word != 0) {
-                        show(" ");
-                        show(st2[2]);
-                        show(" ");
-                        pass(word);
-                    }
-                    number /= 100;
-                    break;
-
                 case 5:
-                    word = number % 100;
+                case 7:
+                case 9:
+                case 11:
+                case 13:
+                    word = number % 10;
                     if (word != 0) {
                         show(" ");
-                        show(st2[3]);
+                        show(st2[n / 2]);
                         show(" ");
-                        pass(word);
+                        pass((int) word);
                     }
-                    number /= 100;
+                    number /= 10;
                     break;
-
             }
             n++;
         }
@@ -79,7 +64,8 @@ public class numbertoword {
     }
 
     public static void pass(int number) {
-        int word, q;
+        long word;
+        int q;
         if (number < 10) {
             show(st1[number]);
         }
@@ -93,7 +79,7 @@ public class numbertoword {
                 show(st4[q - 2]);
             } else {
                 q = number / 10;
-                show(st1[word]);
+                show(st1[(int) word]);
                 show(" ");
                 show(st4[q - 2]);
             }

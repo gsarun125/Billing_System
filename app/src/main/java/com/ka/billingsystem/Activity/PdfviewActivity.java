@@ -24,6 +24,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -36,6 +37,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +63,7 @@ public class PdfviewActivity extends AppCompatActivity {
     ImageButton share;
     ImageButton camera;
     ImageButton textButton;
+    ImageButton Delete;
     String SHARED_PREFS_KEY = "signature";
     String SHARED_PREFS = "shared_prefs";
     String SHARED_PREFS_Logo = "logo";
@@ -68,6 +71,7 @@ public class PdfviewActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_CODE = 100;
     private static final int CAMERA_REQUEST_CODE = 101;
     String SPIS_FIRST_TIME;
+    Long GST;
     String SPIS_FIRST_logo;
     String fileName;
 
@@ -79,14 +83,18 @@ public class PdfviewActivity extends AppCompatActivity {
         share = (ImageButton) findViewById(R.id.share);
         textButton = findViewById(R.id.textButton);
         camera=findViewById(R.id.camera);
+        Delete=findViewById(R.id.pdfViewdelete);
+
         sharedpreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
 
         String qurry = "Select * from user where id='1'";
         Cursor c1 = db.get_value(qurry);
         if (c1.moveToFirst()) {
             @SuppressLint("Range") String data1 = c1.getString(c1.getColumnIndex("signature"));
-
+            @SuppressLint("Range") Long data2 = c1.getLong(c1.getColumnIndex("gst"));
+            GST=data2;
             SPIS_FIRST_TIME =data1;
+            System.out.println("GST"+GST);
         }
 
 
@@ -100,10 +108,10 @@ public class PdfviewActivity extends AppCompatActivity {
         }
 
         File file= new File(dir,fileName);
-        db.filePath(Bill_NO,file.getAbsolutePath(),SPIS_FIRST_TIME);
+        db.filePath(Bill_NO,file.getAbsolutePath(),SPIS_FIRST_TIME,GST);
 
 
-        new PdfGenerationTask(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME,SPIS_FIRST_logo, file).execute();
+        new PdfGenerationTask(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME,SPIS_FIRST_logo, file,GST).execute();
 
 //        File file = invoice1.PDF1(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME, fileName, 0, db);
        // pdfView.fromFile(file).load();
@@ -125,6 +133,12 @@ public class PdfviewActivity extends AppCompatActivity {
             }
         });
 
+        Delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Delete(String.valueOf(Bill_NO));
+            }
+        });
         textButton.setOnClickListener(new View.OnClickListener() {
             boolean isMethod1 = true;
 
@@ -132,12 +146,12 @@ public class PdfviewActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (isMethod1) {
                     pdfView.recycle();
-                    new PdfGenerationTask2(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME,SPIS_FIRST_logo, file).execute();
+                    new PdfGenerationTask2(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME,SPIS_FIRST_logo, file,GST).execute();
                    // File file1 = invoice2.PDF2(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME, fileName, db);
                   //  pdfView.fromFile(file1).load();
                 } else {
                     pdfView.recycle();
-                    new PdfGenerationTask(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME,SPIS_FIRST_logo, file).execute();
+                    new PdfGenerationTask(count, Net_AMT, Bill_NO, Customer_Name, PHone_NO, mQty, mCost, mTotal, mProduct_name, SPIS_FIRST_TIME,SPIS_FIRST_logo, file,GST).execute();
                 }
                 isMethod1 = !isMethod1;
             }
@@ -223,6 +237,35 @@ public class PdfviewActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * Handle the deletion of an invoice.
+     */
+    public void Delete(String mPbillno) {
+
+        try {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.do_you_want_to_delete);
+            builder.setTitle(R.string.alert);
+            builder.setCancelable(true);
+            builder.setNegativeButton(R.string.no, (DialogInterface.OnClickListener) (dialog, which) -> {
+                dialog.dismiss();
+            });
+            builder.setPositiveButton(R.string.yes, (DialogInterface.OnClickListener) (dialog, which) -> {
+                db.moveDataFromTable2ToTable5(mPbillno);
+
+             onBackPressed();
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }catch (Exception e) {
+            Log.e("Delete", "An exception occurred", e);
+        }
+
+    }
+
+
     private void openCamera() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -268,8 +311,10 @@ public class PdfviewActivity extends AppCompatActivity {
         mTotal.clear();
         mProduct_name.clear();
         mCost.clear();
-        Net_AMT = 0;
+        Net_AMT = 0L;
         cusEdit.setText("");
+        Intent i=new Intent(PdfviewActivity.this,MainActivity2.class);
+        startActivity(i);
         finish();
     }
 
@@ -320,7 +365,7 @@ public class PdfviewActivity extends AppCompatActivity {
     private class PdfGenerationTask extends AsyncTask<Void, Void, File> {
 
         private int count;
-        private long netAmt;
+        private Long netAmt;
         private int billNo;
         private String customerName;
         private String phoneNo;
@@ -331,11 +376,12 @@ public class PdfviewActivity extends AppCompatActivity {
         private String spIsFirstTime;
         private String spIsFirstLogo;
         private File file;
+        private Long GST;
 
 
-        public PdfGenerationTask(int count, long netAmt, int billNo, String customerName, String phoneNo,
+        public PdfGenerationTask(int count, Long netAmt, int billNo, String customerName, String phoneNo,
                                  List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProductName,
-                                 String spIsFirstTime, String spIsFirstLogo, File file) {
+                                 String spIsFirstTime, String spIsFirstLogo, File file,Long GST) {
             this.count = count;
             this.netAmt = netAmt;
             this.billNo = billNo;
@@ -347,7 +393,7 @@ public class PdfviewActivity extends AppCompatActivity {
             this.mProductName = mProductName;
             this.spIsFirstTime = spIsFirstTime;
             this.file = file;
-
+this.GST=GST;
             this.spIsFirstLogo=spIsFirstLogo;
         }
         private AlertDialog progressDialog;
@@ -371,7 +417,7 @@ public class PdfviewActivity extends AppCompatActivity {
         @Override
         protected File doInBackground(Void... voids) {
             Export.ExportData(getPackageName(),"Kirthana_backup.zip",create("Kirthana_backup.zip"));
-            return invoice1.PDF1(count, netAmt, billNo, customerName, phoneNo, mQty, mCost, mTotal, mProductName, spIsFirstTime,spIsFirstLogo, file, 0);
+            return invoice1.PDF1(count, netAmt, billNo, customerName, phoneNo, mQty, mCost, mTotal, mProductName, spIsFirstTime,spIsFirstLogo, file, 0,GST);
         }
 
         public  File  create(String Backup_filename){
@@ -398,7 +444,7 @@ public class PdfviewActivity extends AppCompatActivity {
     private class PdfGenerationTask2 extends AsyncTask<Void, Void, File> {
 
         private int count;
-        private long netAmt;
+        private Long netAmt;
         private int billNo;
         private String customerName;
         private String phoneNo;
@@ -409,11 +455,12 @@ public class PdfviewActivity extends AppCompatActivity {
         private String spIsFirstTime;
         private File file;
         private String spIsFirstLogo;
+        private Long GST;
 
         private AlertDialog progressDialog;
-        public PdfGenerationTask2(int count, long netAmt, int billNo, String customerName, String phoneNo,
+        public PdfGenerationTask2(int count, Long netAmt, int billNo, String customerName, String phoneNo,
                                  List<String> mQty, List<Long> mCost, List<Long> mTotal, List<String> mProductName,
-                                 String spIsFirstTime, String spIsFirstLogo, File file) {
+                                 String spIsFirstTime, String spIsFirstLogo, File file,Long GST) {
             this.count = count;
             this.netAmt = netAmt;
             this.billNo = billNo;
@@ -425,6 +472,7 @@ public class PdfviewActivity extends AppCompatActivity {
             this.mProductName = mProductName;
             this.spIsFirstTime = spIsFirstTime;
             this.file = file;
+            this.GST=GST;
             this.spIsFirstLogo=spIsFirstLogo;
         }
         @Override
@@ -446,7 +494,7 @@ public class PdfviewActivity extends AppCompatActivity {
 
         @Override
         protected File doInBackground(Void... voids) {
-            return invoice2.PDF2(count, netAmt, billNo, customerName, phoneNo, mQty, mCost, mTotal, mProductName, spIsFirstTime,spIsFirstLogo,file);
+            return invoice2.PDF2(count, netAmt, billNo, customerName, phoneNo, mQty, mCost, mTotal, mProductName, spIsFirstTime,spIsFirstLogo,file,GST);
         }
 
         @Override

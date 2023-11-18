@@ -56,7 +56,7 @@ public class SalesActivity extends AppCompatActivity  {
 
 
     public static int  count;
-    public static long Net_AMT = 0;
+    public static Long Net_AMT = 0L;
     public static List<Long> mCost= new ArrayList();
     String SHARED_PREFS = "shared_prefs";
     String USER_KEY = "user_key";
@@ -172,8 +172,8 @@ public class SalesActivity extends AppCompatActivity  {
         String phone = phoneEdit.getText().toString().trim();
         String cusName = cusEdit.getText().toString().trim();
 
-        setEditTextBackground(cusEdit, !cusName.isEmpty(), R.drawable.edit_text_green_bg, R.drawable.edit_text_bg);
-        setEditTextBackground(activitySalesBinding.phonenoLayout, phone.length() == 10, R.drawable.edit_text_green_bg, R.drawable.edit_text_bg);
+       // setEditTextBackground(cusEdit, !cusName.isEmpty(), R.drawable.edit_text_green_bg, R.drawable.edit_text_bg);
+        //setEditTextBackground(activitySalesBinding.phonenoLayout, phone.length() == 10, R.drawable.edit_text_green_bg, R.drawable.edit_text_bg);
 
         if (!phone.isEmpty() && !cusName.isEmpty() && phone.length() == 10) {
             updateButtonVisibility();
